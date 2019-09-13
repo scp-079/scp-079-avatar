@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 # SCP-079-AVATAR - Get new joined member's profile photo
 # Copyright (C) 2019 SCP-079 <https://scp-079.org>
 #
@@ -20,28 +17,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Optional
 
-from apscheduler.schedulers.background import BackgroundScheduler
-from pyrogram import Client
+from pyrogram import Client, User
 
-from plugins import glovar
-from plugins.functions.timers import backup_files, reset_data, send_count
-from plugins.functions.timers import update_admins, update_status
+from .telegram import get_users
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
-# Config session
-app = Client(session_name="account")
 
-# Timer
-scheduler = BackgroundScheduler()
-scheduler.add_job(update_status, "cron", [app], minute=30)
-scheduler.add_job(backup_files, "cron", [app], hour=20)
-scheduler.add_job(send_count, "cron", [app], hour=21)
-scheduler.add_job(reset_data, "cron", day=glovar.reset_day, hour=22)
-scheduler.add_job(update_admins, "cron", [app], hour=22, minute=30)
-scheduler.start()
+def get_user(client: Client, uid: int) -> Optional[User]:
+    # Get a user
+    result = None
+    try:
+        result = get_users(client, [uid])
+        if result:
+            result = result[0]
+    except Exception as e:
+        logger.warning(f"Get user error: {e}", exc_info=True)
 
-# Hold
-app.run()
+    return result
