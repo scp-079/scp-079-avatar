@@ -47,11 +47,21 @@ default_user_status: Dict[str, Union[int, str]] = {
 }
 
 locks: Dict[str, Lock] = {
-    "message": Lock()
+    "message": Lock(),
+    "regex": Lock()
 }
 
 receivers: Dict[str, List[str]] = {
+    "avatar": ["NOSPAM"],
     "version": ["HIDE"]
+}
+
+regex: Dict[str, bool] = {
+    "ad": False,
+    "ban": False,
+    "bio": False,
+    "con": False,
+    "nm": False
 }
 
 sender: str = "AVATAR"
@@ -154,6 +164,11 @@ for path in ["data", "tmp"]:
 
 # Init ids variables
 
+admin_ids: Dict[int, Set[int]] = {}
+# admin_ids = {
+#     -10012345678: {12345678}
+# }
+
 bad_ids: Dict[str, Set[int]] = {
     "users": set()
 }
@@ -176,8 +191,18 @@ user_ids: Dict[int, Dict[str, Union[int, str, Set[int]]]] = {}
 #     }
 # }
 
+# Init word variables
+
+for word_type in regex:
+    locals()[f"{word_type}_words"]: Dict[str, Dict[str, Union[float, int]]] = {}
+
+# type_words = {
+#     "regex": 0
+# }
+
 # Load data
-file_list: List[str] = ["bad_ids", "except_ids", "user_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "user_ids"]
+file_list += [f"{f}_words" for f in regex]
 for file in file_list:
     try:
         try:

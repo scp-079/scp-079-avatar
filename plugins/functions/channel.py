@@ -102,6 +102,27 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
     return False
 
 
+def share_regex_count(client: Client, word_type: str) -> bool:
+    # Use this function to share regex count to REGEX
+    try:
+        if glovar.regex[word_type]:
+            file = data_to_file(eval(f"glovar.{word_type}_words"))
+            share_data(
+                client=client,
+                receivers=["REGEX"],
+                action="regex",
+                action_type="count",
+                data=f"{word_type}_words",
+                file=file
+            )
+
+        return True
+    except Exception as e:
+        logger.warning(f"Share regex update error: {e}", exc_info=True)
+
+    return False
+
+
 def share_user_avatar(client: Client, gid: int, uid: int, mid: int, image: Image) -> bool:
     # Share user's avatar to NOSPAM
     try:
