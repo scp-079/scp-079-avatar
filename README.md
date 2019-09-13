@@ -23,7 +23,6 @@ See [this article](https://scp-079.org/avatar/).
         - `etc.py` : Miscellaneous
         - `file.py` : Save files
         - `filters.py` : Some filters
-        - `group.py` : Functions about group
         - `ids.py` : Modify id lists
         - `receive.py` : Receive data from exchange channel
         - `telegram.py` : Some telegram functions
