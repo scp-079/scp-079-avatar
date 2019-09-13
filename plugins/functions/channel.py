@@ -24,7 +24,7 @@ from PIL.Image import Image
 from pyrogram import Client
 
 from .. import glovar
-from .etc import code, code_block, thread
+from .etc import code_block, thread
 from .file import crypt_file, data_to_file, delete_file, get_new_path
 from .telegram import send_document, send_message
 
