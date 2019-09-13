@@ -13,7 +13,8 @@ See [this article](https://scp-079.org/avatar/).
 ## Requirements
 
 - Python 3.6 or higher
-- pip: `pip install -r requirements.txt` or `pip install -U APScheduler Pillow pyAesCrypt pyrogram[fast]`
+- Ubuntu: `sudo apt update && sudo apt install opencc -y`
+- pip: `pip install -r requirements.txt` or `pip install -U APScheduler OpenCC Pillow pyAesCrypt pyrogram[fast]`
 
 ## Files
 

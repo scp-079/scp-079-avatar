@@ -24,7 +24,8 @@ from threading import Thread, Timer
 from time import sleep, time
 from typing import Any, Callable
 
-from pyrogram import Message
+from opencc import convert
+from pyrogram import Message, User
 from pyrogram.errors import FloodWait
 
 # Enable logging
@@ -69,6 +70,23 @@ def delay(secs: int, target: Callable, args: list) -> bool:
     return False
 
 
+def get_full_name(user: User) -> str:
+    # Get user's full name
+    text = ""
+    try:
+        if user and not user.is_deleted:
+            text = user.first_name
+            if user.last_name:
+                text += f" {user.last_name}"
+
+        if text:
+            text = t2s(text)
+    except Exception as e:
+        logger.warning(f"Get full name error: {e}", exc_info=True)
+
+    return text
+
+
 def get_now() -> int:
     # Get time for now
     result = 0
@@ -100,6 +118,16 @@ def random_str(i: int) -> str:
         text = "".join(choice(ascii_letters + digits) for _ in range(i))
     except Exception as e:
         logger.warning(f"Random str error: {e}", exc_info=True)
+
+    return text
+
+
+def t2s(text: str) -> str:
+    # Covert Traditional Chinese to Simplified Chinese
+    try:
+        text = convert(text, config="t2s.json")
+    except Exception as e:
+        logger.warning(f"T2S error: {e}", exc_info=True)
 
     return text
 
