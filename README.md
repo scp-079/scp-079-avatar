@@ -25,7 +25,7 @@ See [this article](https://scp-079.org/avatar/).
         - `file.py` : Save files
         - `filters.py` : Some filters
         - `ids.py` : Modify id lists
-        - `receive.py` : Receive data from exchange channel
+        - `receive.py` : Receive data from hide channel
         - `telegram.py` : Some telegram functions
         - `timers.py` : Timer functions
         - `user.py` : Functions about user and channel object
