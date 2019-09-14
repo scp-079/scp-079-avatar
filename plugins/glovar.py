@@ -47,6 +47,7 @@ default_user_status: Dict[str, Union[int, str]] = {
 }
 
 locks: Dict[str, Lock] = {
+    "admin": Lock(),
     "message": Lock(),
     "regex": Lock()
 }
