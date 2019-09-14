@@ -23,16 +23,15 @@ from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from ..functions.channel import share_user_avatar
-from ..functions.etc import get_full_name, get_now
+from ..functions.etc import get_full_name, get_now, thread
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bio_text
-from ..functions.filters import is_nm_text, is_declared_message
+from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bio_text, is_declared_message, is_nm_text
 from ..functions.ids import init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_declared_message
 from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except
 from ..functions.receive import receive_text_data, receive_version_ask
 from ..functions.timers import send_count
-from ..functions.telegram import get_user_bio
+from ..functions.telegram import get_user_bio, read_history
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -93,6 +92,21 @@ def check_join(client: Client, message: Message) -> bool:
             logger.warning(f"Check join error: {e}", exc_info=True)
         finally:
             glovar.locks["message"].release()
+
+    return False
+
+
+@Client.on_message(Filters.channel & Filters.incoming & hide_channel, group=1)
+def mark_message(client: Client, message: Message) -> bool:
+    # Mark messages from hide channel as read
+    try:
+        if message.chat:
+            cid = message.chat.id
+            thread(read_history, (client, cid))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Mark message error: {e}", exc_info=True)
 
     return False
 
