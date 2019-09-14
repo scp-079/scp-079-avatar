@@ -88,7 +88,6 @@ warn_id: int = 0
 hide_channel_id: int = 0
 
 # [custom]
-image_size: int = 0
 reset_day: str = ""
 time_new: int = 0
 
@@ -115,7 +114,6 @@ try:
     # [channels]
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
     # [custom]
-    image_size = int(config["custom"].get("image_size", image_size))
     reset_day = config["custom"].get("reset_day", reset_day)
     time_new = int(config["custom"].get("time_new", time_new))
     # [encrypt]
@@ -139,7 +137,6 @@ if (captcha_id == 0
         or user_id == 0
         or warn_id == 0
         or hide_channel_id == 0
-        or image_size == 0
         or reset_day in {"", "[DATA EXPUNGED]"}
         or time_new == 0
         or key in {"", b"[DATA EXPUNGED]"}
