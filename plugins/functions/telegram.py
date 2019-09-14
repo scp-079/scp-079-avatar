@@ -20,7 +20,7 @@ import logging
 from typing import Iterable, List, Optional, Union
 
 from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, User
-from pyrogram.api.functions.messages import GetStickerSet
+from pyrogram.api.functions.messages import GetStickerSet, ReadMentions
 from pyrogram.api.functions.users import GetFullUser
 from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet, UserFull
 from pyrogram.api.types.messages import StickerSet as messages_StickerSet
@@ -169,6 +169,27 @@ def read_history(client: Client, cid: int) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Read history error: {e}", exc_info=True)
+
+    return False
+
+
+def read_mention(client: Client, cid: int) -> bool:
+    # Mark a mention as read
+    try:
+        peer = resolve_peer(client, cid)
+        if peer:
+            flood_wait = True
+            while flood_wait:
+                flood_wait = False
+                try:
+                    client.send(ReadMentions(peer=peer))
+                except FloodWait as e:
+                    flood_wait = True
+                    wait_flood(e)
+
+            return True
+    except Exception as e:
+        logger.warning(f"Read mention error: {e}", exc_info=True)
 
     return False
 

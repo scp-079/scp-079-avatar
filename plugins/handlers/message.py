@@ -31,7 +31,7 @@ from ..functions.receive import receive_add_bad, receive_add_except, receive_dec
 from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except
 from ..functions.receive import receive_text_data, receive_version_ask
 from ..functions.timers import send_count
-from ..functions.telegram import get_user_bio, read_history
+from ..functions.telegram import get_user_bio, read_history, read_mention
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -96,9 +96,24 @@ def check_join(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.channel & Filters.incoming & hide_channel, group=1)
+@Client.on_message(~Filters.private & Filters.incoming & Filters.mentioned, group=1)
+def mark_mention(client: Client, message: Message) -> bool:
+    # Mark mention as read
+    try:
+        if message.chat:
+            cid = message.chat.id
+            thread(read_mention, (client, cid))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Mark mention error: {e}", exc_info=True)
+
+    return False
+
+
+@Client.on_message(~Filters.private & Filters.incoming, group=2)
 def mark_message(client: Client, message: Message) -> bool:
-    # Mark messages from hide channel as read
+    # Mark messages from groups and channels as read
     try:
         if message.chat:
             cid = message.chat.id
