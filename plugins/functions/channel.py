@@ -129,7 +129,7 @@ def share_user_avatar(client: Client, gid: int, uid: int, mid: int, image: Image
         file = data_to_file(image)
         share_data(
             client=client,
-            receivers=glovar.receivers["avatar"],
+            receivers=["NOSPAM"],
             action="update",
             action_type="avatar",
             data={

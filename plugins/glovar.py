@@ -51,11 +51,6 @@ locks: Dict[str, Lock] = {
     "regex": Lock()
 }
 
-receivers: Dict[str, List[str]] = {
-    "avatar": ["NOSPAM"],
-    "version": ["HIDE"]
-}
-
 regex: Dict[str, bool] = {
     "ad": False,
     "ban": False,
