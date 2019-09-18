@@ -34,36 +34,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Init
-
-declared_message_ids: Dict[int, Set[int]] = {}
-# declared_message_ids = {
-#     -10012345678: {123}
-# }
-
-default_user_status: Dict[str, Union[int, str]] = {
-    "avatar": "",
-    "join": 0
-}
-
-locks: Dict[str, Lock] = {
-    "admin": Lock(),
-    "message": Lock(),
-    "regex": Lock()
-}
-
-regex: Dict[str, bool] = {
-    "ad": False,
-    "ban": False,
-    "bio": False,
-    "con": False,
-    "nm": False
-}
-
-sender: str = "AVATAR"
-
-version: str = "0.0.1"
-
 # Read data from config.ini
 
 # [bots]
@@ -86,6 +56,7 @@ hide_channel_id: int = 0
 # [custom]
 reset_day: str = ""
 time_new: int = 0
+zh_cn: Union[str, bool] = ""
 
 # [encrypt]
 key: Union[str, bytes] = ""
@@ -116,6 +87,8 @@ try:
     key = config["encrypt"].get("key", key)
     key = key.encode("utf-8")
     password = config["encrypt"].get("password", password)
+    zh_cn = config["custom"].get("zh_cn", zh_cn)
+    zh_cn = eval(zh_cn)
 except Exception as e:
     logger.warning(f"Read data from config.ini error: {e}", exc_info=True)
 
@@ -135,13 +108,44 @@ if (captcha_id == 0
         or hide_channel_id == 0
         or reset_day in {"", "[DATA EXPUNGED]"}
         or time_new == 0
+        or zh_cn not in {False, True}
         or key in {"", b"[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
 
-bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id,
-                     noflood_id, noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
+                     noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+
+# Init
+
+declared_message_ids: Dict[int, Set[int]] = {}
+# declared_message_ids = {
+#     -10012345678: {123}
+# }
+
+default_user_status: Dict[str, Union[int, str]] = {
+    "avatar": "",
+    "join": 0
+}
+
+locks: Dict[str, Lock] = {
+    "admin": Lock(),
+    "message": Lock(),
+    "regex": Lock()
+}
+
+regex: Dict[str, bool] = {
+    "ad": False,
+    "ban": False,
+    "bio": False,
+    "con": False,
+    "nm": False
+}
+
+sender: str = "AVATAR"
+
+version: str = "0.0.2"
 
 # Load data from pickle
 

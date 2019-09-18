@@ -28,6 +28,8 @@ from opencc import convert
 from pyrogram import Message, User
 from pyrogram.errors import FloodWait
 
+from .. import glovar
+
 # Enable logging
 logger = logging.getLogger(__name__)
 
@@ -128,7 +130,8 @@ def random_str(i: int) -> str:
 def t2s(text: str) -> str:
     # Covert Traditional Chinese to Simplified Chinese
     try:
-        text = convert(text, config="t2s.json")
+        if glovar.zh_cn:
+            text = convert(text, config="t2s.json")
     except Exception as e:
         logger.warning(f"T2S error: {e}", exc_info=True)
 
