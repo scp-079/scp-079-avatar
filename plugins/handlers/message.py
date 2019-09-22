@@ -77,11 +77,12 @@ def check_join(client: Client, message: Message) -> bool:
                 # Check avatar
                 if new.photo:
                     file_id = new.photo.big_file_id
+                    file_ref = new.photo.file_ref
                     old_id = glovar.user_ids[uid]["avatar"]
                     if file_id != old_id:
                         glovar.user_ids[uid]["avatar"] = file_id
                         save("user_ids")
-                        image_path = get_downloaded_path(client, file_id)
+                        image_path = get_downloaded_path(client, file_id, file_ref)
                         if image_path:
                             image = Image.open(image_path)
                             share_user_avatar(client, gid, uid, mid, image)
