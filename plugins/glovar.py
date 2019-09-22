@@ -54,6 +54,7 @@ warn_id: int = 0
 hide_channel_id: int = 0
 
 # [custom]
+backup: Union[str, bool] = ""
 reset_day: str = ""
 time_new: int = 0
 zh_cn: Union[str, bool] = ""
@@ -84,6 +85,8 @@ try:
     reset_day = config["custom"].get("reset_day", reset_day)
     time_new = int(config["custom"].get("time_new", time_new))
     # [encrypt]
+    backup = config["backup"].get("backup", backup)
+    backup = eval(backup)
     key = config["encrypt"].get("key", key)
     key = key.encode("utf-8")
     password = config["encrypt"].get("password", password)
@@ -106,6 +109,7 @@ if (captcha_id == 0
         or user_id == 0
         or warn_id == 0
         or hide_channel_id == 0
+        or backup not in {False, True}
         or reset_day in {"", "[DATA EXPUNGED]"}
         or time_new == 0
         or zh_cn not in {False, True}

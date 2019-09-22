@@ -39,7 +39,7 @@ def backup_files(client: Client) -> bool:
                     client=client,
                     receivers=["BACKUP"],
                     action="backup",
-                    action_type="pickle",
+                    action_type="data",
                     data=file,
                     file=f"data/{file}"
                 )
@@ -117,7 +117,7 @@ def update_admins(client: Client) -> bool:
     return False
 
 
-def update_status(client: Client) -> bool:
+def update_status(client: Client, the_type: str) -> bool:
     # Update running status to BACKUP
     try:
         share_data(
@@ -125,7 +125,10 @@ def update_status(client: Client) -> bool:
             receivers=["BACKUP"],
             action="backup",
             action_type="status",
-            data="awake"
+            data={
+                "type": the_type,
+                "backup": glovar.backup
+            }
         )
 
         return True

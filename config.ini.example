@@ -30,6 +30,7 @@ warn_id = [DATA EXPUNGED]
 hide_channel_id = [DATA EXPUNGED]
 
 [custom]
+backup = [DATA EXPUNGED]
 reset_day = [DATA EXPUNGED]
 time_new = [DATA EXPUNGED]
 zh_cn = [DATA EXPUNGED]
