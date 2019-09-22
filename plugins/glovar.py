@@ -82,16 +82,16 @@ try:
     # [channels]
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
     # [custom]
+    backup = config["custom"].get("backup", backup)
+    backup = eval(backup)
     reset_day = config["custom"].get("reset_day", reset_day)
     time_new = int(config["custom"].get("time_new", time_new))
+    zh_cn = config["custom"].get("zh_cn", zh_cn)
+    zh_cn = eval(zh_cn)
     # [encrypt]
-    backup = config["backup"].get("backup", backup)
-    backup = eval(backup)
     key = config["encrypt"].get("key", key)
     key = key.encode("utf-8")
     password = config["encrypt"].get("password", password)
-    zh_cn = config["custom"].get("zh_cn", zh_cn)
-    zh_cn = eval(zh_cn)
 except Exception as e:
     logger.warning(f"Read data from config.ini error: {e}", exc_info=True)
 
