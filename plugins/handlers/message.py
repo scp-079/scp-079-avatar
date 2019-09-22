@@ -77,7 +77,7 @@ def check_join(client: Client, message: Message) -> bool:
                 # Check avatar
                 if new.photo:
                     file_id = new.photo.big_file_id
-                    file_ref = new.photo.file_ref
+                    file_ref = ""
                     old_id = glovar.user_ids[uid]["avatar"]
                     if file_id != old_id:
                         glovar.user_ids[uid]["avatar"] = file_id
