@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 # Config session
 app = Client(session_name="account")
+app.start()
 
 # Send online status
 update_status(app, "online")
@@ -47,4 +48,7 @@ scheduler.add_job(update_admins, "cron", [app], hour=22, minute=30)
 scheduler.start()
 
 # Hold
-app.run()
+app.idle()
+
+# Stop
+app.stop()
