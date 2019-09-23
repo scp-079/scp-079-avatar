@@ -214,7 +214,7 @@ def resolve_peer(client: Client, pid: Union[int, str]) -> Optional[Union[bool, I
     return result
 
 
-def send_document(client: Client, cid: int, file: str, file_ref: str = None, text: str = None, mid: int = None,
+def send_document(client: Client, cid: int, document: str, file_ref: str = None, text: str = None, mid: int = None,
                   markup: InlineKeyboardMarkup = None) -> Optional[Union[bool, Message]]:
     # Send a document to a chat
     result = None
@@ -225,7 +225,7 @@ def send_document(client: Client, cid: int, file: str, file_ref: str = None, tex
             try:
                 result = client.send_document(
                     chat_id=cid,
-                    document=file,
+                    document=document,
                     file_ref=file_ref,
                     caption=text,
                     parse_mode="html",
