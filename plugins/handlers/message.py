@@ -42,58 +42,58 @@ logger = logging.getLogger(__name__)
                    & ~class_c & ~class_e)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
-    if glovar.locks["message"].acquire():
-        try:
-            gid = message.chat.id
-            mid = message.message_id
-            for new in message.new_chat_members:
-                uid = new.id
+    glovar.locks["message"].acquire()
+    try:
+        gid = message.chat.id
+        mid = message.message_id
+        for new in message.new_chat_members:
+            uid = new.id
 
-                # Check if the user is Class D personnel
-                if uid in glovar.bad_ids["users"]:
-                    continue
+            # Check if the user is Class D personnel
+            if uid in glovar.bad_ids["users"]:
+                continue
 
-                # Check if the user is bot
-                if new.is_bot:
-                    continue
+            # Check if the user is bot
+            if new.is_bot:
+                continue
 
-                # Work with NOSPAM
-                name = get_full_name(new)
-                if name and is_nm_text(name):
-                    continue
+            # Work with NOSPAM
+            name = get_full_name(new)
+            if name and is_nm_text(name):
+                continue
 
-                bio = get_user_bio(client, new.username or new.id)
-                if bio and is_bio_text(bio):
-                    continue
-                # Avoid check repeatedly
-                if not is_new_user(new) and init_user_id(uid):
-                    # Check declare status
-                    if is_declared_message(None, message):
-                        return True
+            bio = get_user_bio(client, new.username or new.id)
+            if bio and is_bio_text(bio):
+                continue
+            # Avoid check repeatedly
+            if not is_new_user(new) and init_user_id(uid):
+                # Check declare status
+                if is_declared_message(None, message):
+                    return True
 
-                    # Check avatar
-                    if new.photo:
-                        file_id = new.photo.big_file_id
-                        file_ref = ""
-                        old_id = glovar.user_ids[uid]["avatar"]
-                        if file_id != old_id:
-                            glovar.user_ids[uid]["avatar"] = file_id
-                            save("user_ids")
-                            image_path = get_downloaded_path(client, file_id, file_ref)
-                            if image_path:
-                                image = Image.open(image_path)
-                                share_user_avatar(client, gid, uid, mid, image)
-                                thread(delete_file, (image_path,))
+                # Check avatar
+                if new.photo:
+                    file_id = new.photo.big_file_id
+                    file_ref = ""
+                    old_id = glovar.user_ids[uid]["avatar"]
+                    if file_id != old_id:
+                        glovar.user_ids[uid]["avatar"] = file_id
+                        save("user_ids")
+                        image_path = get_downloaded_path(client, file_id, file_ref)
+                        if image_path:
+                            image = Image.open(image_path)
+                            share_user_avatar(client, gid, uid, mid, image)
+                            thread(delete_file, (image_path,))
 
-                # Update user's join status
-                glovar.user_ids[uid]["join"][gid] = get_now()
-                save("user_ids")
+            # Update user's join status
+            glovar.user_ids[uid]["join"][gid] = get_now()
+            save("user_ids")
 
-            return True
-        except Exception as e:
-            logger.warning(f"Check join error: {e}", exc_info=True)
-        finally:
-            glovar.locks["message"].release()
+        return True
+    except Exception as e:
+        logger.warning(f"Check join error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
 
     return False
 

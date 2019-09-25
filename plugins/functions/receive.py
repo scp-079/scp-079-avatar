@@ -162,30 +162,30 @@ def receive_refresh(client: Client, _: int) -> bool:
 
 def receive_regex(client: Client, message: Message, data: str) -> bool:
     # Receive regex
-    if glovar.locks["regex"].acquire():
-        try:
-            file_name = data
-            word_type = file_name.split("_")[0]
-            if word_type not in glovar.regex:
-                return True
-
-            words_data = receive_file_data(client, message, True)
-            if words_data:
-                pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
-                new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
-                for word in pop_set:
-                    eval(f"glovar.{file_name}").pop(word, 0)
-
-                for word in new_set:
-                    eval(f"glovar.{file_name}")[word] = 0
-
-                save(file_name)
-
+    glovar.locks["regex"].acquire()
+    try:
+        file_name = data
+        word_type = file_name.split("_")[0]
+        if word_type not in glovar.regex:
             return True
-        except Exception as e:
-            logger.warning(f"Receive regex error: {e}", exc_info=True)
-        finally:
-            glovar.locks["regex"].release()
+
+        words_data = receive_file_data(client, message, True)
+        if words_data:
+            pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
+            new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
+            for word in pop_set:
+                eval(f"glovar.{file_name}").pop(word, 0)
+
+            for word in new_set:
+                eval(f"glovar.{file_name}")[word] = 0
+
+            save(file_name)
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive regex error: {e}", exc_info=True)
+    finally:
+        glovar.locks["regex"].release()
 
     return False
 

@@ -120,45 +120,47 @@ def reset_data() -> bool:
 
 def send_count(client: Client) -> bool:
     # Send regex count to REGEX
-    if glovar.locks["regex"].acquire():
-        try:
-            for word_type in glovar.regex:
-                share_regex_count(client, word_type)
-                word_list = list(eval(f"glovar.{word_type}_words"))
-                for word in word_list:
-                    eval(f"glovar.{word_type}_words")[word] = 0
+    glovar.locks["regex"].acquire()
+    try:
+        for word_type in glovar.regex:
+            share_regex_count(client, word_type)
+            word_list = list(eval(f"glovar.{word_type}_words"))
+            for word in word_list:
+                eval(f"glovar.{word_type}_words")[word] = 0
 
-                save(f"{word_type}_words")
+            save(f"{word_type}_words")
 
-            return True
-        except Exception as e:
-            logger.warning(f"Send count error: {e}", exc_info=True)
-        finally:
-            glovar.locks["regex"].release()
+        return True
+    except Exception as e:
+        logger.warning(f"Send count error: {e}", exc_info=True)
+    finally:
+        glovar.locks["regex"].release()
 
     return False
 
 
 def update_admins(client: Client) -> bool:
     # Update admin list every day
-    if glovar.locks["admin"].acquire():
-        try:
-            group_list = list(glovar.admin_ids)
-            for gid in group_list:
-                try:
-                    admin_members = get_admins(client, gid)
-                    if admin_members and any([admin.user.is_self for admin in admin_members]):
-                        glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
-                                                 if ((not admin.user.is_bot and not admin.user.is_deleted)
-                                                     or admin.user.id in glovar.bot_ids)}
+    glovar.locks["admin"].acquire()
+    try:
+        group_list = list(glovar.admin_ids)
+        for gid in group_list:
+            try:
+                admin_members = get_admins(client, gid)
+                if admin_members and any([admin.user.is_self for admin in admin_members]):
+                    glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
+                                             if ((not admin.user.is_bot and not admin.user.is_deleted)
+                                                 or admin.user.id in glovar.bot_ids)}
 
-                        save("admin_ids")
-                except Exception as e:
-                    logger.warning(f"Update admin in {gid} error: {e}", exc_info=True)
+                    save("admin_ids")
+            except Exception as e:
+                logger.warning(f"Update admin in {gid} error: {e}", exc_info=True)
 
-            return True
-        finally:
-            glovar.locks["admin"].release()
+        return True
+    except Exception as e:
+        logger.warning(f"Update admin error: {e}", exc_info=True)
+    finally:
+        glovar.locks["admin"].release()
 
     return False
 
