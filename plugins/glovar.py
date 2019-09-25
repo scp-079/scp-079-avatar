@@ -128,9 +128,9 @@ declared_message_ids: Dict[int, Set[int]] = {}
 #     -10012345678: {123}
 # }
 
-default_user_status: Dict[str, Union[int, str]] = {
+default_user_status: Dict[str, Union[str, Dict[int, int]]] = {
     "avatar": "",
-    "join": 0
+    "join": {}
 }
 
 locks: Dict[str, Lock] = {
