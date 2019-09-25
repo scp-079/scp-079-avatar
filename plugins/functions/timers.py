@@ -17,13 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from copy import deepcopy
 from time import sleep
 
+from PIL import Image
 from pyrogram import Client
 
 from .. import glovar
-from .channel import share_data, share_regex_count
-from .file import save
+from .channel import share_data, share_regex_count, share_user_avatar
+from .etc import get_now, thread
+from .file import delete_file, get_downloaded_path, save
+from .user import get_user
 from .telegram import get_admins
 
 # Enable logging
@@ -50,6 +54,48 @@ def backup_files(client: Client) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Backup error: {e}", exc_info=True)
+
+    return False
+
+
+def interval_min_15(client: Client) -> bool:
+    # Execute every 15 minutes
+    try:
+        # Check user's name
+        now = get_now()
+        user_ids = deepcopy(glovar.user_ids)
+        for uid in user_ids:
+            # Do not check banned users
+            if uid in glovar.bad_ids["users"]:
+                continue
+
+            # Check new joined users
+            if any([now - user_ids[uid]["join"][gid] < glovar.time_new for gid in user_ids[uid]["join"]]):
+                user = get_user(client, uid)
+                if user:
+                    # Check if the user is Class D personnel
+                    if uid in glovar.bad_ids["users"]:
+                        continue
+
+                    # Check avatar
+                    if user.photo:
+                        file_id = user.photo.big_file_id
+                        file_ref = ""
+                        old_id = user_ids[uid]["avatar"]
+                        if file_id != old_id:
+                            glovar.user_ids[uid]["avatar"] = file_id
+                            save("user_ids")
+                            image_path = get_downloaded_path(client, file_id, file_ref)
+                            if image_path:
+                                g_list = list(user_ids[uid]["join"])
+                                gid = sorted(g_list, key=lambda g: user_ids[uid]["join"][g], reverse=True)[0]
+                                image = Image.open(image_path)
+                                share_user_avatar(client, gid, uid, 0, image)
+                                thread(delete_file, (image_path,))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Interval min 15 error: {e}", exc_info=True)
 
     return False
 

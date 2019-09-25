@@ -149,7 +149,7 @@ regex: Dict[str, bool] = {
 
 sender: str = "AVATAR"
 
-version: str = "0.0.4"
+version: str = "0.0.5"
 
 # Load data from pickle
 

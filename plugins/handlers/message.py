@@ -68,11 +68,6 @@ def check_join(client: Client, message: Message) -> bool:
 
                 # Avoid check repeatedly
                 if not is_new_user(new):
-                    # Update user's join status
-                    if init_user_id(uid):
-                        glovar.user_ids[uid]["join"][gid] = get_now()
-                        save("user_ids")
-
                     # Check declare status
                     if is_declared_message(None, message):
                         return True
@@ -89,7 +84,12 @@ def check_join(client: Client, message: Message) -> bool:
                             if image_path:
                                 image = Image.open(image_path)
                                 share_user_avatar(client, gid, uid, mid, image)
-                                delete_file(image_path)
+                                thread(delete_file, (image_path,))
+
+                # Update user's join status
+                if init_user_id(uid):
+                    glovar.user_ids[uid]["join"][gid] = get_now()
+                    save("user_ids")
 
             return True
         except Exception as e:
