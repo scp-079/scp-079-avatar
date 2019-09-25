@@ -75,6 +75,29 @@ def receive_add_bad(_: str, data: dict) -> bool:
     return False
 
 
+def receive_clear_data(data_type: str, data: dict) -> bool:
+    # Receive clear data command
+    try:
+        the_type = data["type"]
+        if data_type == "bad":
+            if the_type == "users":
+                glovar.bad_ids["users"] = set()
+
+            save("bad_ids")
+        elif data_type == "user":
+            if the_type == "all":
+                glovar.user_ids = {}
+            elif the_type == "new":
+                for uid in list(glovar.user_ids):
+                    glovar.user_ids[uid]["join"] = {}
+
+            save("user_ids")
+    except Exception as e:
+        logger.warning(f"Receive clear data: {e}", exc_info=True)
+
+    return False
+
+
 def receive_declared_message(data: dict) -> bool:
     # Update declared message's id
     try:

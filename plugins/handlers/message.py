@@ -25,9 +25,10 @@ from .. import glovar
 from ..functions.channel import share_user_avatar
 from ..functions.etc import get_full_name, get_now, thread
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bio_text, is_declared_message, is_nm_text
+from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bio_text, is_declared_message
+from ..functions.filters import is_new_user, is_nm_text
 from ..functions.ids import init_user_id
-from ..functions.receive import receive_add_bad, receive_add_except, receive_declared_message
+from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except
 from ..functions.receive import receive_text_data, receive_version_ask
 from ..functions.timers import send_count
@@ -65,28 +66,30 @@ def check_join(client: Client, message: Message) -> bool:
                 if bio and is_bio_text(bio):
                     continue
 
-                # Update user's join status
-                if init_user_id(uid):
-                    glovar.user_ids[uid]["join"] = get_now()
-                    save("user_ids")
-
-                # Check declare status
-                if is_declared_message(None, message):
-                    return True
-
-                # Check avatar
-                if new.photo:
-                    file_id = new.photo.big_file_id
-                    file_ref = ""
-                    old_id = glovar.user_ids[uid]["avatar"]
-                    if file_id != old_id:
-                        glovar.user_ids[uid]["avatar"] = file_id
+                # Avoid check repeatedly
+                if not is_new_user(new):
+                    # Update user's join status
+                    if init_user_id(uid):
+                        glovar.user_ids[uid]["join"][gid] = get_now()
                         save("user_ids")
-                        image_path = get_downloaded_path(client, file_id, file_ref)
-                        if image_path:
-                            image = Image.open(image_path)
-                            share_user_avatar(client, gid, uid, mid, image)
-                            delete_file(image_path)
+
+                    # Check declare status
+                    if is_declared_message(None, message):
+                        return True
+
+                    # Check avatar
+                    if new.photo:
+                        file_id = new.photo.big_file_id
+                        file_ref = ""
+                        old_id = glovar.user_ids[uid]["avatar"]
+                        if file_id != old_id:
+                            glovar.user_ids[uid]["avatar"] = file_id
+                            save("user_ids")
+                            image_path = get_downloaded_path(client, file_id, file_ref)
+                            if image_path:
+                                image = Image.open(image_path)
+                                share_user_avatar(client, gid, uid, mid, image)
+                                delete_file(image_path)
 
             return True
         except Exception as e:
@@ -187,6 +190,9 @@ def process_data(client: Client, message: Message) -> bool:
                             receive_add_bad(sender, data)
                         elif action_type == "except":
                             receive_add_except(client, data)
+
+                    elif action == "clear":
+                        receive_clear_data(action_type, data)
 
                     elif action == "remove":
                         if action_type == "bad":

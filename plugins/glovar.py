@@ -149,7 +149,7 @@ regex: Dict[str, bool] = {
 
 sender: str = "AVATAR"
 
-version: str = "0.0.3"
+version: str = "0.0.4"
 
 # Load data from pickle
 
@@ -184,11 +184,13 @@ except_ids: Dict[str, Set[str]] = {
 #     "long": {"content"}
 # }
 
-user_ids: Dict[int, Dict[str, Union[int, str, Set[int]]]] = {}
+user_ids: Dict[int, Dict[str, Union[str, Dict[int, int]]]] = {}
 # user_ids = {
 #     12345678: {
 #         "avatar": "",
-#         "join": 0
+#         "join": {
+#             -10012345678: 1512345678
+#         }
 #     }
 # }
 

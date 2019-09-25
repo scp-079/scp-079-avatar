@@ -20,7 +20,7 @@ import logging
 import re
 from copy import deepcopy
 
-from pyrogram import Filters, Message
+from pyrogram import Filters, Message, User
 
 from .. import glovar
 from .etc import get_now
@@ -112,22 +112,6 @@ def is_hide_channel(_, message: Message) -> bool:
     return False
 
 
-def is_new_user(_, message: Message) -> bool:
-    # Check if the message is sent from a new joined member
-    try:
-        if message.from_user:
-            uid = message.from_user.id
-            if glovar.user_ids.get(uid, {}):
-                now = get_now()
-                join = glovar.user_ids[uid]["join"]
-                if now - join < glovar.time_new:
-                    return True
-    except Exception as e:
-        logger.warning(f"Is new user error: {e}", exc_info=True)
-
-    return False
-
-
 class_c = Filters.create(
     name="Class C",
     func=is_class_c
@@ -156,11 +140,6 @@ from_user = Filters.create(
 hide_channel = Filters.create(
     func=is_hide_channel,
     name="Hide Channel"
-)
-
-new_user = Filters.create(
-    name="New User",
-    func=is_new_user
 )
 
 
@@ -199,6 +178,23 @@ def is_declared_message_id(gid: int, mid: int) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Is declared message id error: {e}", exc_info=True)
+
+    return False
+
+
+def is_new_user(user: User) -> bool:
+    # Check if the message is sent from a new joined member
+    try:
+        uid = user.id
+        if glovar.user_ids.get(uid, {}):
+            if glovar.user_ids[uid].get("join", {}):
+                now = get_now()
+                for gid in list(glovar.user_ids[uid]["join"]):
+                    join = glovar.user_ids[uid]["join"].get(gid, 0)
+                    if now - join < glovar.time_new:
+                        return True
+    except Exception as e:
+        logger.warning(f"Is new user error: {e}", exc_info=True)
 
     return False
 
