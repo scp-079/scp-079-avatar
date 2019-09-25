@@ -65,9 +65,8 @@ def check_join(client: Client, message: Message) -> bool:
                 bio = get_user_bio(client, new.username or new.id)
                 if bio and is_bio_text(bio):
                     continue
-
                 # Avoid check repeatedly
-                if not is_new_user(new):
+                if not is_new_user(new) and init_user_id(uid):
                     # Check declare status
                     if is_declared_message(None, message):
                         return True
@@ -87,9 +86,8 @@ def check_join(client: Client, message: Message) -> bool:
                                 thread(delete_file, (image_path,))
 
                 # Update user's join status
-                if init_user_id(uid):
-                    glovar.user_ids[uid]["join"][gid] = get_now()
-                    save("user_ids")
+                glovar.user_ids[uid]["join"][gid] = get_now()
+                save("user_ids")
 
             return True
         except Exception as e:
