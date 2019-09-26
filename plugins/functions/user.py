@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Optional
+from typing import Optional, Union
 
 from pyrogram import Client, User
 
@@ -27,7 +27,7 @@ from .telegram import get_users
 logger = logging.getLogger(__name__)
 
 
-def get_user(client: Client, uid: int) -> Optional[User]:
+def get_user(client: Client, uid: Union[int, str]) -> Optional[User]:
     # Get a user
     result = None
     try:

@@ -72,26 +72,30 @@ def interval_min_15(client: Client) -> bool:
             # Check new joined users
             if any([now - user_ids[uid]["join"][gid] < glovar.time_new for gid in user_ids[uid]["join"]]):
                 user = get_user(client, uid)
-                if user:
-                    # Check if the user is Class D personnel
-                    if uid in glovar.bad_ids["users"]:
-                        continue
+                if not user:
+                    continue
 
-                    # Check avatar
-                    if user.photo:
-                        file_id = user.photo.big_file_id
-                        file_ref = ""
-                        old_id = user_ids[uid]["avatar"]
-                        if file_id != old_id:
-                            glovar.user_ids[uid]["avatar"] = file_id
-                            save("user_ids")
-                            image_path = get_downloaded_path(client, file_id, file_ref)
-                            if image_path:
-                                g_list = list(user_ids[uid]["join"])
-                                gid = sorted(g_list, key=lambda g: user_ids[uid]["join"][g], reverse=True)[0]
-                                image = Image.open(image_path)
-                                share_user_avatar(client, gid, uid, 0, image)
-                                thread(delete_file, (image_path,))
+                # Check if the user is Class D personnel
+                if uid in glovar.bad_ids["users"]:
+                    continue
+
+                # Check avatar
+                if not user.photo:
+                    continue
+
+                file_id = user.photo.big_file_id
+                file_ref = ""
+                old_id = user_ids[uid]["avatar"]
+                if file_id != old_id:
+                    glovar.user_ids[uid]["avatar"] = file_id
+                    save("user_ids")
+                    image_path = get_downloaded_path(client, file_id, file_ref)
+                    if image_path:
+                        g_list = list(user_ids[uid]["join"])
+                        gid = sorted(g_list, key=lambda g: user_ids[uid]["join"][g], reverse=True)[0]
+                        image = Image.open(image_path)
+                        share_user_avatar(client, gid, uid, 0, image)
+                        thread(delete_file, (image_path,))
 
         return True
     except Exception as e:
