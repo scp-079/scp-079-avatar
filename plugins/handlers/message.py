@@ -134,125 +134,127 @@ def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel
     try:
         data = receive_text_data(message)
-        if data:
-            sender = data["from"]
-            receivers = data["to"]
-            action = data["action"]
-            action_type = data["type"]
-            data = data["data"]
-            # This will look awkward,
-            # seems like it can be simplified,
-            # but this is to ensure that the permissions are clear,
-            # so it is intentionally written like this
-            if glovar.sender in receivers:
+        if not data:
+            return True
 
-                if sender == "CLEAN":
+        sender = data["from"]
+        receivers = data["to"]
+        action = data["action"]
+        action_type = data["type"]
+        data = data["data"]
+        # This will look awkward,
+        # seems like it can be simplified,
+        # but this is to ensure that the permissions are clear,
+        # so it is intentionally written like this
+        if glovar.sender in receivers:
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            if sender == "CLEAN":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "HIDE":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "version":
-                        if action_type == "ask":
-                            receive_version_ask(client, data)
+            elif sender == "HIDE":
 
-                elif sender == "LANG":
+                if action == "version":
+                    if action_type == "ask":
+                        receive_version_ask(client, data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            elif sender == "LANG":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "LONG":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            elif sender == "LONG":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "MANAGE":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
-                        elif action_type == "except":
-                            receive_add_except(client, data)
+            elif sender == "MANAGE":
 
-                    elif action == "clear":
-                        receive_clear_data(action_type, data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
+                    elif action_type == "except":
+                        receive_add_except(client, data)
 
-                    elif action == "remove":
-                        if action_type == "bad":
-                            receive_remove_bad(sender, data)
-                        elif action_type == "except":
-                            receive_remove_except(client, data)
+                elif action == "clear":
+                    receive_clear_data(action_type, data)
 
-                elif sender == "NOFLOOD":
+                elif action == "remove":
+                    if action_type == "bad":
+                        receive_remove_bad(sender, data)
+                    elif action_type == "except":
+                        receive_remove_except(client, data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            elif sender == "NOFLOOD":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "NOPORN":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            elif sender == "NOPORN":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "NOSPAM":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            elif sender == "NOSPAM":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "RECHECK":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "add":
-                        if action_type == "bad":
-                            receive_add_bad(sender, data)
+            elif sender == "RECHECK":
 
-                    elif action == "update":
-                        if action_type == "declare":
-                            receive_declared_message(data)
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
 
-                elif sender == "REGEX":
+                elif action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
 
-                    if action == "regex":
-                        if action_type == "update":
-                            receive_regex(client, message, data)
-                        elif action_type == "count":
-                            if data == "ask":
-                                send_count(client)
+            elif sender == "REGEX":
 
-                elif sender == "USER":
+                if action == "regex":
+                    if action_type == "update":
+                        receive_regex(client, message, data)
+                    elif action_type == "count":
+                        if data == "ask":
+                            send_count(client)
 
-                    if action == "remove":
-                        if action_type == "bad":
-                            receive_remove_bad(sender, data)
+            elif sender == "USER":
+
+                if action == "remove":
+                    if action_type == "bad":
+                        receive_remove_bad(sender, data)
 
         return True
     except Exception as e:
