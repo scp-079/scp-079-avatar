@@ -65,6 +65,7 @@ def check_join(client: Client, message: Message) -> bool:
             bio = get_user_bio(client, new.username or new.id)
             if bio and is_bio_text(bio):
                 continue
+
             # Avoid check repeatedly
             if not is_new_user(new) and init_user_id(uid):
                 # Check declare status
