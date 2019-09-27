@@ -219,10 +219,9 @@ def receive_remove_except(client: Client, data: dict) -> bool:
         # Receive except contents
         if the_type == "long":
             the_user = get_user(client, the_id)
-            if the_user:
-                if the_user.photo:
-                    file_id = the_user.photo.big_file_id
-                    glovar.except_ids["long"].discard(file_id)
+            if the_user and the_user.photo:
+                file_id = the_user.photo.big_file_id
+                glovar.except_ids["long"].discard(file_id)
 
         save("except_ids")
 
