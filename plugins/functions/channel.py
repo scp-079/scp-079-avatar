@@ -58,43 +58,45 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
         if glovar.sender in receivers:
             receivers.remove(glovar.sender)
 
-        if receivers:
-            channel_id = glovar.hide_channel_id
-            if file:
-                text = format_data(
-                    sender=glovar.sender,
-                    receivers=receivers,
-                    action=action,
-                    action_type=action_type,
-                    data=data
-                )
-                if encrypt:
-                    # Encrypt the file, save to the tmp directory
-                    file_path = get_new_path()
-                    crypt_file("encrypt", file, file_path)
-                else:
-                    # Send directly
-                    file_path = file
+        if not receivers:
+            return True
 
-                result = send_document(client, channel_id, file_path, None, text)
-                # Delete the tmp file
-                if result:
-                    for f in {file, file_path}:
-                        if "tmp/" in f:
-                            thread(delete_file, (f,))
+        channel_id = glovar.hide_channel_id
+        if file:
+            text = format_data(
+                sender=glovar.sender,
+                receivers=receivers,
+                action=action,
+                action_type=action_type,
+                data=data
+            )
+            if encrypt:
+                # Encrypt the file, save to the tmp directory
+                file_path = get_new_path()
+                crypt_file("encrypt", file, file_path)
             else:
-                text = format_data(
-                    sender=glovar.sender,
-                    receivers=receivers,
-                    action=action,
-                    action_type=action_type,
-                    data=data
-                )
-                result = send_message(client, channel_id, text)
+                # Send directly
+                file_path = file
 
-            # Sending failed due to channel issue
-            if result is False:
-                return True
+            result = send_document(client, channel_id, file_path, None, text)
+            # Delete the tmp file
+            if result:
+                for f in {file, file_path}:
+                    if "tmp/" in f:
+                        thread(delete_file, (f,))
+        else:
+            text = format_data(
+                sender=glovar.sender,
+                receivers=receivers,
+                action=action,
+                action_type=action_type,
+                data=data
+            )
+            result = send_message(client, channel_id, text)
+
+        # Sending failed due to channel issue
+        if result is False:
+            return True
 
         return True
     except Exception as e:
@@ -106,16 +108,18 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
 def share_regex_count(client: Client, word_type: str) -> bool:
     # Use this function to share regex count to REGEX
     try:
-        if glovar.regex[word_type]:
-            file = data_to_file(eval(f"glovar.{word_type}_words"))
-            share_data(
-                client=client,
-                receivers=["REGEX"],
-                action="regex",
-                action_type="count",
-                data=f"{word_type}_words",
-                file=file
-            )
+        if not glovar.regex.get(word_type):
+            return True
+
+        file = data_to_file(eval(f"glovar.{word_type}_words"))
+        share_data(
+            client=client,
+            receivers=["REGEX"],
+            action="regex",
+            action_type="count",
+            data=f"{word_type}_words",
+            file=file
+        )
 
         return True
     except Exception as e:
