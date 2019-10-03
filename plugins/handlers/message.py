@@ -29,7 +29,7 @@ from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bi
 from ..functions.filters import is_new_user, is_nm_text
 from ..functions.ids import init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
-from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except
+from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except, receive_rollback
 from ..functions.receive import receive_text_data, receive_version_ask
 from ..functions.timers import send_count
 from ..functions.telegram import get_user_bio, read_history, read_mention
@@ -191,6 +191,10 @@ def process_data(client: Client, message: Message) -> bool:
                         receive_add_bad(sender, data)
                     elif action_type == "except":
                         receive_add_except(client, data)
+
+                elif action == "backup":
+                    if action_type == "rollback":
+                        receive_rollback(client, message, data)
 
                 elif action == "clear":
                     receive_clear_data(client, action_type, data)
