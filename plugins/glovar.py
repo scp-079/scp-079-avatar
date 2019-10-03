@@ -139,7 +139,9 @@ lang: Dict[str, str] = {
     "colon": (zh_cn and "：") or ": ",
     "action": (zh_cn and "执行操作") or "Action",
     "clear": (zh_cn and "清空数据") or "Clear",
-    "more": (zh_cn and "附加信息") or "Extra Info"
+    "more": (zh_cn and "附加信息") or "Extra Info",
+    # Group
+    "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists"
 }
 
 # Init

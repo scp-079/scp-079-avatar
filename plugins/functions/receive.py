@@ -158,10 +158,17 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = False) -
     return data
 
 
-def receive_refresh(client: Client, _: int) -> bool:
+def receive_refresh(client: Client, data: int) -> bool:
     # Receive refresh
     try:
+        aid = data
         update_admins(client)
+
+        # Send debug message
+        text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
+                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('action')}{lang('colon')}{code(lang('refresh'))}\n")
+        thread(send_help, (client, glovar.debug_channel_id, text))
 
         return True
     except Exception as e:
