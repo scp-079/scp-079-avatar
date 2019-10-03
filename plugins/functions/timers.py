@@ -24,8 +24,8 @@ from PIL import Image
 from pyrogram import Client
 
 from .. import glovar
-from .channel import share_data, share_regex_count, share_user_avatar
-from .etc import get_now, thread
+from .channel import send_help, share_data, share_regex_count, share_user_avatar
+from .etc import code, general_link, get_now, lang, thread
 from .file import delete_file, get_downloaded_path, save
 from .user import get_user
 from .telegram import get_admins
@@ -101,7 +101,7 @@ def interval_min_15(client: Client) -> bool:
     return False
 
 
-def reset_data() -> bool:
+def reset_data(client: Client) -> bool:
     # Reset user data every month
     try:
         glovar.bad_ids = {
@@ -111,6 +111,11 @@ def reset_data() -> bool:
 
         glovar.user_ids = {}
         save("user_ids")
+
+        # Send debug message
+        text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
+                f"{lang('action')}{lang('colon')}{code(lang('reset'))}\n")
+        thread(send_help, (client, glovar.debug_channel_id, text))
 
         return True
     except Exception as e:
