@@ -249,6 +249,28 @@ def receive_remove_except(client: Client, data: dict) -> bool:
     return False
 
 
+def receive_rollback(client: Client, message: Message, data: dict) -> bool:
+    # Receive rollback data
+    try:
+        aid = data["admin_id"]
+        the_type = data["type"]
+        the_data = receive_file_data(client, message)
+        if the_data:
+            exec(f"glovar.{the_type} = the_data")
+            save(the_type)
+
+        # Send debug message
+        text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
+                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('action')}{lang('colon')}{code(lang('rollback'))}\n"
+                f"{lang('more')}{lang('colon')}{code(the_type)}\n")
+        thread(send_help, (client, glovar.debug_channel_id, text))
+    except Exception as e:
+        logger.warning(f"Receive rollback error: {e}", exc_info=True)
+
+    return False
+
+
 def receive_text_data(message: Message) -> dict:
     # Receive text's data from exchange channel
     data = {}

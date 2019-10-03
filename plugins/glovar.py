@@ -140,6 +140,7 @@ lang: Dict[str, str] = {
     "action": (zh_cn and "执行操作") or "Action",
     "clear": (zh_cn and "清空数据") or "Clear",
     "more": (zh_cn and "附加信息") or "Extra Info",
+    "rollback": (zh_cn and "数据回滚") or "Rollback",
     "reset": (zh_cn and "重置数据") or "Reset Data",
     # Group
     "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists"
