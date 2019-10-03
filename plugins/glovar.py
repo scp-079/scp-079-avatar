@@ -51,11 +51,14 @@ user_id: int = 0
 warn_id: int = 0
 
 # [channels]
+debug_channel_id: int = 0
 hide_channel_id: int = 0
 
 # [custom]
 backup: Union[str, bool] = ""
 date_reset: str = ""
+project_link: str = ""
+project_name: str = ""
 time_new: int = 0
 zh_cn: Union[str, bool] = ""
 
@@ -80,11 +83,14 @@ try:
     user_id = int(config["bots"].get("user_id", user_id))
     warn_id = int(config["bots"].get("warn_id", warn_id))
     # [channels]
+    debug_channel_id = int(config["channels"].get("debug_channel_id", debug_channel_id))
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
     # [custom]
     backup = config["custom"].get("backup", backup)
     backup = eval(backup)
     date_reset = config["custom"].get("date_reset", date_reset)
+    project_link = config["custom"].get("project_link", project_link)
+    project_name = config["custom"].get("project_name", project_name)
     time_new = int(config["custom"].get("time_new", time_new))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
@@ -108,9 +114,12 @@ if (captcha_id == 0
         or tip_id == 0
         or user_id == 0
         or warn_id == 0
+        or debug_channel_id == 0
         or hide_channel_id == 0
         or backup not in {False, True}
         or date_reset in {"", "[DATA EXPUNGED]"}
+        or project_link in {"", "[DATA EXPUNGED]"}
+        or project_name in {"", "[DATA EXPUNGED]"}
         or time_new == 0
         or zh_cn not in {False, True}
         or key in {"", b"[DATA EXPUNGED]"}
@@ -120,6 +129,18 @@ if (captcha_id == 0
 
 bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
                      noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+
+# Languages
+lang: Dict[str, str] = {
+    # Admin
+    "admin_project": (zh_cn and "项目管理员") or "Project Admin",
+    # Basic
+    "project": (zh_cn and "项目编号") or "Project",
+    "colon": (zh_cn and "：") or ": ",
+    "action": (zh_cn and "执行操作") or "Action",
+    "clear": (zh_cn and "清空数据") or "Clear",
+    "more": (zh_cn and "附加信息") or "Extra Info"
+}
 
 # Init
 

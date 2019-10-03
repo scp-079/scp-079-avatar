@@ -22,7 +22,7 @@ from random import choice, uniform
 from string import ascii_letters, digits
 from threading import Thread, Timer
 from time import sleep, time
-from typing import Any, Callable
+from typing import Any, Callable, Union
 
 from opencc import convert
 from pyrogram import Message, User
@@ -72,6 +72,17 @@ def delay(secs: int, target: Callable, args: list) -> bool:
     return False
 
 
+def general_link(text: Union[int, str], link: str) -> str:
+    # Get a general markdown link
+    result = ""
+    try:
+        result = f'<a href="{link}">{escape(str(text))}</a>'
+    except Exception as e:
+        logger.warning(f"General link error: {e}", exc_info=True)
+
+    return result
+
+
 def get_full_name(user: User) -> str:
     # Get user's full name
     text = ""
@@ -116,6 +127,17 @@ def get_text(message: Message) -> str:
     return text
 
 
+def lang(text: str) -> str:
+    # Get the text
+    result = ""
+    try:
+        result = glovar.lang.get(text, text)
+    except Exception as e:
+        logger.warning(f"Lang error: {e}", exc_info=True)
+
+    return result
+
+
 def random_str(i: int) -> str:
     # Get a random string
     text = ""
@@ -150,6 +172,17 @@ def thread(target: Callable, args: tuple) -> bool:
         logger.warning(f"Thread error: {e}", exc_info=True)
 
     return False
+
+
+def user_mention(uid: int) -> str:
+    # Get a mention text
+    text = ""
+    try:
+        text = general_link(f"{uid}", f"tg://user?id={uid}")
+    except Exception as e:
+        logger.warning(f"User mention error: {e}", exc_info=True)
+
+    return text
 
 
 def wait_flood(e: FloodWait) -> bool:

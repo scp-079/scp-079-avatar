@@ -25,8 +25,8 @@ from typing import Any
 from pyrogram import Client, Message
 
 from .. import glovar
-from .channel import share_data
-from .etc import get_text, thread
+from .channel import send_help, share_data
+from .etc import code, general_link, get_text, lang, thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .ids import init_group_id
 from .timers import update_admins
@@ -75,9 +75,10 @@ def receive_add_bad(_: str, data: dict) -> bool:
     return False
 
 
-def receive_clear_data(data_type: str, data: dict) -> bool:
+def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
     # Receive clear data command
     try:
+        aid = data["admin_id"]
         the_type = data["type"]
         if data_type == "bad":
             if the_type == "users":
@@ -97,6 +98,13 @@ def receive_clear_data(data_type: str, data: dict) -> bool:
                     glovar.user_ids[uid]["join"] = {}
 
             save("user_ids")
+
+        # Send debug message
+        text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
+                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('action')}{lang('colon')}{code(lang('clear'))}\n"
+                f"{lang('more')}{lang('colon')}{code(f'{data_type} {the_type}')}\n")
+        thread(send_help, (client, glovar.debug_channel_id, text))
     except Exception as e:
         logger.warning(f"Receive clear data: {e}", exc_info=True)
 
@@ -122,26 +130,28 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = False) -
     # Receive file's data from exchange channel
     data = None
     try:
-        if message.document:
-            file_id = message.document.file_id
-            file_ref = message.document.file_ref
-            path = get_downloaded_path(client, file_id, file_ref)
-            if path:
-                if decrypt:
-                    # Decrypt the file, save to the tmp directory
-                    path_decrypted = get_new_path()
-                    crypt_file("decrypt", path, path_decrypted)
-                    path_final = path_decrypted
-                else:
-                    # Read the file directly
-                    path_decrypted = ""
-                    path_final = path
+        if not message.document:
+            return None
 
-                with open(path_final, "rb") as f:
-                    data = pickle.load(f)
+        file_id = message.document.file_id
+        file_ref = message.document.file_ref
+        path = get_downloaded_path(client, file_id, file_ref)
+        if path:
+            if decrypt:
+                # Decrypt the file, save to the tmp directory
+                path_decrypted = get_new_path()
+                crypt_file("decrypt", path, path_decrypted)
+                path_final = path_decrypted
+            else:
+                # Read the file directly
+                path_decrypted = ""
+                path_final = path
 
-                for f in {path, path_decrypted}:
-                    thread(delete_file, (f,))
+            with open(path_final, "rb") as f:
+                data = pickle.load(f)
+
+            for f in {path, path_decrypted}:
+                thread(delete_file, (f,))
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
 

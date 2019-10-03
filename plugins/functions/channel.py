@@ -51,6 +51,24 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
     return text
 
 
+def send_help(client: Client, cid: int, text: str) -> bool:
+    # Request HIDE to help to send a text in the channel
+    try:
+        file = data_to_file(text)
+        share_data(
+            client=client,
+            receivers=["HIDE"],
+            action="help",
+            action_type="send",
+            data=cid,
+            file=file
+        )
+    except Exception as e:
+        logger.warning(f"Send help error: {e}", exc_info=True)
+
+    return False
+
+
 def share_data(client: Client, receivers: List[str], action: str, action_type: str, data: Union[bool, dict, int, str],
                file: str = None, encrypt: bool = True) -> bool:
     # Use this function to share data in the channel
