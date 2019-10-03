@@ -128,7 +128,7 @@ def random_str(i: int) -> str:
 
 
 def t2s(text: str) -> str:
-    # Covert Traditional Chinese to Simplified Chinese
+    # Convert the string
     try:
         if glovar.zh_cn:
             text = convert(text, config="t2s.json")
