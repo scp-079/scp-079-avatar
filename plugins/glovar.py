@@ -122,7 +122,7 @@ if (captcha_id == 0
         or project_name in {"", "[DATA EXPUNGED]"}
         or time_new == 0
         or zh_cn not in {False, True}
-        or key in {"", b"[DATA EXPUNGED]"}
+        or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
