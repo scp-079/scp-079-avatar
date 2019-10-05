@@ -144,7 +144,7 @@ lang: Dict[str, str] = {
     # Group
     "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists",
     # Record
-    "project": (zh_cn and "项目编号") or "Project",
+    "project": (zh_cn and "项目编号") or "Project"
 }
 
 # Init
