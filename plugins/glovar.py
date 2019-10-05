@@ -135,15 +135,16 @@ lang: Dict[str, str] = {
     # Admin
     "admin_project": (zh_cn and "项目管理员") or "Project Admin",
     # Basic
-    "project": (zh_cn and "项目编号") or "Project",
-    "colon": (zh_cn and "：") or ": ",
     "action": (zh_cn and "执行操作") or "Action",
     "clear": (zh_cn and "清空数据") or "Clear",
+    "colon": (zh_cn and "：") or ": ",
     "more": (zh_cn and "附加信息") or "Extra Info",
-    "rollback": (zh_cn and "数据回滚") or "Rollback",
     "reset": (zh_cn and "重置数据") or "Reset Data",
+    "rollback": (zh_cn and "数据回滚") or "Rollback",
     # Group
-    "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists"
+    "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists",
+    # Record
+    "project": (zh_cn and "项目编号") or "Project",
 }
 
 # Init
