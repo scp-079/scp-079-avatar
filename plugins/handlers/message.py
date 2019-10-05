@@ -31,7 +31,7 @@ from ..functions.ids import init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except, receive_rollback
 from ..functions.receive import receive_text_data, receive_version_ask
-from ..functions.timers import send_count
+from ..functions.timers import backup_files, send_count
 from ..functions.telegram import get_user_bio, read_history, read_mention
 
 # Enable logging
@@ -193,7 +193,10 @@ def process_data(client: Client, message: Message) -> bool:
                         receive_add_except(client, data)
 
                 elif action == "backup":
-                    if action_type == "rollback":
+
+                    if action_type == "now":
+                        backup_files(client)
+                    elif action_type == "rollback":
                         receive_rollback(client, message, data)
 
                 elif action == "clear":
