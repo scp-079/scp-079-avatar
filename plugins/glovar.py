@@ -63,7 +63,6 @@ time_new: int = 0
 zh_cn: Union[str, bool] = ""
 
 # [encrypt]
-key: Union[str, bytes] = ""
 password: str = ""
 
 try:
@@ -95,8 +94,6 @@ try:
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
     # [encrypt]
-    key = config["encrypt"].get("key", key)
-    key = key.encode("utf-8")
     password = config["encrypt"].get("password", password)
 except Exception as e:
     logger.warning(f"Read data from config.ini error: {e}", exc_info=True)
@@ -122,7 +119,6 @@ if (captcha_id == 0
         or project_name in {"", "[DATA EXPUNGED]"}
         or time_new == 0
         or zh_cn not in {False, True}
-        or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
