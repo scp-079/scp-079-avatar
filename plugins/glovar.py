@@ -123,9 +123,6 @@ if (captcha_id == 0
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
 
-bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
-                     noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
-
 # Languages
 lang: Dict[str, str] = {
     # Admin
@@ -144,6 +141,9 @@ lang: Dict[str, str] = {
 }
 
 # Init
+
+bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
+                     noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
 
 declared_message_ids: Dict[int, Set[int]] = {}
 # declared_message_ids = {
