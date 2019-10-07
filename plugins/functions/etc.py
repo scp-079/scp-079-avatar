@@ -93,7 +93,7 @@ def get_full_name(user: User) -> str:
                 text += f" {user.last_name}"
 
         if text:
-            text = normal(text)
+            text = t2t(text)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
 
@@ -138,17 +138,6 @@ def lang(text: str) -> str:
     return result
 
 
-def normal(text: str) -> str:
-    # Convert the string
-    try:
-        if glovar.zh_cn:
-            text = convert(text, config="t2s.json")
-    except Exception as e:
-        logger.warning(f"T2S error: {e}", exc_info=True)
-
-    return text
-
-
 def random_str(i: int) -> str:
     # Get a random string
     text = ""
@@ -156,6 +145,17 @@ def random_str(i: int) -> str:
         text = "".join(choice(ascii_letters + digits) for _ in range(i))
     except Exception as e:
         logger.warning(f"Random str error: {e}", exc_info=True)
+
+    return text
+
+
+def t2t(text: str) -> str:
+    # Convert the string, text to text
+    try:
+        if glovar.zh_cn:
+            text = convert(text, config="t2s.json")
+    except Exception as e:
+        logger.warning(f"T2T error: {e}", exc_info=True)
 
     return text
 

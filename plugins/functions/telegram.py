@@ -27,7 +27,7 @@ from pyrogram.api.types.messages import StickerSet as messages_StickerSet
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 from pyrogram.errors import UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
-from .etc import normal, wait_flood
+from .etc import t2t, wait_flood
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -104,7 +104,7 @@ def get_sticker_title(client: Client, short_name: str) -> Optional[str]:
                 if isinstance(the_set, messages_StickerSet):
                     inner_set = the_set.set
                     if isinstance(inner_set, StickerSet):
-                        result = normal(inner_set.title)
+                        result = t2t(inner_set.title)
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
@@ -146,7 +146,7 @@ def get_user_bio(client: Client, uid: int) -> Optional[str]:
                 try:
                     user: UserFull = client.send(GetFullUser(id=user_id))
                     if user and user.about:
-                        result = normal(user.about)
+                        result = t2t(user.about)
                 except FloodWait as e:
                     flood_wait = True
                     wait_flood(e)
