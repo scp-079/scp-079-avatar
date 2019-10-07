@@ -187,16 +187,18 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
             return True
 
         words_data = receive_file_data(client, message, True)
-        if words_data:
-            pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
-            new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
-            for word in pop_set:
-                eval(f"glovar.{file_name}").pop(word, 0)
+        if not words_data:
+            return True
 
-            for word in new_set:
-                eval(f"glovar.{file_name}")[word] = 0
+        pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
+        new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
+        for word in pop_set:
+            eval(f"glovar.{file_name}").pop(word, 0)
 
-            save(file_name)
+        for word in new_set:
+            eval(f"glovar.{file_name}")[word] = 0
+
+        save(file_name)
 
         return True
     except Exception as e:
