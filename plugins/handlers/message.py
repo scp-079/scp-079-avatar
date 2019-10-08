@@ -26,7 +26,7 @@ from ..functions.channel import share_user_avatar
 from ..functions.etc import get_full_name, get_now, thread
 from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bio_text, is_declared_message
-from ..functions.filters import is_new_user, is_nm_text
+from ..functions.filters import is_nm_text
 from ..functions.ids import init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except, receive_rollback
@@ -47,6 +47,7 @@ def check_join(client: Client, message: Message) -> bool:
         gid = message.chat.id
         mid = message.message_id
         for new in message.new_chat_members:
+            # Basic data
             uid = new.id
 
             # Check if the user is Class D personnel
@@ -58,33 +59,38 @@ def check_join(client: Client, message: Message) -> bool:
                 continue
 
             # Work with NOSPAM
-            name = get_full_name(new, True)
-            if name and is_nm_text(name):
+            if glovar.nospam_id in glovar.admin_ids[gid]:
+                # Check name
+                name = get_full_name(new, True)
+                if name and is_nm_text(name):
+                    continue
+
+                # Check bio
+                bio = get_user_bio(client, new.username or new.id, True)
+                if bio and is_bio_text(bio):
+                    continue
+
+            # Check declare status
+            if is_declared_message(None, message):
+                return True
+
+            # Init the user's status
+            if not init_user_id(uid):
                 continue
 
-            bio = get_user_bio(client, new.username or new.id, True)
-            if bio and is_bio_text(bio):
-                continue
-
-            # Avoid check repeatedly
-            if not is_new_user(new) and init_user_id(uid):
-                # Check declare status
-                if is_declared_message(None, message):
-                    return True
-
-                # Check avatar
-                if new.photo:
-                    file_id = new.photo.big_file_id
-                    file_ref = ""
-                    old_id = glovar.user_ids[uid]["avatar"]
-                    if file_id != old_id:
-                        glovar.user_ids[uid]["avatar"] = file_id
-                        save("user_ids")
-                        image_path = get_downloaded_path(client, file_id, file_ref)
-                        if image_path:
-                            image = Image.open(image_path)
-                            share_user_avatar(client, gid, uid, mid, image)
-                            thread(delete_file, (image_path,))
+            # Check avatar
+            if new.photo:
+                file_id = new.photo.big_file_id
+                file_ref = ""
+                old_id = glovar.user_ids[uid]["avatar"]
+                if file_id != old_id:
+                    glovar.user_ids[uid]["avatar"] = file_id
+                    save("user_ids")
+                    image_path = get_downloaded_path(client, file_id, file_ref)
+                    if image_path:
+                        image = Image.open(image_path)
+                        share_user_avatar(client, gid, uid, mid, image)
+                        thread(delete_file, (image_path,))
 
             # Update user's join status
             glovar.user_ids[uid]["join"][gid] = get_now()

@@ -20,10 +20,9 @@ import logging
 import re
 from copy import deepcopy
 
-from pyrogram import Filters, Message, User
+from pyrogram import Filters, Message
 
 from .. import glovar
-from .etc import get_now
 from .ids import init_group_id
 from .file import save
 
@@ -178,23 +177,6 @@ def is_declared_message_id(gid: int, mid: int) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Is declared message id error: {e}", exc_info=True)
-
-    return False
-
-
-def is_new_user(user: User) -> bool:
-    # Check if the message is sent from a new joined member
-    try:
-        uid = user.id
-        if glovar.user_ids.get(uid, {}):
-            if glovar.user_ids[uid].get("join", {}):
-                now = get_now()
-                for gid in list(glovar.user_ids[uid]["join"]):
-                    join = glovar.user_ids[uid]["join"].get(gid, 0)
-                    if now - join < glovar.time_new:
-                        return True
-    except Exception as e:
-        logger.warning(f"Is new user error: {e}", exc_info=True)
 
     return False
 
