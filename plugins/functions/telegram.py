@@ -20,10 +20,9 @@ import logging
 from typing import Iterable, List, Optional, Union
 
 from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, User
-from pyrogram.api.functions.messages import GetStickerSet, ReadMentions
+from pyrogram.api.functions.messages import ReadMentions
 from pyrogram.api.functions.users import GetFullUser
-from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet, UserFull
-from pyrogram.api.types.messages import StickerSet as messages_StickerSet
+from pyrogram.api.types import InputPeerUser, InputPeerChannel, UserFull
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 from pyrogram.errors import UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
