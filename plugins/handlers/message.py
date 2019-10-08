@@ -58,11 +58,11 @@ def check_join(client: Client, message: Message) -> bool:
                 continue
 
             # Work with NOSPAM
-            name = get_full_name(new)
+            name = get_full_name(new, True)
             if name and is_nm_text(name):
                 continue
 
-            bio = get_user_bio(client, new.username or new.id)
+            bio = get_user_bio(client, new.username or new.id, True)
             if bio and is_bio_text(bio):
                 continue
 

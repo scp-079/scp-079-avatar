@@ -84,7 +84,7 @@ def general_link(text: Union[int, str], link: str) -> str:
     return result
 
 
-def get_full_name(user: User, normal: bool = True) -> str:
+def get_full_name(user: User, normal: bool = False) -> str:
     # Get user's full name
     text = ""
     try:

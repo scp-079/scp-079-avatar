@@ -91,29 +91,6 @@ def get_chat_member(client: Client, cid: int, uid: int) -> Optional[ChatMember]:
     return result
 
 
-def get_sticker_title(client: Client, short_name: str, normal: bool = True) -> Optional[str]:
-    # Get sticker set's title
-    result = None
-    try:
-        sticker_set = InputStickerSetShortName(short_name=short_name)
-        flood_wait = True
-        while flood_wait:
-            flood_wait = False
-            try:
-                the_set = client.send(GetStickerSet(stickerset=sticker_set))
-                if isinstance(the_set, messages_StickerSet):
-                    inner_set = the_set.set
-                    if isinstance(inner_set, StickerSet):
-                        result = t2t(inner_set.title, normal)
-            except FloodWait as e:
-                flood_wait = True
-                wait_flood(e)
-    except Exception as e:
-        logger.warning(f"Get sticker title error: {e}", exc_info=True)
-
-    return result
-
-
 def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[User]]:
     # Get users
     result = None
@@ -134,7 +111,7 @@ def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[
     return result
 
 
-def get_user_bio(client: Client, uid: int, normal: bool = True) -> Optional[str]:
+def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str]:
     # Get user's bio
     result = None
     try:
