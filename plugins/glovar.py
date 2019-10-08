@@ -166,7 +166,9 @@ regex: Dict[str, bool] = {
     "ban": False,
     "bio": False,
     "con": False,
-    "nm": False
+    "nm": False,
+    "spc": False,
+    "spe": False
 }
 
 sender: str = "AVATAR"
