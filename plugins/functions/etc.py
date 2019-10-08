@@ -23,6 +23,7 @@ from string import ascii_letters, digits
 from threading import Thread, Timer
 from time import sleep, time
 from typing import Any, Callable, Union
+from unicodedata import normalize
 
 from opencc import convert
 from pyrogram import Message, User
@@ -83,7 +84,7 @@ def general_link(text: Union[int, str], link: str) -> str:
     return result
 
 
-def get_full_name(user: User) -> str:
+def get_full_name(user: User, normal: bool = True) -> str:
     # Get user's full name
     text = ""
     try:
@@ -93,7 +94,7 @@ def get_full_name(user: User) -> str:
                 text += f" {user.last_name}"
 
         if text:
-            text = t2t(text)
+            text = t2t(text, normal)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
 
@@ -149,9 +150,21 @@ def random_str(i: int) -> str:
     return text
 
 
-def t2t(text: str) -> str:
+def t2t(text: str, normal: bool, printable: bool = True) -> str:
     # Convert the string, text to text
     try:
+        if not text:
+            return ""
+
+        if normal:
+            for special in ["spc", "spe"]:
+                text = "".join(eval(f"glovar.{special}_dict").get(t, t) for t in text)
+
+            text = normalize("NFKC", text)
+
+        if printable:
+            text = "".join(t for t in text if t.isprintable() or t in {"\n", "\r", "\t"})
+
         if glovar.zh_cn:
             text = convert(text, config="t2s.json")
     except Exception as e:
