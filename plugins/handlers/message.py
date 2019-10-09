@@ -44,8 +44,11 @@ def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
     glovar.locks["message"].acquire()
     try:
+        # Basic data
         gid = message.chat.id
         mid = message.message_id
+        now = message.date or get_now()
+
         for new in message.new_chat_members:
             # Basic data
             uid = new.id
@@ -93,7 +96,7 @@ def check_join(client: Client, message: Message) -> bool:
                         thread(delete_file, (image_path,))
 
             # Update user's join status
-            glovar.user_ids[uid]["join"][gid] = get_now()
+            glovar.user_ids[uid]["join"][gid] = now
             save("user_ids")
 
         return True
