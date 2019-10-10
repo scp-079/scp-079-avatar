@@ -39,15 +39,16 @@ logger = logging.getLogger(__name__)
 def receive_add_except(client: Client, data: dict) -> bool:
     # Receive a object and add it to except list
     try:
+        # Basic data
         the_id = data["id"]
         the_type = data["type"]
-        # Receive except contents
-        if the_type == "long":
+
+        # Receive except content
+        if the_type in {"long"}:
             the_user = get_user(client, the_id)
-            if the_user:
-                if the_user.photo:
-                    file_id = the_user.photo.big_file_id
-                    glovar.except_ids["long"].add(file_id)
+            if the_user and the_user.photo:
+                file_id = the_user.photo.big_file_id
+                glovar.except_ids["long"].add(file_id)
 
         save("except_ids")
 
@@ -61,8 +62,11 @@ def receive_add_except(client: Client, data: dict) -> bool:
 def receive_add_bad(_: str, data: dict) -> bool:
     # Receive bad users or channels that other bots shared
     try:
+        # Basic data
         the_id = data["id"]
         the_type = data["type"]
+
+        # Receive bad user
         if the_type == "user":
             glovar.bad_ids["users"].add(the_id)
 
@@ -78,18 +82,23 @@ def receive_add_bad(_: str, data: dict) -> bool:
 def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
     # Receive clear data command
     try:
+        # Basic data
         aid = data["admin_id"]
         the_type = data["type"]
+
+        # Clear bad data
         if data_type == "bad":
             if the_type == "users":
                 glovar.bad_ids["users"] = set()
 
             save("bad_ids")
+        # Clear except data
         elif data_type == "except":
             if the_type == "long":
                 glovar.except_ids["long"] = set()
 
             save("except_ids")
+        # Clear user data
         elif data_type == "user":
             if the_type == "all":
                 glovar.user_ids = {}
@@ -114,12 +123,17 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
 def receive_declared_message(data: dict) -> bool:
     # Update declared message's id
     try:
+        # Basic data
         gid = data["group_id"]
         mid = data["message_id"]
-        if glovar.admin_ids.get(gid):
-            if init_group_id(gid):
-                glovar.declared_message_ids[gid].add(mid)
-                return True
+
+        if not glovar.admin_ids.get(gid):
+            return True
+
+        if init_group_id(gid):
+            glovar.declared_message_ids[gid].add(mid)
+
+        return True
     except Exception as e:
         logger.warning(f"Receive declared message error: {e}", exc_info=True)
 
@@ -164,7 +178,10 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = True) ->
 def receive_refresh(client: Client, data: int) -> bool:
     # Receive refresh
     try:
+        # Basic data
         aid = data
+
+        # Update admins
         update_admins(client)
 
         # Send debug message
@@ -233,8 +250,11 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
 def receive_remove_bad(_: str, data: dict) -> bool:
     # Receive removed bad objects
     try:
+        # Basic data
         the_id = data["id"]
         the_type = data["type"]
+
+        # Remove bad user
         if the_type == "user":
             glovar.bad_ids["users"].discard(the_id)
             if glovar.user_ids.get(the_id):
@@ -254,10 +274,12 @@ def receive_remove_bad(_: str, data: dict) -> bool:
 def receive_remove_except(client: Client, data: dict) -> bool:
     # Receive a object and remove it from except list
     try:
+        # Basic data
         the_id = data["id"]
         the_type = data["type"]
-        # Receive except contents
-        if the_type == "long":
+
+        # Receive except content
+        if the_type in {"long"}:
             the_user = get_user(client, the_id)
             if the_user and the_user.photo:
                 file_id = the_user.photo.big_file_id
@@ -275,9 +297,11 @@ def receive_remove_except(client: Client, data: dict) -> bool:
 def receive_rollback(client: Client, message: Message, data: dict) -> bool:
     # Receive rollback data
     try:
+        # Basic data
         aid = data["admin_id"]
         the_type = data["type"]
         the_data = receive_file_data(client, message)
+
         if the_data:
             exec(f"glovar.{the_type} = the_data")
             save(the_type)
@@ -310,8 +334,10 @@ def receive_text_data(message: Message) -> dict:
 def receive_version_ask(client: Client, data: dict) -> bool:
     # Receive version info request
     try:
+        # Basic data
         aid = data["admin_id"]
         mid = data["message_id"]
+
         share_data(
             client=client,
             receivers=["HIDE"],
