@@ -22,6 +22,7 @@ from configparser import RawConfigParser
 from os import mkdir
 from os.path import exists
 from shutil import rmtree
+from string import ascii_lowercase
 from threading import Lock
 from typing import Dict, List, Set, Union
 
@@ -171,6 +172,8 @@ regex: Dict[str, bool] = {
     "spc": False,
     "spe": False
 }
+for c in ascii_lowercase:
+    regex[f"ad{c}"] = False
 
 sender: str = "AVATAR"
 
