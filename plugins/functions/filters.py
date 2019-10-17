@@ -230,6 +230,11 @@ def is_emoji(the_type: str, text: str) -> bool:
             if sum(emoji_dict.values()) >= glovar.emoji_ad_total:
                 return True
 
+        # Check many
+        elif the_type == "many":
+            if sum(emoji_dict.values()) >= 15:
+                return True
+
         # Check wb
         elif the_type == "wb":
             if any(emoji_dict[emoji] >= glovar.emoji_wb_single for emoji in emoji_dict):
