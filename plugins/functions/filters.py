@@ -21,7 +21,7 @@ import re
 from copy import deepcopy
 from string import ascii_lowercase
 
-from pyrogram import Filters, Message
+from pyrogram import Filters, Message, User
 
 from .. import glovar
 from .ids import init_group_id
@@ -69,12 +69,8 @@ def is_class_e(_, message: Message) -> bool:
     # Check if the message is Class E object
     try:
         if message.from_user:
-            # All groups' admins
-            uid = message.from_user.id
-            admin_ids = deepcopy(glovar.admin_ids)
-            for gid in admin_ids:
-                if uid in admin_ids[gid]:
-                    return True
+            if is_class_e_user(message.from_user):
+                return True
     except Exception as e:
         logger.warning(f"Is class e error: {e}", exc_info=True)
 
@@ -198,6 +194,20 @@ def is_bio_text(text: str) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Is bio text error: {e}", exc_info=True)
+
+    return False
+
+
+def is_class_e_user(user: User) -> bool:
+    # Check if the user is a Class E personnel
+    try:
+        uid = user.id
+        group_list = list(glovar.admin_ids)
+        for gid in group_list:
+            if uid in glovar.admin_ids.get(gid, set()):
+                return True
+    except Exception as e:
+        logger.warning(f"Is class e user error: {e}", exc_info=True)
 
     return False
 
