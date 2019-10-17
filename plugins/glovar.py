@@ -18,6 +18,7 @@
 
 import logging
 import pickle
+from codecs import getdecoder
 from configparser import RawConfigParser
 from os import mkdir
 from os.path import exists
@@ -106,7 +107,7 @@ try:
     # [emoji]
     emoji_ad_single = int(config["emoji"].get("emoji_ad_single", emoji_ad_single))
     emoji_ad_total = int(config["emoji"].get("emoji_ad_total", emoji_ad_total))
-    emoji_protect = config["emoji"].get("emoji_protect", emoji_protect)
+    emoji_protect = getdecoder("unicode_escape")(config["emoji"].get("emoji_protect", emoji_protect))[0]
     emoji_wb_single = int(config["emoji"].get("emoji_wb_single", emoji_wb_single))
     emoji_wb_total = int(config["emoji"].get("emoji_wb_total", emoji_wb_total))
     # [encrypt]
