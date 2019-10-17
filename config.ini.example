@@ -38,5 +38,12 @@ project_name = SCP-079-AVATAR
 time_new = [DATA EXPUNGED]
 zh_cn = [DATA EXPUNGED]
 
+[emoji]
+emoji_ad_single = [DATA EXPUNGED]
+emoji_ad_total = [DATA EXPUNGED]
+emoji_protect = [DATA EXPUNGED]
+emoji_wb_single = [DATA EXPUNGED]
+emoji_wb_total = [DATA EXPUNGED]
+
 [encrypt]
 password = [DATA EXPUNGED]

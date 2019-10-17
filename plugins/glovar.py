@@ -26,6 +26,8 @@ from string import ascii_lowercase
 from threading import Lock
 from typing import Dict, List, Set, Union
 
+from emoji import UNICODE_EMOJI
+
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -63,6 +65,13 @@ project_name: str = ""
 time_new: int = 0
 zh_cn: Union[bool, str] = ""
 
+# [emoji]
+emoji_ad_single: int = 0
+emoji_ad_total: int = 0
+emoji_protect: str = ""
+emoji_wb_single: int = 0
+emoji_wb_total: int = 0
+
 # [encrypt]
 password: str = ""
 
@@ -94,6 +103,12 @@ try:
     time_new = int(config["custom"].get("time_new", time_new))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
+    # [emoji]
+    emoji_ad_single = int(config["emoji"].get("emoji_ad_single", emoji_ad_single))
+    emoji_ad_total = int(config["emoji"].get("emoji_ad_total", emoji_ad_total))
+    emoji_protect = config["emoji"].get("emoji_protect", emoji_protect)
+    emoji_wb_single = int(config["emoji"].get("emoji_wb_single", emoji_wb_single))
+    emoji_wb_total = int(config["emoji"].get("emoji_wb_total", emoji_wb_total))
     # [encrypt]
     password = config["encrypt"].get("password", password)
 except Exception as e:
@@ -120,6 +135,11 @@ if (captcha_id == 0
         or project_name in {"", "[DATA EXPUNGED]"}
         or time_new == 0
         or zh_cn not in {False, True}
+        or emoji_ad_single == 0
+        or emoji_ad_total == 0
+        or emoji_protect in {"", "[DATA EXPUNGED]"}
+        or emoji_wb_single == 0
+        or emoji_wb_total == 0
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
@@ -156,6 +176,8 @@ default_user_status: Dict[str, Union[str, Dict[int, int]]] = {
     "join": {}
 }
 
+emoji_set: Set[str] = set(UNICODE_EMOJI)
+
 locks: Dict[str, Lock] = {
     "admin": Lock(),
     "message": Lock(),
@@ -169,6 +191,7 @@ regex: Dict[str, bool] = {
     "con": False,
     "iml": False,
     "nm": False,
+    "pho": False,
     "spc": False,
     "spe": False
 }
@@ -177,7 +200,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.0.6"
+version: str = "0.0.7"
 
 # Load data from pickle
 
