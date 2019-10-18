@@ -259,9 +259,7 @@ def receive_remove_bad(_: str, data: dict) -> bool:
         # Remove bad user
         if the_type == "user":
             glovar.bad_ids["users"].discard(the_id)
-            if glovar.user_ids.get(the_id):
-                glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
-
+            glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
             save("user_ids")
 
         save("bad_ids")
