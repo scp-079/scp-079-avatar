@@ -74,7 +74,7 @@ def delay(secs: int, target: Callable, args: list) -> bool:
 
 
 def general_link(text: Union[int, str], link: str) -> str:
-    # Get a general markdown link
+    # Get a general link
     result = ""
     try:
         text = str(text)
