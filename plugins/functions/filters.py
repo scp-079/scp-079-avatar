@@ -161,13 +161,13 @@ def is_ad_text(text: str, matched: str = "") -> str:
     return ""
 
 
-def is_ban_text(text: str) -> bool:
+def is_ban_text(text: str, message: Message = None) -> bool:
     # Check if the text is ban text
     try:
         if is_regex_text("ban", text):
             return True
 
-        ad = is_regex_text("ad", text) or is_emoji("ad", text)
+        ad = is_regex_text("ad", text) or is_emoji("ad", text, message)
         con = is_regex_text("con", text) or is_regex_text("iml", text) or is_regex_text("pho", text)
         if ad and con:
             return True
