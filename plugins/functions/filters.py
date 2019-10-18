@@ -24,6 +24,7 @@ from string import ascii_lowercase
 from pyrogram import Filters, Message, User
 
 from .. import glovar
+from .etc import get_text
 from .ids import init_group_id
 from .file import save
 
@@ -223,9 +224,12 @@ def is_declared_message_id(gid: int, mid: int) -> bool:
     return False
 
 
-def is_emoji(the_type: str, text: str) -> bool:
+def is_emoji(the_type: str, text: str, message: Message = None) -> bool:
     # Check the emoji type
     try:
+        if message:
+            text = get_text(message, False, False)
+
         emoji_dict = {}
         emoji_set = {emoji for emoji in glovar.emoji_set if emoji in text and emoji not in glovar.emoji_protect}
         emoji_old_set = deepcopy(emoji_set)
