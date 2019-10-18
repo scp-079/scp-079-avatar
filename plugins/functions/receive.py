@@ -92,14 +92,16 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
                 glovar.bad_ids["users"] = set()
 
             save("bad_ids")
+
         # Clear except data
-        elif data_type == "except":
+        if data_type == "except":
             if the_type == "long":
                 glovar.except_ids["long"] = set()
 
             save("except_ids")
+
         # Clear user data
-        elif data_type == "user":
+        if data_type == "user":
             if the_type == "all":
                 glovar.user_ids = {}
             elif the_type == "new":
