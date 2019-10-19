@@ -85,7 +85,7 @@ def get_chat_member(client: Client, cid: int, uid: int) -> Optional[ChatMember]:
             except UserNotParticipant:
                 result = False
     except Exception as e:
-        logger.warning(f"Get chat member error: {e}", exc_info=True)
+        logger.warning(f"Get chat member {uid} in {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -105,7 +105,7 @@ def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[
             except PeerIdInvalid:
                 return None
     except Exception as e:
-        logger.warning(f"Get users error: {e}", exc_info=True)
+        logger.warning(f"Get users {uids} error: {e}", exc_info=True)
 
     return result
 
@@ -129,7 +129,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get user bio error: {e}", exc_info=True)
+        logger.warning(f"Get user {uid} bio error: {e}", exc_info=True)
 
     return result
 
@@ -148,7 +148,7 @@ def read_history(client: Client, cid: int) -> bool:
 
         return True
     except Exception as e:
-        logger.warning(f"Read history error: {e}", exc_info=True)
+        logger.warning(f"Read history in {cid} error: {e}", exc_info=True)
 
     return False
 
@@ -171,7 +171,7 @@ def read_mention(client: Client, cid: int) -> bool:
 
         return True
     except Exception as e:
-        logger.warning(f"Read mention error: {e}", exc_info=True)
+        logger.warning(f"Read mention in {cid} error: {e}", exc_info=True)
 
     return False
 
@@ -191,7 +191,7 @@ def resolve_peer(client: Client, pid: Union[int, str]) -> Optional[Union[bool, I
             except (PeerIdInvalid, UsernameInvalid, UsernameNotOccupied):
                 return False
     except Exception as e:
-        logger.warning(f"Resolve peer error: {e}", exc_info=True)
+        logger.warning(f"Resolve peer {pid} error: {e}", exc_info=True)
 
     return result
 
@@ -220,7 +220,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
     except Exception as e:
-        logger.warning(f"Send document to {cid} error: {e}", exec_info=True)
+        logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
 
     return result
 
