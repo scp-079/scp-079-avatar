@@ -81,6 +81,7 @@ def receive_add_bad(_: str, data: dict) -> bool:
 
 def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
     # Receive clear data command
+    glovar.locks["message"].acquire()
     try:
         # Basic data
         aid = data["admin_id"]
@@ -105,9 +106,8 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
             if the_type == "all":
                 glovar.user_ids = {}
             elif the_type == "new":
-                with glovar.locks["message"]:
-                    for uid in list(glovar.user_ids):
-                        glovar.user_ids[uid]["join"] = {}
+                for uid in list(glovar.user_ids):
+                    glovar.user_ids[uid]["join"] = {}
 
             save("user_ids")
 
@@ -119,6 +119,8 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
         thread(send_help, (client, glovar.debug_channel_id, text))
     except Exception as e:
         logger.warning(f"Receive clear data: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
 
     return False
 
