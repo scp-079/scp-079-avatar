@@ -62,11 +62,12 @@ def backup_files(client: Client) -> bool:
 
 def interval_min_15(client: Client) -> bool:
     # Execute every 15 minutes
-    glovar.locks["message"].acquire()
     try:
         # Check user's name
         now = get_now()
-        user_ids = deepcopy(glovar.user_ids)
+
+        with glovar.locks["message"]:
+            user_ids = deepcopy(glovar.user_ids)
 
         for uid in user_ids:
             # Do not check banned users
@@ -108,8 +109,6 @@ def interval_min_15(client: Client) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Interval min 15 error: {e}", exc_info=True)
-    finally:
-        glovar.locks["message"].release()
 
     return False
 
