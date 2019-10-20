@@ -65,7 +65,13 @@ def interval_min_15(client: Client) -> bool:
     try:
         # Check user's name
         now = get_now()
-        user_ids = deepcopy(glovar.user_ids)
+
+        glovar.locks["message"].acquire()
+        try:
+            user_ids = deepcopy(glovar.user_ids)
+        finally:
+            glovar.locks["message"].release()
+
         for uid in user_ids:
             # Do not check banned users
             if uid in glovar.bad_ids["users"]:
