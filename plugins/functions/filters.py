@@ -283,6 +283,7 @@ def is_nm_text(text: str) -> bool:
 
 def is_regex_text(word_type: str, text: str, again: bool = False) -> Optional[Match]:
     # Check if the text hit the regex rules
+    glovar.locks["regex"].acquire()
     result = None
     try:
         if text:
@@ -309,5 +310,7 @@ def is_regex_text(word_type: str, text: str, again: bool = False) -> Optional[Ma
         return is_regex_text(word_type, text, True)
     except Exception as e:
         logger.warning(f"Is regex text error: {e}", exc_info=True)
+    finally:
+        glovar.locks["regex"].release()
 
     return result
