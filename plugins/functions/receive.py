@@ -26,7 +26,7 @@ from pyrogram import Client, Message
 
 from .. import glovar
 from .channel import send_help, share_data
-from .etc import code, general_link, get_text, lang, thread, user_mention
+from .etc import code, general_link, get_text, lang, mention_id, thread
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .ids import init_group_id
 from .timers import update_admins
@@ -113,7 +113,7 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
-                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('clear'))}\n"
                 f"{lang('more')}{lang('colon')}{code(f'{data_type} {the_type}')}\n")
         thread(send_help, (client, glovar.debug_channel_id, text))
@@ -191,7 +191,7 @@ def receive_refresh(client: Client, data: int) -> bool:
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
-                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('refresh'))}\n")
         thread(send_help, (client, glovar.debug_channel_id, text))
 
@@ -311,7 +311,7 @@ def receive_rollback(client: Client, message: Message, data: dict) -> bool:
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
-                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('rollback'))}\n"
                 f"{lang('more')}{lang('colon')}{code(the_type)}\n")
         thread(send_help, (client, glovar.debug_channel_id, text))

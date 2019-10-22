@@ -38,8 +38,8 @@ from ..functions.telegram import get_user_bio, read_history, read_mention
 logger = logging.getLogger(__name__)
 
 
-@Client.on_message(Filters.incoming & Filters.group & from_user & Filters.new_chat_members
-                   & ~class_c & ~class_e)
+@Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members
+                   & from_user & ~class_c & ~class_e)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
     glovar.locks["message"].acquire()
@@ -138,7 +138,8 @@ def mark_message(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & Filters.channel & hide_channel)
+@Client.on_message(Filters.incoming & Filters.channel
+                   & hide_channel)
 def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel
     try:
@@ -157,7 +158,13 @@ def process_data(client: Client, message: Message) -> bool:
         # so it is intentionally written like this
         if glovar.sender in receivers:
 
-            if sender == "CLEAN":
+            if sender == "CAPTCHA":
+
+                if action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
+
+            elif sender == "CLEAN":
 
                 if action == "add":
                     if action_type == "bad":
