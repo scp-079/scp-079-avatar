@@ -26,7 +26,7 @@ from ..functions.channel import share_user_avatar
 from ..functions.etc import get_full_name, get_now, thread
 from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import authorized_group, class_c, class_e, from_user, hide_channel, is_bio_text
-from ..functions.filters import is_declared_message, is_nm_text
+from ..functions.filters import is_class_d_user, is_declared_message, is_nm_text
 from ..functions.ids import init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_refresh, receive_regex, receive_remove_bad, receive_remove_except
@@ -55,7 +55,7 @@ def check_join(client: Client, message: Message) -> bool:
             uid = new.id
 
             # Check if the user is Class D personnel
-            if uid in glovar.bad_ids["users"]:
+            if is_class_d_user(new):
                 continue
 
             # Check if the user is bot

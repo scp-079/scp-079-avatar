@@ -54,7 +54,7 @@ def is_authorized_group(_, update: Union[CallbackQuery, Message]) -> bool:
 
 
 def is_class_c(_, message: Message) -> bool:
-    # Check if the message is Class C object
+    # Check if the message is Class C personnel
     try:
         if not message.from_user:
             return False
@@ -75,12 +75,9 @@ def is_class_c(_, message: Message) -> bool:
 def is_class_d(_, message: Message) -> bool:
     # Check if the message is Class D object
     try:
-        if not message.from_user:
-            return False
-
-        uid = message.from_user.id
-        if uid in glovar.bad_ids["users"]:
-            return True
+        if message.from_user:
+            if is_class_d_user(message.from_user):
+                return True
     except Exception as e:
         logger.warning(f"Is class d error: {e}", exc_info=True)
 
@@ -90,11 +87,9 @@ def is_class_d(_, message: Message) -> bool:
 def is_class_e(_, message: Message, test: bool = False) -> bool:
     # Check if the message is Class E object
     try:
-        if not message.from_user:
-            return False
-
-        if not test and is_class_e_user(message.from_user):
-            return True
+        if message.from_user:
+            if not test and is_class_e_user(message.from_user):
+                return True
     except Exception as e:
         logger.warning(f"Is class e error: {e}", exc_info=True)
 
@@ -227,6 +222,18 @@ def is_bio_text(text: str) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Is bio text error: {e}", exc_info=True)
+
+    return False
+
+
+def is_class_d_user(user: User) -> bool:
+    # Check if the user is a Class D personnel
+    try:
+        uid = user.id
+        if uid in glovar.bad_ids["users"]:
+            return True
+    except Exception as e:
+        logger.warning(f"Is class d user error: {e}", exc_info=True)
 
     return False
 
