@@ -169,7 +169,6 @@ def update_admins(client: Client) -> bool:
                     glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
                                              if ((not admin.user.is_bot and not admin.user.is_deleted)
                                                  or admin.user.id in glovar.bot_ids)}
-
                     save("admin_ids")
             except Exception as e:
                 logger.warning(f"Update admin in {gid} error: {e}", exc_info=True)

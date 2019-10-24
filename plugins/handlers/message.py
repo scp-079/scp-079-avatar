@@ -25,8 +25,8 @@ from .. import glovar
 from ..functions.channel import share_user_avatar
 from ..functions.etc import get_full_name, get_now, thread
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import class_c, class_e, from_user, hide_channel, is_bio_text, is_declared_message
-from ..functions.filters import is_nm_text
+from ..functions.filters import authorized_group, class_c, class_e, from_user, hide_channel, is_bio_text
+from ..functions.filters import is_declared_message, is_nm_text
 from ..functions.ids import init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_refresh, receive_regex, receive_remove_bad, receive_remove_except
@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members
+                   & authorized_group
                    & from_user & ~class_c & ~class_e)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
@@ -108,13 +109,15 @@ def check_join(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(~Filters.private & Filters.incoming & Filters.mentioned, group=1)
+@Client.on_message(Filters.incoming & ~Filters.private & Filters.mentioned, group=1)
 def mark_mention(client: Client, message: Message) -> bool:
     # Mark mention as read
     try:
-        if message.chat:
-            cid = message.chat.id
-            thread(read_mention, (client, cid))
+        if not message.chat:
+            return True
+
+        cid = message.chat.id
+        thread(read_mention, (client, cid))
 
         return True
     except Exception as e:
@@ -123,13 +126,15 @@ def mark_mention(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(~Filters.private & Filters.incoming, group=2)
+@Client.on_message(Filters.incoming & ~Filters.private, group=2)
 def mark_message(client: Client, message: Message) -> bool:
     # Mark messages from groups and channels as read
     try:
-        if message.chat:
-            cid = message.chat.id
-            thread(read_history, (client, cid))
+        if not message.chat:
+            return True
+
+        cid = message.chat.id
+        thread(read_history, (client, cid))
 
         return True
     except Exception as e:

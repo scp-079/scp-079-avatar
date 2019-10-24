@@ -39,7 +39,6 @@ See [this article](https://scp-079.org/avatar/).
 - `README.md` : This file
 - `requirements.txt` : Managed by pip
 
-
 ## Contribute
 
 Welcome to make this project even better. You can submit merge requests, or report issues.

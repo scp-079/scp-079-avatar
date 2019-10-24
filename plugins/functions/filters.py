@@ -20,9 +20,9 @@ import logging
 import re
 from copy import deepcopy
 from string import ascii_lowercase
-from typing import Match, Optional
+from typing import Match, Optional, Union
 
-from pyrogram import Filters, Message, User
+from pyrogram import CallbackQuery, Filters, Message, User
 
 from .. import glovar
 from .etc import get_text
@@ -33,21 +33,39 @@ from .file import save
 logger = logging.getLogger(__name__)
 
 
+def is_authorized_group(_, update: Union[CallbackQuery, Message]) -> bool:
+    # Check if the message is send from the authorized group
+    try:
+        if isinstance(update, CallbackQuery):
+            message = update.message
+        else:
+            message = update
+
+        if not message.chat:
+            return False
+
+        cid = message.chat.id
+        if init_group_id(cid):
+            return True
+    except Exception as e:
+        logger.warning(f"Is authorized group error: {e}", exc_info=True)
+
+    return False
+
+
 def is_class_c(_, message: Message) -> bool:
     # Check if the message is Class C object
     try:
-        if message.from_user:
-            # Basic data
-            uid = message.from_user.id
-            gid = message.chat.id
+        if not message.from_user:
+            return False
 
-            # Init the group
-            if not init_group_id(gid):
-                return False
+        # Basic data
+        uid = message.from_user.id
+        gid = message.chat.id
 
-            # Check permission
-            if uid in glovar.admin_ids[gid] or uid in glovar.bot_ids or message.from_user.is_self:
-                return True
+        # Check permission
+        if uid in glovar.admin_ids[gid] or uid in glovar.bot_ids or message.from_user.is_self:
+            return True
     except Exception as e:
         logger.warning(f"Is class c error: {e}", exc_info=True)
 
@@ -57,22 +75,26 @@ def is_class_c(_, message: Message) -> bool:
 def is_class_d(_, message: Message) -> bool:
     # Check if the message is Class D object
     try:
-        if message.from_user:
-            uid = message.from_user.id
-            if uid in glovar.bad_ids["users"]:
-                return True
+        if not message.from_user:
+            return False
+
+        uid = message.from_user.id
+        if uid in glovar.bad_ids["users"]:
+            return True
     except Exception as e:
         logger.warning(f"Is class d error: {e}", exc_info=True)
 
     return False
 
 
-def is_class_e(_, message: Message) -> bool:
+def is_class_e(_, message: Message, test: bool = False) -> bool:
     # Check if the message is Class E object
     try:
-        if message.from_user:
-            if is_class_e_user(message.from_user):
-                return True
+        if not message.from_user:
+            return False
+
+        if not test and is_class_e_user(message.from_user):
+            return True
     except Exception as e:
         logger.warning(f"Is class e error: {e}", exc_info=True)
 
@@ -82,10 +104,12 @@ def is_class_e(_, message: Message) -> bool:
 def is_declared_message(_, message: Message) -> bool:
     # Check if the message is declared by other bots
     try:
-        if message.chat:
-            gid = message.chat.id
-            mid = message.message_id
-            return is_declared_message_id(gid, mid)
+        if not message.chat:
+            return False
+
+        gid = message.chat.id
+        mid = message.message_id
+        return is_declared_message_id(gid, mid)
     except Exception as e:
         logger.warning(f"Is declared message error: {e}", exc_info=True)
 
@@ -106,15 +130,22 @@ def is_from_user(_, message: Message) -> bool:
 def is_hide_channel(_, message: Message) -> bool:
     # Check if the message is sent from the hide channel
     try:
-        if message.chat:
-            cid = message.chat.id
-            if cid == glovar.hide_channel_id:
-                return True
+        if not message.chat:
+            return False
+
+        cid = message.chat.id
+        if cid == glovar.hide_channel_id:
+            return True
     except Exception as e:
         logger.warning(f"Is hide channel error: {e}", exc_info=True)
 
     return False
 
+
+authorized_group = Filters.create(
+    func=is_authorized_group,
+    name="Authorized Group"
+)
 
 class_c = Filters.create(
     name="Class C",
