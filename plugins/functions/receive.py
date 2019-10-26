@@ -36,6 +36,26 @@ from .user import get_user
 logger = logging.getLogger(__name__)
 
 
+def receive_add_bad(_: str, data: dict) -> bool:
+    # Receive bad users or channels that other bots shared
+    try:
+        # Basic data
+        the_id = data["id"]
+        the_type = data["type"]
+
+        # Receive bad user
+        if the_type == "user":
+            glovar.bad_ids["users"].add(the_id)
+
+        save("bad_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive add bad error: {e}", exc_info=True)
+
+    return False
+
+
 def receive_add_except(client: Client, data: dict) -> bool:
     # Receive a object and add it to except list
     try:
@@ -55,26 +75,6 @@ def receive_add_except(client: Client, data: dict) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Receive add except error: {e}", exc_info=True)
-
-    return False
-
-
-def receive_add_bad(_: str, data: dict) -> bool:
-    # Receive bad users or channels that other bots shared
-    try:
-        # Basic data
-        the_id = data["id"]
-        the_type = data["type"]
-
-        # Receive bad user
-        if the_type == "user":
-            glovar.bad_ids["users"].add(the_id)
-
-        save("bad_ids")
-
-        return True
-    except Exception as e:
-        logger.warning(f"Receive add bad error: {e}", exc_info=True)
 
     return False
 
@@ -326,10 +326,13 @@ def receive_text_data(message: Message) -> dict:
     data = {}
     try:
         text = get_text(message)
-        if text:
-            data = loads(text)
+
+        if not text:
+            return {}
+
+        data = loads(text)
     except Exception as e:
-        logger.warning(f"Receive data error: {e}")
+        logger.warning(f"Receive text data error: {e}")
 
     return data
 
