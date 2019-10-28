@@ -204,7 +204,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.1.1"
+version: str = "0.1.2"
 
 # Load data from pickle
 
