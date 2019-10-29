@@ -27,6 +27,7 @@ from .. import glovar
 from .channel import send_help, share_data, share_regex_count, share_user_avatar
 from .etc import code, general_link, get_now, lang, thread
 from .file import delete_file, get_downloaded_path, save
+from .group import leave_group
 from .user import get_user
 from .telegram import get_admins
 
@@ -165,11 +166,13 @@ def update_admins(client: Client) -> bool:
         for gid in group_list:
             try:
                 admin_members = get_admins(client, gid)
-                if admin_members and any([admin.user.is_self for admin in admin_members]):
+                if admin_members:
                     glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
                                              if ((not admin.user.is_bot and not admin.user.is_deleted)
                                                  or admin.user.id in glovar.bot_ids)}
                     save("admin_ids")
+                elif admin_members is False:
+                    leave_group(gid)
             except Exception as e:
                 logger.warning(f"Update admin in {gid} error: {e}", exc_info=True)
 
