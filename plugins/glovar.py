@@ -191,6 +191,7 @@ locks: Dict[str, Lock] = {
 
 regex: Dict[str, bool] = {
     "ad": False,
+    "aff": False,
     "ban": False,
     "bio": False,
     "con": False,
