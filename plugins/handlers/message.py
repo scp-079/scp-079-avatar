@@ -176,7 +176,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":
@@ -192,7 +192,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":
@@ -202,7 +202,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":
@@ -212,7 +212,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
                     elif action_type == "except":
                         receive_add_except(client, data)
 
@@ -228,7 +228,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 elif action == "remove":
                     if action_type == "bad":
-                        receive_remove_bad(sender, data)
+                        receive_remove_bad(data)
                     elif action_type == "except":
                         receive_remove_except(client, data)
 
@@ -240,7 +240,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":
@@ -250,7 +250,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":
@@ -260,7 +260,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":
@@ -270,7 +270,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(sender, data)
+                        receive_add_bad(data)
 
                 elif action == "update":
                     if action_type == "declare":

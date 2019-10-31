@@ -36,7 +36,7 @@ from .user import get_user
 logger = logging.getLogger(__name__)
 
 
-def receive_add_bad(_: str, data: dict) -> bool:
+def receive_add_bad(data: dict) -> bool:
     # Receive bad users or channels that other bots shared
     try:
         # Basic data
@@ -66,9 +66,12 @@ def receive_add_except(client: Client, data: dict) -> bool:
         # Receive except content
         if the_type in {"long"}:
             the_user = get_user(client, the_id)
-            if the_user and the_user.photo:
-                file_id = the_user.photo.big_file_id
-                glovar.except_ids["long"].add(file_id)
+
+            if not the_user or not the_user.photo:
+                return True
+
+            file_id = the_user.photo.big_file_id
+            glovar.except_ids["long"].add(file_id)
 
         save("except_ids")
 
@@ -252,7 +255,7 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
     return False
 
 
-def receive_remove_bad(_: str, data: dict) -> bool:
+def receive_remove_bad(data: dict) -> bool:
     # Receive removed bad objects
     try:
         # Basic data
@@ -284,9 +287,12 @@ def receive_remove_except(client: Client, data: dict) -> bool:
         # Receive except content
         if the_type in {"long"}:
             the_user = get_user(client, the_id)
-            if the_user and the_user.photo:
-                file_id = the_user.photo.big_file_id
-                glovar.except_ids["long"].discard(file_id)
+
+            if not the_user or not the_user.photo:
+                return True
+
+            file_id = the_user.photo.big_file_id
+            glovar.except_ids["long"].discard(file_id)
 
         save("except_ids")
 
@@ -305,9 +311,11 @@ def receive_rollback(client: Client, message: Message, data: dict) -> bool:
         the_type = data["type"]
         the_data = receive_file_data(client, message)
 
-        if the_data:
-            exec(f"glovar.{the_type} = the_data")
-            save(the_type)
+        if not the_data:
+            return True
+
+        exec(f"glovar.{the_type} = the_data")
+        save(the_type)
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"

@@ -134,6 +134,25 @@ def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str
     return result
 
 
+def leave_chat(client: Client, cid: int) -> bool:
+    # Leave a channel
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                client.leave_chat(chat_id=cid, delete=True)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+
+        return True
+    except Exception as e:
+        logger.warning(f"Leave chat {cid} error: {e}", exc_info=True)
+
+    return False
+
+
 def read_history(client: Client, cid: int) -> bool:
     # Mark messages in a chat as read
     try:

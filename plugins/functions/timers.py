@@ -81,23 +81,23 @@ def interval_min_15(client: Client) -> bool:
 
             # Get user
             user = get_user(client, uid)
-            if not user:
-                continue
 
             # Check avatar
-            if not user.photo:
+            if not user or user.photo:
                 continue
 
             # Get avatar
             file_id = user.photo.big_file_id
             file_ref = ""
             old_id = user_ids[uid]["avatar"]
+
             if file_id == old_id:
                 continue
 
             glovar.user_ids[uid]["avatar"] = file_id
             save("user_ids")
             image_path = get_downloaded_path(client, file_id, file_ref)
+
             if not image_path:
                 continue
 
@@ -172,7 +172,7 @@ def update_admins(client: Client) -> bool:
                                                  or admin.user.id in glovar.bot_ids)}
                     save("admin_ids")
                 elif admin_members is False:
-                    leave_group(gid)
+                    leave_group(client, gid)
             except Exception as e:
                 logger.warning(f"Update admin in {gid} error: {e}", exc_info=True)
 

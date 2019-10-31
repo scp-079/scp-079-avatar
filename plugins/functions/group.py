@@ -18,17 +18,23 @@
 
 import logging
 
+from pyrogram import Client
+
 from .. import glovar
+from .etc import thread
 from .file import save
+from .telegram import leave_chat
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
-def leave_group(gid: int) -> bool:
+def leave_group(client: Client, gid: int) -> bool:
     # Leave a group, clear it's data
     try:
         glovar.left_group_ids.add(gid)
+        save("left_group_ids")
+        thread(leave_chat, (client, gid))
 
         glovar.admin_ids.pop(gid, set())
         save("admin_ids")
