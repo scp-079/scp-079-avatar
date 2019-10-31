@@ -91,10 +91,12 @@ def get_full_name(user: User, normal: bool = False) -> str:
     # Get user's full name
     text = ""
     try:
-        if user and not user.is_deleted:
-            text = user.first_name
-            if user.last_name:
-                text += f" {user.last_name}"
+        if not user or user.is_deleted:
+            return ""
+
+        text = user.first_name
+        if user.last_name:
+            text += f" {user.last_name}"
 
         if text and normal:
             text = t2t(text, normal)
