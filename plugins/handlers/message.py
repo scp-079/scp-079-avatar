@@ -70,7 +70,7 @@ def check_join(client: Client, message: Message) -> bool:
                     continue
 
                 # Check bio
-                bio = get_user_bio(client, new.username or new.id, True)
+                bio = get_user_bio(client, uid, True)
                 if bio and is_bio_text(bio):
                     continue
 
