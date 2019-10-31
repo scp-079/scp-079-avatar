@@ -26,8 +26,8 @@ from pyrogram import CallbackQuery, Filters, Message, User
 
 from .. import glovar
 from .etc import get_text
-from .ids import init_group_id
 from .file import save
+from .ids import init_group_id
 
 # Enable logging
 logger = logging.getLogger(__name__)
