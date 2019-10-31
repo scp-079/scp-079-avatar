@@ -83,7 +83,7 @@ def interval_min_15(client: Client) -> bool:
             user = get_user(client, uid)
 
             # Check avatar
-            if not user or user.photo:
+            if not user or not user.photo:
                 continue
 
             # Get avatar
