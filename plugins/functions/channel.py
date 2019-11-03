@@ -116,8 +116,7 @@ def share_data_thread(client: Client, receivers: List[str], action: str, action_
             # Delete the tmp file
             if result:
                 for f in {file, file_path}:
-                    if "tmp/" in f:
-                        thread(delete_file, (f,))
+                    "tmp/" in f and thread(delete_file, (f,))
         else:
             text = format_data(
                 sender=glovar.sender,
