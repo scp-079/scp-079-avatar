@@ -191,7 +191,6 @@ locks: Dict[str, Lock] = {
 
 regex: Dict[str, bool] = {
     "ad": False,
-    "aff": False,
     "ban": False,
     "bio": False,
     "con": False,
@@ -206,7 +205,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.1.4"
+version: str = "0.1.5"
 
 # Load data from pickle
 
