@@ -32,7 +32,7 @@ from .etc import t2t, wait_flood
 logger = logging.getLogger(__name__)
 
 
-def download_media(client: Client, file_id: str, file_ref: str, file_path: str):
+def download_media(client: Client, file_id: str, file_ref: str, file_path: str) -> Optional[str]:
     # Download a media file
     result = None
     try:
