@@ -200,6 +200,7 @@ regex: Dict[str, bool] = {
     "spc": False,
     "spe": False
 }
+
 for c in ascii_lowercase:
     regex[f"ad{c}"] = False
 
