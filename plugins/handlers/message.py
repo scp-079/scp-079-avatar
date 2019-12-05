@@ -143,7 +143,7 @@ def mark_message(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & Filters.channel
+@Client.on_message((Filters.incoming or glovar.aio) & Filters.channel
                    & hide_channel)
 def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel

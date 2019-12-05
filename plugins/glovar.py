@@ -59,6 +59,7 @@ debug_channel_id: int = 0
 hide_channel_id: int = 0
 
 # [custom]
+aio: Union[bool, str] = ""
 backup: Union[bool, str] = ""
 date_reset: str = ""
 project_link: str = ""
@@ -97,6 +98,8 @@ try:
     debug_channel_id = int(config["channels"].get("debug_channel_id", debug_channel_id))
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
     # [custom]
+    aio = config["custom"].get("aio", aio)
+    aio = eval(aio)
     backup = config["custom"].get("backup", backup)
     backup = eval(backup)
     date_reset = config["custom"].get("date_reset", date_reset)
@@ -132,6 +135,7 @@ if (captcha_id == 0
         or warn_id == 0
         or debug_channel_id == 0
         or hide_channel_id == 0
+        or aio not in {False, True}
         or backup not in {False, True}
         or date_reset in {"", "[DATA EXPUNGED]"}
         or project_link in {"", "[DATA EXPUNGED]"}
