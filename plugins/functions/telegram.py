@@ -145,6 +145,8 @@ def leave_chat(client: Client, cid: int, delete: bool = False) -> bool:
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
+            except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+                return False
 
         return True
     except Exception as e:
