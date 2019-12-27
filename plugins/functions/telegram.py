@@ -110,7 +110,7 @@ def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[
     return result
 
 
-def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str]:
+def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool = False) -> Optional[str]:
     # Get user's bio
     result = None
     try:
@@ -124,7 +124,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str
             try:
                 user: UserFull = client.send(GetFullUser(id=user_id))
                 if user and user.about:
-                    result = t2t(user.about, normal)
+                    result = t2t(user.about, normal, printable)
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)

@@ -65,12 +65,12 @@ def check_join(client: Client, message: Message) -> bool:
             # Work with NOSPAM
             if glovar.nospam_id in glovar.admin_ids[gid]:
                 # Check name
-                name = get_full_name(new, True)
+                name = get_full_name(new, True, True)
                 if name and is_nm_text(name):
                     continue
 
                 # Check bio
-                bio = get_user_bio(client, uid, True)
+                bio = get_user_bio(client, uid, True, True)
                 if bio and is_bio_text(bio):
                     continue
 

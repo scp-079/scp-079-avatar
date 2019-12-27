@@ -304,7 +304,7 @@ def is_emoji(the_type: str, text: str, message: Message = None) -> bool:
     # Check the emoji type
     try:
         if message:
-            text = get_text(message, False, False)
+            text = get_text(message)
 
         emoji_dict = {}
         emoji_set = {emoji for emoji in glovar.emoji_set if emoji in text and emoji not in glovar.emoji_protect}
