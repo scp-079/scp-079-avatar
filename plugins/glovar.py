@@ -81,6 +81,7 @@ password: str = ""
 try:
     config = RawConfigParser()
     config.read("config.ini")
+
     # [bots]
     avatar_id = int(config["bots"].get("avatar_id", avatar_id))
     captcha_id = int(config["bots"].get("captcha_id", captcha_id))
@@ -94,9 +95,11 @@ try:
     tip_id = int(config["bots"].get("tip_id", tip_id))
     user_id = int(config["bots"].get("user_id", user_id))
     warn_id = int(config["bots"].get("warn_id", warn_id))
+
     # [channels]
     debug_channel_id = int(config["channels"].get("debug_channel_id", debug_channel_id))
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
+
     # [custom]
     aio = config["custom"].get("aio", aio)
     aio = eval(aio)
@@ -108,6 +111,7 @@ try:
     time_new = int(config["custom"].get("time_new", time_new))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
+
     # [emoji]
     emoji_ad_single = int(config["emoji"].get("emoji_ad_single", emoji_ad_single))
     emoji_ad_total = int(config["emoji"].get("emoji_ad_total", emoji_ad_total))
@@ -115,6 +119,7 @@ try:
     emoji_protect = getdecoder("unicode_escape")(config["emoji"].get("emoji_protect", emoji_protect))[0]
     emoji_wb_single = int(config["emoji"].get("emoji_wb_single", emoji_wb_single))
     emoji_wb_total = int(config["emoji"].get("emoji_wb_total", emoji_wb_total))
+
     # [encrypt]
     password = config["encrypt"].get("password", password)
 except Exception as e:
