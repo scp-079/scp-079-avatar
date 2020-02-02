@@ -280,6 +280,7 @@ for word_type in regex:
 # Load data
 file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "left_group_ids", "trust_ids", "user_ids"]
 file_list += [f"{f}_words" for f in regex]
+
 for file in file_list:
     try:
         try:
@@ -300,6 +301,7 @@ for file in file_list:
 # Generate special characters dictionary
 for special in ["spc", "spe"]:
     locals()[f"{special}_dict"]: Dict[str, str] = {}
+
     for rule in locals()[f"{special}_words"]:
         # Check keys
         if "[" not in rule:
@@ -311,6 +313,7 @@ for special in ["spc", "spe"]:
 
         keys = rule.split("]")[0][1:]
         value = rule.split("?#")[1][1]
+
         for k in keys:
             locals()[f"{special}_dict"][k] = value
 
