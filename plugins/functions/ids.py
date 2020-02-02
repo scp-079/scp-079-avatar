@@ -36,6 +36,10 @@ def init_group_id(gid: int) -> bool:
             glovar.admin_ids[gid] = set()
             save("admin_ids")
 
+        if glovar.trust_ids.get(gid) is None:
+            glovar.trust_ids[gid] = set()
+            save("trust_ids")
+
         if glovar.declared_message_ids.get(gid) is None:
             glovar.declared_message_ids[gid] = set()
 

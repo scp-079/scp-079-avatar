@@ -210,7 +210,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.1.6"
+version: str = "0.1.7"
 
 # Load data from pickle
 
@@ -248,6 +248,11 @@ except_ids: Dict[str, Set[str]] = {
 left_group_ids: Set[int] = set()
 # left_group_ids = {-10012345678}
 
+trust_ids: Dict[int, Set[int]] = {}
+# trust_ids = {
+#     -10012345678: {12345678}
+# }
+
 user_ids: Dict[int, Dict[str, Union[str, Dict[int, int]]]] = {}
 # user_ids = {
 #     12345678: {
@@ -268,7 +273,7 @@ for word_type in regex:
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "left_group_ids", "user_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "left_group_ids", "trust_ids", "user_ids"]
 file_list += [f"{f}_words" for f in regex]
 for file in file_list:
     try:
@@ -305,6 +310,6 @@ for special in ["spc", "spe"]:
             locals()[f"{special}_dict"][k] = value
 
 # Start program
-copyright_text = (f"SCP-079-{sender} v{version}, Copyright (C) 2019 SCP-079 <https://scp-079.org>\n"
+copyright_text = (f"SCP-079-{sender} v{version}, Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>\n"
                   "Licensed under the terms of the GNU General Public License v3 or later (GPLv3+)\n")
 print(copyright_text)

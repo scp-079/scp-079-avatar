@@ -66,11 +66,13 @@ def check_join(client: Client, message: Message) -> bool:
             if glovar.nospam_id in glovar.admin_ids[gid]:
                 # Check name
                 name = get_full_name(new, True, True)
+
                 if name and is_nm_text(name):
                     continue
 
                 # Check bio
                 bio = get_user_bio(client, uid, True, True)
+
                 if bio and is_bio_text(bio):
                     continue
 
@@ -87,10 +89,12 @@ def check_join(client: Client, message: Message) -> bool:
                 file_id = new.photo.big_file_id
                 file_ref = ""
                 old_id = glovar.user_ids[uid]["avatar"]
+
                 if file_id != old_id:
                     glovar.user_ids[uid]["avatar"] = file_id
                     save("user_ids")
                     image_path = get_downloaded_path(client, file_id, file_ref)
+
                     if image_path:
                         image = Image.open(image_path)
                         share_user_avatar(client, gid, uid, mid, image)

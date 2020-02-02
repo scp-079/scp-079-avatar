@@ -144,6 +144,7 @@ def send_count(client: Client) -> bool:
         for word_type in glovar.regex:
             share_regex_count(client, word_type)
             word_list = list(eval(f"glovar.{word_type}_words"))
+
             for word in word_list:
                 eval(f"glovar.{word_type}_words")[word] = 0
 
@@ -163,13 +164,24 @@ def update_admins(client: Client) -> bool:
     glovar.locks["admin"].acquire()
     try:
         group_list = list(glovar.admin_ids)
+
         for gid in group_list:
             admin_members = get_admins(client, gid)
+
             if admin_members:
+                # Admin list
                 glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
+                                         if (((not admin.user.is_bot and not admin.user.is_deleted)
+                                             or admin.user.id in glovar.bot_ids)
+                                             and admin.can_delete_messages
+                                             and admin.can_restrict_members)}
+                save("admin_ids")
+
+                # Trust list
+                glovar.trust_ids[gid] = {admin.user.id for admin in admin_members
                                          if ((not admin.user.is_bot and not admin.user.is_deleted)
                                              or admin.user.id in glovar.bot_ids)}
-                save("admin_ids")
+                save("trust_ids")
             elif admin_members is False:
                 leave_group(client, gid)
 

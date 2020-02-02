@@ -39,6 +39,11 @@ def leave_group(client: Client, gid: int) -> bool:
         glovar.admin_ids.pop(gid, set())
         save("admin_ids")
 
+        glovar.trust_ids.pop(gid, set())
+        save("trust_ids")
+
+        glovar.declared_message_ids.pop(gid, set())
+
         return True
     except Exception as e:
         logger.warning(f"Leave group error: {e}", exc_info=True)

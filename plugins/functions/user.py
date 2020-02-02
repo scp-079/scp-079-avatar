@@ -32,6 +32,7 @@ def get_user(client: Client, uid: Union[int, str]) -> Optional[User]:
     result = None
     try:
         result = get_users(client, [uid])
+
         if result:
             result = result[0]
     except Exception as e:
