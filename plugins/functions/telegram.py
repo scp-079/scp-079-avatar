@@ -20,6 +20,7 @@ import logging
 from typing import Iterable, List, Optional, Union
 
 from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, User
+from pyrogram.api.functions.account import UpdateStatus
 from pyrogram.api.functions.messages import ReadMentions
 from pyrogram.api.functions.users import GetFullUser
 from pyrogram.api.types import InputPeerUser, InputPeerChannel, UserFull
@@ -279,3 +280,22 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
         logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
 
     return result
+
+
+def update_online_status(client: Client, offline: bool = False) -> bool:
+    # Update account status
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                client.send(UpdateStatus(offline=offline))
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+
+        return True
+    except Exception as e:
+        logger.warning(f"Update online status error: {e}", exc_info=True)
+
+    return False

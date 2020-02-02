@@ -29,7 +29,7 @@ from .etc import code, general_link, get_now, lang, thread
 from .file import delete_file, get_downloaded_path, save
 from .group import leave_group
 from .user import get_user
-from .telegram import get_admins
+from .telegram import get_admins, update_online_status
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -57,6 +57,19 @@ def backup_files(client: Client) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Backup error: {e}", exc_info=True)
+
+    return False
+
+
+def interval_hour_01(client: Client) -> bool:
+    # Execute every hour
+    try:
+        # Update online status
+        thread(update_online_status, (client,))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Interval hour 01 error: {e}", exc_info=True)
 
     return False
 
