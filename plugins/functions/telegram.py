@@ -116,6 +116,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool
     result = None
     try:
         user_id = resolve_peer(client, uid)
+
         if not user_id:
             return None
 
@@ -179,6 +180,7 @@ def read_mention(client: Client, cid: int) -> bool:
     # Mark a mention as read
     try:
         peer = resolve_peer(client, cid)
+
         if not peer:
             return True
 
