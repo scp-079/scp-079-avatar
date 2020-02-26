@@ -31,8 +31,8 @@ debug_channel_id = [DATA EXPUNGED]
 hide_channel_id = [DATA EXPUNGED]
 
 [custom]
-aio = [DATA EXPUNGED]
-backup = [DATA EXPUNGED]
+aio = False
+backup = False
 date_reset = [DATA EXPUNGED]
 project_link = https://scp-079.org/avatar/
 project_name = SCP-079-AVATAR
