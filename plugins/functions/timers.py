@@ -18,6 +18,7 @@
 
 import logging
 from copy import deepcopy
+from random import randint
 from time import sleep
 
 from PIL import Image
@@ -25,7 +26,7 @@ from pyrogram import Client
 
 from .. import glovar
 from .channel import send_help, share_data, share_regex_count, share_user_avatar
-from .etc import code, general_link, get_now, lang, thread
+from .etc import code, delay, general_link, get_now, lang, thread
 from .file import delete_file, get_downloaded_path, save
 from .group import leave_group
 from .user import get_user
@@ -65,7 +66,7 @@ def interval_hour_01(client: Client) -> bool:
     # Execute every hour
     try:
         # Update online status
-        thread(update_online_status, (client,))
+        delay(randint(0, 600), update_online_status, [client])
 
         return True
     except Exception as e:
