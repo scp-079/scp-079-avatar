@@ -247,7 +247,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
             except (ChannelInvalid, ChannelPrivate, ChatAdminRequired, PeerIdInvalid):
                 return False
     except Exception as e:
-        logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
+        logger.warning(f"Send document {document} to {cid} error: {e}", exc_info=True)
 
     return result
 
