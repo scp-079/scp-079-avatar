@@ -63,7 +63,7 @@ def get_admins(client: Client, cid: int) -> Union[bool, List[ChatMember], None]:
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
-            except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+            except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
                 return False
     except Exception as e:
         logger.warning(f"Get admins in {cid} error: {e}", exc_info=True)
@@ -125,6 +125,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool
             flood_wait = False
             try:
                 user: UserFull = client.send(GetFullUser(id=user_id))
+
                 if user and user.about:
                     result = t2t(user.about, normal, printable)
             except FloodWait as e:
@@ -147,7 +148,7 @@ def leave_chat(client: Client, cid: int, delete: bool = False) -> bool:
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
-            except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+            except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
                 return False
 
         return True
@@ -243,7 +244,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
                 wait_flood(e)
             except ButtonDataInvalid:
                 logger.warning(f"Send document {document} to {cid} - invalid markup: {markup}")
-            except (ChatAdminRequired, PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+            except (ChannelInvalid, ChannelPrivate, ChatAdminRequired, PeerIdInvalid):
                 return False
     except Exception as e:
         logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
@@ -276,7 +277,7 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
                 wait_flood(e)
             except ButtonDataInvalid:
                 logger.warning(f"Send message to {cid} - invalid markup: {markup}")
-            except (ChatAdminRequired, PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+            except (ChannelInvalid, ChannelPrivate, ChatAdminRequired, PeerIdInvalid):
                 return False
     except Exception as e:
         logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
