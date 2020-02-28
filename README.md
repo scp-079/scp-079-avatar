@@ -4,7 +4,7 @@ This bot is used to get new joined member's profile photo.
 
 ## How to use
 
-- See [the document](https://scp-079.org/avatar/) to learn more
+- Read [the document](https://scp-079.org/avatar/) to learn more
 - [README](https://scp-079.org/readme/) of the SCP-079 Project's demo instances
 - Discuss [group](https://t.me/SCP_079_CHAT)
 
