@@ -1,6 +1,6 @@
 # SCP-079-AVATAR
 
-This bot is used to get new joined member's profile photo.
+This bot is used to get newly joined member's profile photo.
 
 ## How to use
 

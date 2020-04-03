@@ -1,4 +1,4 @@
-# SCP-079-AVATAR - Get new joined member's profile photo
+# SCP-079-AVATAR - Get newly joined member's profile photo
 # Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-AVATAR.
