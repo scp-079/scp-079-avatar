@@ -78,6 +78,7 @@ def delay(secs: int, target: Callable, args: list) -> bool:
 def general_link(text: Union[int, str], link: str) -> str:
     # Get a general link
     result = ""
+
     try:
         text = str(text).strip()
         link = link.strip()
@@ -93,6 +94,7 @@ def general_link(text: Union[int, str], link: str) -> str:
 def get_full_name(user: User, normal: bool = False, printable: bool = False) -> str:
     # Get user's full name
     text = ""
+
     try:
         if not user or user.is_deleted:
             return ""
@@ -113,6 +115,7 @@ def get_full_name(user: User, normal: bool = False, printable: bool = False) -> 
 def get_now() -> int:
     # Get time for now
     result = 0
+
     try:
         result = int(time())
     except Exception as e:
@@ -124,6 +127,7 @@ def get_now() -> int:
 def get_text(message: Message, normal: bool = False, printable: bool = False) -> str:
     # Get message's text
     text = ""
+
     try:
         if not message:
             return ""
@@ -144,6 +148,7 @@ def get_text(message: Message, normal: bool = False, printable: bool = False) ->
 def lang(text: str) -> str:
     # Get the text
     result = ""
+
     try:
         result = glovar.lang.get(text, text)
     except Exception as e:
@@ -155,6 +160,7 @@ def lang(text: str) -> str:
 def mention_id(uid: int) -> str:
     # Get a ID mention string
     result = ""
+
     try:
         result = general_link(f"{uid}", f"tg://user?id={uid}")
     except Exception as e:
@@ -166,6 +172,7 @@ def mention_id(uid: int) -> str:
 def random_str(i: int) -> str:
     # Get a random string
     text = ""
+
     try:
         text = "".join(choice(ascii_letters + digits) for _ in range(i))
     except Exception as e:

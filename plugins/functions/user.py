@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 def get_user(client: Client, uid: Union[int, str]) -> Optional[User]:
     # Get a user
     result = None
+
     try:
         result = get_users(client, [uid])
 

@@ -36,6 +36,7 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
                 data: Union[bool, dict, int, str] = None) -> str:
     # Get exchange string
     text = ""
+
     try:
         data = {
             "from": sender,

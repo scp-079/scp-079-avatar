@@ -44,6 +44,7 @@ logger = logging.getLogger(__name__)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
     glovar.locks["message"].acquire()
+
     try:
         # Basic data
         gid = message.chat.id
@@ -158,6 +159,7 @@ def mark_message(client: Client, message: Message) -> bool:
 def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel
     glovar.locks["receive"].acquire()
+
     try:
         data = receive_text_data(message)
 

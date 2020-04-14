@@ -363,6 +363,7 @@ def is_nm_text(text: str) -> bool:
 def is_regex_text(word_type: str, text: str, ocr: bool = False, again: bool = False) -> Optional[Match]:
     # Check if the text hit the regex rules
     result = None
+
     try:
         if text:
             if not again:

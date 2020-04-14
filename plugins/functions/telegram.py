@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 def download_media(client: Client, file_id: str, file_ref: str, file_path: str) -> Optional[str]:
     # Download a media file
     result = None
+
     try:
         flood_wait = True
         while flood_wait:
@@ -54,6 +55,7 @@ def download_media(client: Client, file_id: str, file_ref: str, file_path: str) 
 def get_admins(client: Client, cid: int) -> Union[bool, List[ChatMember], None]:
     # Get a group's admins
     result = None
+
     try:
         flood_wait = True
         while flood_wait:
@@ -74,6 +76,7 @@ def get_admins(client: Client, cid: int) -> Union[bool, List[ChatMember], None]:
 def get_chat_member(client: Client, cid: int, uid: int) -> Union[bool, ChatMember, None]:
     # Get information about one member of a chat
     result = None
+
     try:
         flood_wait = True
         while flood_wait:
@@ -94,6 +97,7 @@ def get_chat_member(client: Client, cid: int, uid: int) -> Union[bool, ChatMembe
 def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[User]]:
     # Get users
     result = None
+
     try:
         flood_wait = True
         while flood_wait:
@@ -114,6 +118,7 @@ def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[
 def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool = False) -> Optional[str]:
     # Get user's bio
     result = None
+
     try:
         user_id = resolve_peer(client, uid)
 
@@ -204,6 +209,7 @@ def read_mention(client: Client, cid: int) -> bool:
 def resolve_peer(client: Client, pid: Union[int, str]) -> Union[bool, InputPeerChannel, InputPeerUser, None]:
     # Get an input peer by id
     result = None
+
     try:
         flood_wait = True
         while flood_wait:
@@ -225,6 +231,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
                   markup: InlineKeyboardMarkup = None) -> Union[bool, Message, None]:
     # Send a document to a chat
     result = None
+
     try:
         flood_wait = True
         while flood_wait:
@@ -256,6 +263,7 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
                  markup: InlineKeyboardMarkup = None) -> Union[bool, Message, None]:
     # Send a message to a chat
     result = None
+
     try:
         if not text.strip():
             return None

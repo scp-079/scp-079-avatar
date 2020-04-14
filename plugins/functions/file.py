@@ -85,6 +85,7 @@ def delete_file(path: str) -> bool:
 def get_downloaded_path(client: Client, file_id: str, file_ref: str) -> str:
     # Download file, get it's path on local machine
     final_path = ""
+
     try:
         if not file_id:
             return ""
@@ -100,6 +101,7 @@ def get_downloaded_path(client: Client, file_id: str, file_ref: str) -> str:
 def get_new_path(extension: str = "", prefix: str = "") -> str:
     # Get a new path in tmp directory
     result = ""
+
     try:
         file_path = random_str(8)
 

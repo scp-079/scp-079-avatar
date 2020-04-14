@@ -85,6 +85,7 @@ def receive_add_except(client: Client, data: dict) -> bool:
 def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
     # Receive clear data command
     glovar.locks["message"].acquire()
+
     try:
         # Basic data
         aid = data["admin_id"]
@@ -151,6 +152,7 @@ def receive_declared_message(data: dict) -> bool:
 def receive_file_data(client: Client, message: Message, decrypt: bool = True) -> Any:
     # Receive file's data from exchange channel
     data = None
+
     try:
         if not message.document:
             return None
@@ -208,6 +210,7 @@ def receive_refresh(client: Client, data: int) -> bool:
 def receive_regex(client: Client, message: Message, data: str) -> bool:
     # Receive regex
     glovar.locks["regex"].acquire()
+
     try:
         file_name = data
         word_type = file_name.split("_")[0]
@@ -337,6 +340,7 @@ def receive_rollback(client: Client, message: Message, data: dict) -> bool:
 def receive_text_data(message: Message) -> dict:
     # Receive text's data from exchange channel
     data = {}
+
     try:
         text = get_text(message)
 

@@ -154,6 +154,7 @@ def reset_data(client: Client) -> bool:
 def send_count(client: Client) -> bool:
     # Send regex count to REGEX
     glovar.locks["regex"].acquire()
+
     try:
         for word_type in glovar.regex:
             share_regex_count(client, word_type)
@@ -176,6 +177,7 @@ def send_count(client: Client) -> bool:
 def update_admins(client: Client) -> bool:
     # Update admin list every day
     glovar.locks["admin"].acquire()
+
     try:
         group_list = list(glovar.admin_ids)
 

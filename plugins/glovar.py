@@ -83,22 +83,22 @@ try:
     config.read("config.ini")
 
     # [bots]
-    avatar_id = int(config["bots"].get("avatar_id", avatar_id))
-    captcha_id = int(config["bots"].get("captcha_id", captcha_id))
-    clean_id = int(config["bots"].get("clean_id", clean_id))
-    lang_id = int(config["bots"].get("lang_id", lang_id))
-    long_id = int(config["bots"].get("long_id", long_id))
-    noflood_id = int(config["bots"].get("noflood_id", noflood_id))
-    noporn_id = int(config["bots"].get("noporn_id", noporn_id))
-    nospam_id = int(config["bots"].get("nospam_id", nospam_id))
-    recheck_id = int(config["bots"].get("recheck_id", recheck_id))
-    tip_id = int(config["bots"].get("tip_id", tip_id))
-    user_id = int(config["bots"].get("user_id", user_id))
-    warn_id = int(config["bots"].get("warn_id", warn_id))
+    avatar_id = int(config["bots"].get("avatar_id", str(avatar_id)))
+    captcha_id = int(config["bots"].get("captcha_id", str(captcha_id)))
+    clean_id = int(config["bots"].get("clean_id", str(clean_id)))
+    lang_id = int(config["bots"].get("lang_id", str(lang_id)))
+    long_id = int(config["bots"].get("long_id", str(long_id)))
+    noflood_id = int(config["bots"].get("noflood_id", str(noflood_id)))
+    noporn_id = int(config["bots"].get("noporn_id", str(noporn_id)))
+    nospam_id = int(config["bots"].get("nospam_id", str(nospam_id)))
+    recheck_id = int(config["bots"].get("recheck_id", str(recheck_id)))
+    tip_id = int(config["bots"].get("tip_id", str(tip_id)))
+    user_id = int(config["bots"].get("user_id", str(user_id)))
+    warn_id = int(config["bots"].get("warn_id", str(warn_id)))
 
     # [channels]
-    debug_channel_id = int(config["channels"].get("debug_channel_id", debug_channel_id))
-    hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
+    debug_channel_id = int(config["channels"].get("debug_channel_id", str(debug_channel_id)))
+    hide_channel_id = int(config["channels"].get("hide_channel_id", str(hide_channel_id)))
 
     # [custom]
     aio = config["custom"].get("aio", aio)
@@ -108,17 +108,17 @@ try:
     date_reset = config["custom"].get("date_reset", date_reset)
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
-    time_new = int(config["custom"].get("time_new", time_new))
+    time_new = int(config["custom"].get("time_new", str(time_new)))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
 
     # [emoji]
-    emoji_ad_single = int(config["emoji"].get("emoji_ad_single", emoji_ad_single))
-    emoji_ad_total = int(config["emoji"].get("emoji_ad_total", emoji_ad_total))
-    emoji_many = int(config["emoji"].get("emoji_many", emoji_many))
+    emoji_ad_single = int(config["emoji"].get("emoji_ad_single", str(emoji_ad_single)))
+    emoji_ad_total = int(config["emoji"].get("emoji_ad_total", str(emoji_ad_total)))
+    emoji_many = int(config["emoji"].get("emoji_many", str(emoji_many)))
     emoji_protect = getdecoder("unicode_escape")(config["emoji"].get("emoji_protect", emoji_protect))[0]
-    emoji_wb_single = int(config["emoji"].get("emoji_wb_single", emoji_wb_single))
-    emoji_wb_total = int(config["emoji"].get("emoji_wb_total", emoji_wb_total))
+    emoji_wb_single = int(config["emoji"].get("emoji_wb_single", str(emoji_wb_single)))
+    emoji_wb_total = int(config["emoji"].get("emoji_wb_total", str(emoji_wb_total)))
 
     # [encrypt]
     password = config["encrypt"].get("password", password)
@@ -215,7 +215,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.1.8"
+version: str = "0.1.9"
 
 # Load data from pickle
 
