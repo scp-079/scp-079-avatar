@@ -218,9 +218,9 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
         if word_type not in glovar.regex:
             return True
 
-        words_data = receive_file_data(client, message, True)
+        words_data = receive_file_data(client, message)
 
-        if not words_data:
+        if words_data is None:
             return True
 
         pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
