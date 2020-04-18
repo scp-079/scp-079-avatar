@@ -198,6 +198,11 @@ locks: Dict[str, Lock] = {
     "regex": Lock()
 }
 
+receivers: Dict[str, List[str]] = {
+    "white": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG", "MANAGE",
+              "NOFLOOD", "NOPORN", "NOSPAM", "TICKET", "TIP", "USER", "WARN", "WATCH"]
+}
+
 regex: Dict[str, bool] = {
     "ad": False,
     "ban": False,
