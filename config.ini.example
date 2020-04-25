@@ -16,12 +16,12 @@ port = 1080
 avatar_id = [DATA EXPUNGED]
 captcha_id = [DATA EXPUNGED]
 clean_id = [DATA EXPUNGED]
+index_id = [DATA EXPUNGED]
 lang_id = [DATA EXPUNGED]
 long_id = [DATA EXPUNGED]
 noflood_id = [DATA EXPUNGED]
 noporn_id = [DATA EXPUNGED]
 nospam_id = [DATA EXPUNGED]
-recheck_id = [DATA EXPUNGED]
 tip_id = [DATA EXPUNGED]
 user_id = [DATA EXPUNGED]
 warn_id = [DATA EXPUNGED]
@@ -31,21 +31,36 @@ debug_channel_id = [DATA EXPUNGED]
 hide_channel_id = [DATA EXPUNGED]
 
 [custom]
-aio = False
-backup = False
-date_reset = 1st mon
 project_link = https://scp-079.org/avatar/
 project_name = SCP-079-AVATAR
-time_new = [DATA EXPUNGED]
-zh_cn = [DATA EXPUNGED]
 
 [emoji]
 emoji_ad_single = [DATA EXPUNGED]
 emoji_ad_total = [DATA EXPUNGED]
-emoji_many = [DATA EXPUNGED]
-emoji_protect = [DATA EXPUNGED]
+emoji_many = 15
+emoji_protect = \U0001F642
 emoji_wb_single = [DATA EXPUNGED]
 emoji_wb_total = [DATA EXPUNGED]
 
 [encrypt]
+key = [DATA EXPUNGED]
 password = [DATA EXPUNGED]
+
+[language]
+lang = cmn-Hans
+normalize = True
+
+[limit]
+limit_message = [DATA EXPUNGED]
+
+[mode]
+aio = False
+backup = False
+
+[time]
+date_reset = 1st mon
+time_begin = [DATA EXPUNGED]
+time_check = [DATA EXPUNGED]
+time_end = [DATA EXPUNGED]
+time_new = [DATA EXPUNGED]
+time_old = [DATA EXPUNGED]

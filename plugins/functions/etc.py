@@ -21,10 +21,11 @@ from html import escape
 from random import choice, uniform
 from string import ascii_letters, digits
 from threading import Thread, Timer
-from time import sleep, time
-from typing import Any, Callable, Union
+from time import localtime, sleep, time
+from typing import Any, Callable, Optional, Union
 from unicodedata import normalize
 
+from cryptography.fernet import Fernet
 from opencc import convert
 from pyrogram import Message, User
 from pyrogram.errors import FloodWait
@@ -59,6 +60,26 @@ def code_block(text: Any) -> str:
         logger.warning(f"Code block error: {e}", exc_info=True)
 
     return ""
+
+
+def crypt_str(operation: str, text: str, key: bytes) -> str:
+    # Encrypt or decrypt a string
+    result = ""
+
+    try:
+        f = Fernet(key)
+        text = text.encode("utf-8")
+
+        if operation == "decrypt":
+            result = f.decrypt(text)
+        else:
+            result = f.encrypt(text)
+
+        result = result.decode("utf-8")
+    except Exception as e:
+        logger.warning(f"Crypt str error: {e}", exc_info=True)
+
+    return result
 
 
 def delay(secs: int, target: Callable, args: list) -> bool:
@@ -112,6 +133,30 @@ def get_full_name(user: User, normal: bool = False, printable: bool = False) -> 
     return text
 
 
+def get_hour() -> int:
+    # Get hour
+    result = 0
+
+    try:
+        result = localtime().tm_hour
+    except Exception as e:
+        logger.warning(f"Get hour error: {e}", exc_info=True)
+
+    return result
+
+
+def get_int(text: str) -> Optional[int]:
+    # Get a int from a string
+    result = None
+
+    try:
+        result = int(text)
+    except Exception as e:
+        logger.info(f"Get int error: {e}", exc_info=True)
+
+    return result
+
+
 def get_now() -> int:
     # Get time for now
     result = 0
@@ -150,7 +195,7 @@ def lang(text: str) -> str:
     result = ""
 
     try:
-        result = glovar.lang.get(text, text)
+        result = glovar.lang_dict.get(text, text)
     except Exception as e:
         logger.warning(f"Lang error: {e}", exc_info=True)
 
@@ -181,23 +226,25 @@ def random_str(i: int) -> str:
     return text
 
 
-def t2t(text: str, normal: bool, printable: bool, simplified: bool = False) -> str:
+def t2t(text: str, normal: bool, printable: bool) -> str:
     # Convert the string, text to text
     try:
         if not text:
             return ""
 
-        if normal:
+        if glovar.normalize and normal:
             for special in ["spc", "spe"]:
                 text = "".join(eval(f"glovar.{special}_dict").get(t, t) for t in text)
 
             text = normalize("NFKC", text)
 
+        if glovar.normalize and normal and "Hans" in glovar.lang:
+            text = convert(text, config="t2s.json")
+        elif glovar.normalize and normal and "Hant" in glovar.lang:
+            text = convert(text, config="s2t.json")
+
         if printable:
             text = "".join(t for t in text if t.isprintable() or t in {"\n", "\r", "\t"})
-
-        if (normal or simplified) and glovar.zh_cn:
-            text = convert(text, config="t2s.json")
     except Exception as e:
         logger.warning(f"T2T error: {e}", exc_info=True)
 

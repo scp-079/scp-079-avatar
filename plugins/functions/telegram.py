@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Iterable, List, Optional, Union
+from typing import Generator, Iterable, List, Optional, Union
 
 from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, User
 from pyrogram.api.functions.account import UpdateStatus
@@ -94,6 +94,25 @@ def get_chat_member(client: Client, cid: int, uid: int) -> Union[bool, ChatMembe
     return result
 
 
+def get_members(client: Client, cid: int, query: str = "all") -> Optional[Generator[ChatMember, None, None]]:
+    # Get a members generator of a chat
+    result = None
+
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.iter_chat_members(chat_id=cid, filter=query)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+    except Exception as e:
+        logger.warning(f"Get members in {cid} error: {e}", exc_info=True)
+
+    return result
+
+
 def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[User]]:
     # Get users
     result = None
@@ -115,8 +134,8 @@ def get_users(client: Client, uids: Iterable[Union[int, str]]) -> Optional[List[
     return result
 
 
-def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool = False) -> Optional[str]:
-    # Get user's bio
+def get_user_full(client: Client, uid: int) -> Optional[UserFull]:
+    # Get a full user
     result = None
 
     try:
@@ -129,15 +148,12 @@ def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool
         while flood_wait:
             flood_wait = False
             try:
-                user: UserFull = client.send(GetFullUser(id=user_id))
-
-                if user and user.about:
-                    result = t2t(user.about, normal, printable)
+                result = client.send(GetFullUser(id=user_id))
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get user {uid} bio error: {e}", exc_info=True)
+        logger.warning(f"Get user {uid} full error: {e}", exc_info=True)
 
     return result
 

@@ -21,26 +21,82 @@ import logging
 from PIL import Image
 from pyrogram import Client, Filters, Message
 
+from typing import List
+
 from .. import glovar
 from ..functions.channel import share_user_avatar
-from ..functions.etc import get_full_name, get_now, thread
+from ..functions.etc import get_full_name, get_hour, get_now, t2t, thread
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import authorized_group, class_c, class_e, from_user, hide_channel, is_bio_text
-from ..functions.filters import is_class_d_user, is_declared_message, is_nm_text
-from ..functions.ids import init_user_id
+from ..functions.filters import authorized_group, class_d, class_e, declared_message, from_user, hide_channel
+from ..functions.filters import is_bio_text, is_class_d_user, is_declared_message, is_nm_text
+from ..functions.filters import is_watch_user, white_user
+from ..functions.ids import init_group_id, init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
-from ..functions.receive import receive_refresh, receive_regex, receive_remove_bad, receive_remove_except
-from ..functions.receive import receive_rollback, receive_text_data, receive_version_ask
+from ..functions.receive import receive_kicked_user, receive_refresh, receive_regex, receive_remove_bad
+from ..functions.receive import receive_remove_except, receive_remove_score, receive_remove_white, receive_rollback
+from ..functions.receive import receive_status_ask, receive_user_score, receive_version_ask, receive_watch_user
+from ..functions.receive import receive_text_data
 from ..functions.timers import backup_files, send_count
-from ..functions.telegram import get_user_bio, read_history, read_mention
+from ..functions.telegram import get_user_full, read_history, read_mention
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
+@Client.on_message(Filters.incoming & Filters.group & ~Filters.new_chat_members
+                   & authorized_group
+                   & from_user & ~class_d & ~class_e & ~white_user
+                   & ~declared_message)
+def check(_: Client, message: Message) -> bool:
+    # Check message sent from users
+    glovar.locks["message"].acquire()
+
+    try:
+        # Basic data
+        gid = message.chat.id
+        uid = message.from_user.id
+        mid = message.message_id
+        hour = get_hour()
+        now = message.date or get_now()
+
+        # Check hour
+        if (hour < glovar.time_begin < glovar.time_end
+                or glovar.time_begin < glovar.time_end < hour
+                or glovar.time_end < hour < glovar.time_begin):
+            return True
+
+        # Check white wait status
+        if glovar.white_wait_ids.get(uid, set()):
+            return True
+
+        # Check watch status
+        if is_watch_user(message.from_user, "ban", now) or is_watch_user(message.from_user, "delete", now):
+            return True
+
+        # Init user id
+        if not init_user_id(uid):
+            return True
+
+        # Record message id
+        if not glovar.user_ids[uid]["message"].get(gid, set()):
+            glovar.user_ids[uid]["message"][gid] = set()
+
+        glovar.user_ids[uid]["message"][gid].add(mid)
+        save("user_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Check error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return False
+
+
 @Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members
                    & authorized_group
-                   & from_user & ~class_c & ~class_e)
+                   & from_user & ~class_d & ~class_e & ~white_user
+                   & ~declared_message)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
     glovar.locks["message"].acquire()
@@ -72,7 +128,12 @@ def check_join(client: Client, message: Message) -> bool:
                     continue
 
                 # Check bio
-                bio = get_user_bio(client, uid, True, True)
+                user = get_user_full(client, uid)
+
+                if not user or not user.about:
+                    bio = ""
+                else:
+                    bio = t2t(user.about, True, True)
 
                 if bio and is_bio_text(bio):
                     continue
@@ -120,7 +181,7 @@ def check_join(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & ~Filters.private & Filters.mentioned, group=1)
+@Client.on_message(Filters.incoming & Filters.channel & Filters.mentioned, group=1)
 def mark_mention(client: Client, message: Message) -> bool:
     # Mark mention as read
     try:
@@ -137,7 +198,7 @@ def mark_mention(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & ~Filters.private & Filters.channel, group=2)
+@Client.on_message(Filters.incoming & Filters.channel, group=2)
 def mark_message(client: Client, message: Message) -> bool:
     # Mark messages as read
     try:
@@ -183,16 +244,22 @@ def process_data(client: Client, message: Message) -> bool:
                 if action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "CLEAN":
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+                    elif action_type == "watch":
+                        receive_watch_user(data)
 
                 elif action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "HIDE":
 
@@ -204,27 +271,35 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+                    elif action_type == "watch":
+                        receive_watch_user(data)
 
                 elif action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "LONG":
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+                    elif action_type == "watch":
+                        receive_watch_user(data)
 
                 elif action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "MANAGE":
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
                     elif action_type == "except":
                         receive_add_except(client, data)
 
@@ -243,6 +318,14 @@ def process_data(client: Client, message: Message) -> bool:
                         receive_remove_bad(data)
                     elif action_type == "except":
                         receive_remove_except(client, data)
+                    elif action_type == "score":
+                        receive_remove_score(data)
+                    elif action_type == "white":
+                        receive_remove_white(data)
+
+                elif action == "status":
+                    if action_type == "ask":
+                        receive_status_ask(client, data)
 
                 elif action == "update":
                     if action_type == "refresh":
@@ -252,41 +335,43 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+                    elif action_type == "watch":
+                        receive_watch_user(data)
 
                 elif action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "NOPORN":
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+                    elif action_type == "watch":
+                        receive_watch_user(data)
 
                 elif action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "NOSPAM":
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+                    elif action_type == "watch":
+                        receive_watch_user(data)
 
                 elif action == "update":
                     if action_type == "declare":
                         receive_declared_message(data)
-
-            elif sender == "RECHECK":
-
-                if action == "add":
-                    if action_type == "bad":
-                        receive_add_bad(data)
-
-                elif action == "update":
-                    if action_type == "declare":
-                        receive_declared_message(data)
+                    elif action_type == "score":
+                        receive_user_score(sender, data)
 
             elif sender == "REGEX":
 
@@ -294,19 +379,63 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "update":
                         receive_regex(client, message, data)
                     elif action_type == "count":
-                        if data == "ask":
-                            send_count(client)
+                        data == "ask" and send_count(client)
 
             elif sender == "USER":
 
                 if action == "add":
                     if action_type == "bad":
-                        receive_add_bad(data)
+                        receive_add_bad(sender, data)
+
+        elif "USER" in receivers:
+
+            if sender == "WARN":
+
+                if action == "help":
+                    if action_type == "delete":
+                        receive_kicked_user(client, data)
 
         return True
     except Exception as e:
         logger.warning(f"Process data error: {e}", exc_info=True)
     finally:
         glovar.locks["receive"].release()
+
+    return False
+
+
+@Client.on_deleted_messages()
+def deleted(_: Client, messages: List[Message]) -> bool:
+    # Deleted messages
+    glovar.locks["message"].acquire()
+
+    try:
+        group_list = set(glovar.admin_ids)
+
+        for message in messages:
+            if not message.chat:
+                continue
+
+            gid = message.chat.id
+            mid = message.message_id
+
+            if gid in glovar.left_group_ids:
+                continue
+
+            if gid not in group_list:
+                continue
+
+            if not init_group_id(gid):
+                continue
+
+            glovar.deleted_ids[gid].add(mid)
+
+        save("deleted_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Deleted error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
 
     return False

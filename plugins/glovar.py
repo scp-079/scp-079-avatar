@@ -28,6 +28,7 @@ from threading import Lock
 from typing import Dict, List, Set, Union
 
 from emoji import UNICODE_EMOJI
+from yaml import safe_load
 
 # Enable logging
 logging.basicConfig(
@@ -44,12 +45,12 @@ logger = logging.getLogger(__name__)
 avatar_id: int = 0
 captcha_id: int = 0
 clean_id: int = 0
+index_id: int = 0
 lang_id: int = 0
 long_id: int = 0
 noflood_id: int = 0
 noporn_id: int = 0
 nospam_id: int = 0
-recheck_id: int = 0
 tip_id: int = 0
 user_id: int = 0
 warn_id: int = 0
@@ -59,13 +60,8 @@ debug_channel_id: int = 0
 hide_channel_id: int = 0
 
 # [custom]
-aio: Union[bool, str] = ""
-backup: Union[bool, str] = ""
-date_reset: str = ""
 project_link: str = ""
 project_name: str = ""
-time_new: int = 0
-zh_cn: Union[bool, str] = ""
 
 # [emoji]
 emoji_ad_single: int = 0
@@ -76,7 +72,27 @@ emoji_wb_single: int = 0
 emoji_wb_total: int = 0
 
 # [encrypt]
+key: Union[bytes, str] = ""
 password: str = ""
+
+# [language]
+lang: str = ""
+normalize: Union[bool, str] = ""
+
+# [limit]
+limit_message: int = 0
+
+# [mode]
+aio: Union[bool, str] = ""
+backup: Union[bool, str] = ""
+
+# [time]
+date_reset: str = ""
+time_begin: int = 0
+time_check: int = 0
+time_end: int = 0
+time_new: int = 0
+time_old: int = 0
 
 try:
     config = RawConfigParser()
@@ -86,12 +102,12 @@ try:
     avatar_id = int(config["bots"].get("avatar_id", str(avatar_id)))
     captcha_id = int(config["bots"].get("captcha_id", str(captcha_id)))
     clean_id = int(config["bots"].get("clean_id", str(clean_id)))
+    index_id = int(config["bots"].get("index_id", str(index_id)))
     lang_id = int(config["bots"].get("lang_id", str(lang_id)))
     long_id = int(config["bots"].get("long_id", str(long_id)))
     noflood_id = int(config["bots"].get("noflood_id", str(noflood_id)))
     noporn_id = int(config["bots"].get("noporn_id", str(noporn_id)))
     nospam_id = int(config["bots"].get("nospam_id", str(nospam_id)))
-    recheck_id = int(config["bots"].get("recheck_id", str(recheck_id)))
     tip_id = int(config["bots"].get("tip_id", str(tip_id)))
     user_id = int(config["bots"].get("user_id", str(user_id)))
     warn_id = int(config["bots"].get("warn_id", str(warn_id)))
@@ -101,16 +117,8 @@ try:
     hide_channel_id = int(config["channels"].get("hide_channel_id", str(hide_channel_id)))
 
     # [custom]
-    aio = config["custom"].get("aio", aio)
-    aio = eval(aio)
-    backup = config["custom"].get("backup", backup)
-    backup = eval(backup)
-    date_reset = config["custom"].get("date_reset", date_reset)
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
-    time_new = int(config["custom"].get("time_new", str(time_new)))
-    zh_cn = config["custom"].get("zh_cn", zh_cn)
-    zh_cn = eval(zh_cn)
 
     # [emoji]
     emoji_ad_single = int(config["emoji"].get("emoji_ad_single", str(emoji_ad_single)))
@@ -121,63 +129,99 @@ try:
     emoji_wb_total = int(config["emoji"].get("emoji_wb_total", str(emoji_wb_total)))
 
     # [encrypt]
+    key = config["encrypt"].get("key", key)
+    key = key.encode("utf-8")
     password = config["encrypt"].get("password", password)
+
+    # [language]
+    lang = config["language"].get("lang", lang)
+    normalize = config["language"].get("normalize", normalize)
+    normalize = eval(normalize)
+
+    # [limit]
+    limit_message = int(config["limit"].get("limit_message", str(limit_message)))
+
+    # [mode]
+    aio = config["mode"].get("aio", aio)
+    aio = eval(aio)
+    backup = config["mode"].get("backup", backup)
+    backup = eval(backup)
+
+    # [time]
+    date_reset = config["time"].get("date_reset", date_reset)
+    time_begin = int(config["time"].get("time_begin", str(time_begin)))
+    time_check = int(config["time"].get("time_check", str(time_check)))
+    time_end = int(config["time"].get("time_end", str(time_end)))
+    time_new = int(config["time"].get("time_new", str(time_new)))
+    time_old = int(config["time"].get("time_old", str(time_old)))
 except Exception as e:
     logger.warning(f"Read data from config.ini error: {e}", exc_info=True)
 
 # Check
-if (captcha_id == 0
+if (False
+        # [bots]
         or avatar_id == 0
+        or captcha_id == 0
         or clean_id == 0
+        or index_id == 0
         or lang_id == 0
         or long_id == 0
         or noflood_id == 0
         or noporn_id == 0
         or nospam_id == 0
-        or recheck_id == 0
         or tip_id == 0
         or user_id == 0
         or warn_id == 0
+
+        # [channels]
         or debug_channel_id == 0
         or hide_channel_id == 0
-        or aio not in {False, True}
-        or backup not in {False, True}
-        or date_reset in {"", "[DATA EXPUNGED]"}
+
+        # [custom]
         or project_link in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
-        or time_new == 0
-        or zh_cn not in {False, True}
+
+        # [emoji]
         or emoji_ad_single == 0
         or emoji_ad_total == 0
         or emoji_many == 0
         or emoji_protect in {"", "[DATA EXPUNGED]"}
         or emoji_wb_single == 0
         or emoji_wb_total == 0
-        or password in {"", "[DATA EXPUNGED]"}):
+
+        # [encrypt]
+        or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
+        or password in {"", "[DATA EXPUNGED]"}
+
+        # [language]
+        or lang in {"", "[DATA EXPUNGED]"}
+        or normalize not in {False, True}
+
+        # [mode]
+        or aio not in {False, True}
+        or backup not in {False, True}
+
+        # [time]
+        or date_reset in {"", "[DATA EXPUNGED]"}
+        or time_new == 0
+        or time_old == 0):
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
 
-# Languages
-lang: Dict[str, str] = {
-    # Admin
-    "admin_project": (zh_cn and "项目管理员") or "Project Admin",
-    # Basic
-    "action": (zh_cn and "执行操作") or "Action",
-    "clear": (zh_cn and "清空数据") or "Clear",
-    "colon": (zh_cn and "：") or ": ",
-    "more": (zh_cn and "附加信息") or "Extra Info",
-    "reset": (zh_cn and "重置数据") or "Reset Data",
-    "rollback": (zh_cn and "数据回滚") or "Rollback",
-    # Group
-    "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists",
-    # Record
-    "project": (zh_cn and "项目编号") or "Project"
-}
+# Language Dictionary
+lang_dict: dict = {}
+
+try:
+    with open(f"languages/{lang}.yml", "r") as f:
+        lang_dict = safe_load(f)
+except Exception as e:
+    logger.critical(f"Reading language YAML file failed: {e}", exc_info=True)
+    raise SystemExit("Reading language YAML file failed")
 
 # Init
 
-bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
-                     noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, index_id, lang_id, long_id,
+                     noflood_id, noporn_id, nospam_id, tip_id, user_id, warn_id}
 
 declared_message_ids: Dict[int, Set[int]] = {}
 # declared_message_ids = {
@@ -186,7 +230,18 @@ declared_message_ids: Dict[int, Set[int]] = {}
 
 default_user_status: Dict[str, Union[str, Dict[int, int]]] = {
     "avatar": "",
-    "join": {}
+    "join": {},
+    "message": {},
+    "score": {
+        "captcha": 0.0,
+        "clean": 0.0,
+        "lang": 0.0,
+        "long": 0.0,
+        "noflood": 0.0,
+        "noporn": 0.0,
+        "nospam": 0.0,
+        "warn": 0.0
+    }
 }
 
 emoji_set: Set[str] = set(UNICODE_EMOJI)
@@ -195,12 +250,13 @@ locks: Dict[str, Lock] = {
     "admin": Lock(),
     "message": Lock(),
     "receive": Lock(),
-    "regex": Lock()
+    "regex": Lock(),
+    "white": Lock()
 }
 
 receivers: Dict[str, List[str]] = {
-    "white": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG", "MANAGE",
-              "NOFLOOD", "NOPORN", "NOSPAM", "TICKET", "TIP", "USER", "WARN", "WATCH"]
+    "white": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
+              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "USER", "WATCH"]
 }
 
 regex: Dict[str, bool] = {
@@ -220,7 +276,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.1.9"
+version: str = "0.2.0"
 
 # Load data from pickle
 
@@ -242,10 +298,17 @@ admin_ids: Dict[int, Set[int]] = {}
 # }
 
 bad_ids: Dict[str, Set[int]] = {
+    "channels": set(),
     "users": set()
 }
 # bad_ids = {
+#     "channels": {-10012345678},
 #     "users": {12345678}
+# }
+
+deleted_ids: Dict[int, Set[int]] = {}
+# deleted_ids = {
+#     -10012345678: {123}
 # }
 
 except_ids: Dict[str, Set[str]] = {
@@ -263,14 +326,51 @@ trust_ids: Dict[int, Set[int]] = {}
 #     -10012345678: {12345678}
 # }
 
-user_ids: Dict[int, Dict[str, Union[str, Dict[int, int]]]] = {}
+user_ids: Dict[int, Dict[str, Union[str, Dict[Union[int, str], Union[float, int, Set[int]]]]]] = {}
 # user_ids = {
 #     12345678: {
 #         "avatar": "",
 #         "join": {
 #             -10012345678: 1512345678
+#         },
+#         "message": {
+#             -10012345678: {123}
+#         },
+#         "score": {
+#             "captcha": 0.0,
+#             "clean": 0.0,
+#             "lang": 0.0,
+#             "long": 0.0,
+#             "noflood": 0.0,
+#             "noporn": 0.0,
+#             "nospam": 0.0,
+#             "warn": 0.0
 #         }
 #     }
+# }
+
+watch_ids: Dict[str, Dict[int, int]] = {
+    "ban": {},
+    "delete": {}
+}
+# watch_ids = {
+#     "ban": {
+#         12345678: 0
+#     },
+#     "delete": {
+#         12345678: 0
+#     }
+# }
+
+white_ids: Set[int] = set()
+# white_ids = {12345678}
+
+white_kicked_ids: Set[int] = set()
+# white_kicked_ids = {87654321}
+
+white_wait_ids: Dict[int, Set[int]] = {}
+# white_wait_ids = {
+#     12345678: {-10012345678}
 # }
 
 # Init word variables
@@ -283,7 +383,8 @@ for word_type in regex:
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "left_group_ids", "trust_ids", "user_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "deleted_ids", "except_ids", "left_group_ids", "trust_ids",
+                        "user_ids", "watch_ids", "white_ids", "white_kicked_ids", "white_wait_ids"]
 file_list += [f"{f}_words" for f in regex]
 
 for file in file_list:

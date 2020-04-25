@@ -1,0 +1,28 @@
+# English
+
+# Admin
+admin_project: Project Admin
+
+# Basic
+action: Action
+clear: Clear
+more: Extra Info
+reset: Reset Data
+rollback: Rollback
+
+# Group
+refresh: Refresh Admin Lists
+
+# Record
+project: Project
+
+# Status
+waiting_users: White List Waiting
+watching_users: White List watching
+white_users: White List
+
+# Symbol
+colon: ": "
+
+# Unit
+members: member(s)

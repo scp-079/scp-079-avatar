@@ -12,16 +12,21 @@ This bot is used to get newly joined member's profile photo.
 
 - Python 3.6 or higher
 - Debian 10: `sudo apt update && sudo apt install opencc -y`
-- pip: `pip install -r requirements.txt` or `pip install -U APScheduler emoji OpenCC Pillow pyAesCrypt pyrogram[fast]`
+- pip: `pip install -r requirements.txt` 
+- or pip: `pip install -U APScheduler emoji OpenCC Pillow pyAesCrypt pyrogram[fast] pyyaml`
 
 ## Files
 
+- languages
+   - `cmn-Hans.yml` : Mandarin Chinese (Simplified)
+   - `en.yml` : English
 - plugins
     - functions
         - `channel.py` : Functions about channel
         - `etc.py` : Miscellaneous
         - `file.py` : Save files
         - `filters.py` : Some filters
+        - `group.py` : Functions about group
         - `ids.py` : Modify id lists
         - `receive.py` : Receive data from hide channel
         - `telegram.py` : Some telegram functions
@@ -39,7 +44,14 @@ This bot is used to get newly joined member's profile photo.
 
 ## Contribute
 
-Welcome to make this project even better. You can submit merge requests, or report issues.
+Welcome to make this project even better.
+
+If you are willing to contribute, please [apply](https://t.me/SCP_079_TICKET_BOT) to join our private group on GitLab.
+
+## Translation
+
+- [Choose Language Tags](https://www.w3.org/International/questions/qa-choosing-language-tags)
+- [Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
 
 ## License
 

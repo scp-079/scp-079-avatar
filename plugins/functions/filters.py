@@ -25,7 +25,7 @@ from typing import Match, Optional, Union
 from pyrogram import CallbackQuery, Filters, Message, User
 
 from .. import glovar
-from .etc import get_text
+from .etc import get_now, get_text
 from .file import save
 from .ids import init_group_id
 
@@ -78,6 +78,18 @@ def is_class_d(_, message: Message) -> bool:
     try:
         if message.from_user:
             if is_class_d_user(message.from_user):
+                return True
+
+        if message.forward_from:
+            fid = message.forward_from.id
+
+            if fid in glovar.bad_ids["users"]:
+                return True
+
+        if message.forward_from_chat:
+            cid = message.forward_from_chat.id
+
+            if cid in glovar.bad_ids["channels"]:
                 return True
     except Exception as e:
         logger.warning(f"Is class d error: {e}", exc_info=True)
@@ -140,6 +152,22 @@ def is_hide_channel(_, message: Message) -> bool:
     return False
 
 
+def is_white_user(_, message: Message) -> bool:
+    # Check if the user is in the white list
+    try:
+        if not message.from_user:
+            return False
+
+        uid = message.from_user.id
+
+        if uid in glovar.white_ids:
+            return True
+    except Exception as e:
+        logger.warning(f"Is white user error: {e}", exc_info=True)
+
+    return False
+
+
 authorized_group = Filters.create(
     func=is_authorized_group,
     name="Authorized Group"
@@ -173,6 +201,11 @@ from_user = Filters.create(
 hide_channel = Filters.create(
     func=is_hide_channel,
     name="Hide Channel"
+)
+
+white_user = Filters.create(
+    func=is_white_user,
+    name="White User"
 )
 
 
@@ -347,6 +380,35 @@ def is_emoji(the_type: str, text: str, message: Message = None) -> bool:
     return False
 
 
+def is_high_score_user(user: Union[int, User], high: bool = True) -> float:
+    # Check if the message is sent by a high score user
+    try:
+        if is_class_e_user(user):
+            return 0.0
+
+        if isinstance(user, int):
+            uid = user
+        else:
+            uid = user.id
+
+        user_status = glovar.user_ids.get(uid, {})
+
+        if not user_status:
+            return 0.0
+
+        score = sum(user_status["score"].values())
+
+        if not high:
+            return score
+
+        if score >= 3.0:
+            return score
+    except Exception as e:
+        logger.warning(f"Is high score user error: {e}", exc_info=True)
+
+    return 0.0
+
+
 def is_nm_text(text: str) -> bool:
     # Check if the text is nm text
     try:
@@ -385,12 +447,15 @@ def is_regex_text(word_type: str, text: str, ocr: bool = False, again: bool = Fa
             result = re.search(word, text, re.I | re.S | re.M)
 
             # Count and return
-            if result:
-                count = eval(f"glovar.{word_type}_words").get(word, 0)
-                count += 1
-                eval(f"glovar.{word_type}_words")[word] = count
-                save(f"{word_type}_words")
-                return result
+            if not result:
+                continue
+
+            count = eval(f"glovar.{word_type}_words").get(word, 0)
+            count += 1
+            eval(f"glovar.{word_type}_words")[word] = count
+            save(f"{word_type}_words")
+
+            return result
 
         # Try again
         return is_regex_text(word_type, text, ocr, True)
@@ -398,3 +463,25 @@ def is_regex_text(word_type: str, text: str, ocr: bool = False, again: bool = Fa
         logger.warning(f"Is regex text error: {e}", exc_info=True)
 
     return result
+
+
+def is_watch_user(user: Union[int, User], the_type: str, now: int = 0) -> bool:
+    # Check if the message is sent by a watch user
+    try:
+        if is_class_e_user(user):
+            return False
+
+        if isinstance(user, int):
+            uid = user
+        else:
+            uid = user.id
+
+        now = now or get_now()
+        until = glovar.watch_ids[the_type].get(uid, 0)
+
+        if now < until:
+            return True
+    except Exception as e:
+        logger.warning(f"Is watch user error: {e}", exc_info=True)
+
+    return False

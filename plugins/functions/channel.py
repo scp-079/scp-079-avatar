@@ -53,7 +53,7 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
 
 
 def send_help(client: Client, cid: int, text: str) -> bool:
-    # Request HIDE to help to send a text in the channel
+    # Request HIDE to help to send a text in a chat
     try:
         file = data_to_file(text)
         share_data(
@@ -86,6 +86,16 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
     return False
 
 
+def share_data_failed() -> bool:
+    # Sharing data failed, use the exchange channel instead
+    try:
+        return True
+    except Exception as e:
+        logger.warning(f"Share data failed error: {e}", exc_info=True)
+
+    return False
+
+
 def share_data_thread(client: Client, receivers: List[str], action: str, action_type: str,
                       data: Union[bool, dict, int, str] = None, file: str = None, encrypt: bool = True) -> bool:
     # Share data thread
@@ -98,30 +108,8 @@ def share_data_thread(client: Client, receivers: List[str], action: str, action_
 
         channel_id = glovar.hide_channel_id
 
-        if file:
-            text = format_data(
-                sender=glovar.sender,
-                receivers=receivers,
-                action=action,
-                action_type=action_type,
-                data=data
-            )
-
-            if encrypt:
-                # Encrypt the file, save to the tmp directory
-                file_path = get_new_path()
-                crypt_file("encrypt", file, file_path)
-            else:
-                # Send directly
-                file_path = file
-
-            result = send_document(client, channel_id, file_path, None, text)
-
-            # Delete the tmp file
-            if result:
-                for f in {file, file_path}:
-                    f.startswith("tmp/") and thread(delete_file, (f,))
-        else:
+        # Plain text
+        if not file:
             text = format_data(
                 sender=glovar.sender,
                 receivers=receivers,
@@ -130,10 +118,34 @@ def share_data_thread(client: Client, receivers: List[str], action: str, action_
                 data=data
             )
             result = send_message(client, channel_id, text)
+            return (result is False) and share_data_failed()
 
-        # Sending failed due to channel issue
-        if result is False:
-            return True
+        # Share with a file
+        text = format_data(
+            sender=glovar.sender,
+            receivers=receivers,
+            action=action,
+            action_type=action_type,
+            data=data
+        )
+
+        if encrypt:
+            # Encrypt the file, save to the tmp directory
+            file_path = get_new_path()
+            crypt_file("encrypt", file, file_path)
+        else:
+            # Send directly
+            file_path = file
+
+        result = send_document(client, channel_id, file_path, None, text)
+
+        # Check result
+        if not result:
+            return (result is False) and share_data_failed()
+
+        # Delete the tmp file
+        for f in {file, file_path}:
+            f.startswith("tmp/") and thread(delete_file, (f,))
 
         return True
     except Exception as e:

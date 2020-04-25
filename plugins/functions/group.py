@@ -39,6 +39,9 @@ def leave_group(client: Client, gid: int) -> bool:
         glovar.admin_ids.pop(gid, set())
         save("admin_ids")
 
+        glovar.deleted_ids.pop(gid, set())
+        save("deleted_ids")
+
         glovar.trust_ids.pop(gid, set())
         save("trust_ids")
 
