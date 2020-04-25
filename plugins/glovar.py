@@ -143,6 +143,7 @@ try:
 
     # [mode]
     aio = config["mode"].get("aio", aio)
+    logger.warning(aio)
     aio = eval(aio)
     backup = config["mode"].get("backup", backup)
     backup = eval(backup)
