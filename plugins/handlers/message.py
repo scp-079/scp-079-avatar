@@ -43,7 +43,7 @@ from ..functions.telegram import get_user_full, read_history, read_mention
 logger = logging.getLogger(__name__)
 
 
-@Client.on_message(Filters.incoming & Filters.group & ~Filters.new_chat_members
+@Client.on_message(Filters.incoming & Filters.group & ~Filters.service
                    & authorized_group
                    & from_user & ~class_d & ~class_e & ~white_user
                    & ~declared_message)
