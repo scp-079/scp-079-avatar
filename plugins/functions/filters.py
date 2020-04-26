@@ -152,13 +152,22 @@ def is_hide_channel(_, message: Message) -> bool:
     return False
 
 
-def is_white_user(_, message: Message) -> bool:
+def is_white_user(_, personnel: Union[int, Message, User]) -> bool:
     # Check if the user is in the white list
     try:
-        if not message.from_user:
+        if isinstance(personnel, int):
+            uid = personnel
+        elif isinstance(personnel, Message) and not personnel.from_user:
+            return False
+        elif isinstance(personnel, Message):
+            uid = personnel.from_user.id
+        elif isinstance(personnel, User):
+            uid = personnel.id
+        else:
             return False
 
-        uid = message.from_user.id
+        if is_class_e_user(uid):
+            return True
 
         if uid in glovar.white_ids:
             return True

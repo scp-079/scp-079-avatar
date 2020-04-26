@@ -27,7 +27,7 @@ from .. import glovar
 from ..functions.channel import share_user_avatar
 from ..functions.etc import get_full_name, get_hour, get_now, get_text, t2t, thread
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import authorized_group, class_d, class_e, declared_message, from_user, hide_channel
+from ..functions.filters import authorized_group, class_d, declared_message, from_user, hide_channel
 from ..functions.filters import is_bio_text, is_class_d_user, is_declared_message, is_nm_text
 from ..functions.filters import is_watch_user, white_user
 from ..functions.ids import init_group_id, init_user_id
@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 @Client.on_message(Filters.incoming & Filters.group & ~Filters.service & ~Filters.bot
                    & authorized_group
-                   & from_user & ~class_d & ~class_e & ~white_user
+                   & from_user & ~class_d & ~white_user
                    & ~declared_message)
 def check(_: Client, message: Message) -> bool:
     # Check message sent from users
@@ -107,7 +107,7 @@ def check(_: Client, message: Message) -> bool:
 
 @Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members
                    & authorized_group
-                   & from_user & ~class_d & ~class_e & ~white_user
+                   & from_user & ~class_d & ~white_user
                    & ~declared_message)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
