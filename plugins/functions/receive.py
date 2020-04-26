@@ -68,15 +68,16 @@ def receive_add_except(client: Client, data: dict) -> bool:
         the_type = data["type"]
 
         # Receive except content
-        if the_type in {"long"}:
-            the_user = get_user(client, the_id)
+        if the_type not in {"long"}:
+            return True
 
-            if not the_user or not the_user.photo:
-                return True
+        the_user = get_user(client, the_id)
 
-            file_id = the_user.photo.big_file_id
-            glovar.except_ids["long"].add(file_id)
+        if not the_user or not the_user.photo:
+            return True
 
+        file_id = the_user.photo.big_file_id
+        glovar.except_ids["long"].add(file_id)
         save("except_ids")
 
         return True
@@ -353,15 +354,16 @@ def receive_remove_except(client: Client, data: dict) -> bool:
         the_type = data["type"]
 
         # Receive except content
-        if the_type in {"long"}:
-            the_user = get_user(client, the_id)
+        if the_type not in {"long"}:
+            return True
 
-            if not the_user or not the_user.photo:
-                return True
+        the_user = get_user(client, the_id)
 
-            file_id = the_user.photo.big_file_id
-            glovar.except_ids["long"].discard(file_id)
+        if not the_user or not the_user.photo:
+            return True
 
+        file_id = the_user.photo.big_file_id
+        glovar.except_ids["long"].discard(file_id)
         save("except_ids")
 
         return True
@@ -400,10 +402,11 @@ def receive_remove_watch(data: dict) -> bool:
         uid = data["id"]
         the_type = data["type"]
 
-        if the_type == "all":
-            glovar.watch_ids["ban"].pop(uid, 0)
-            glovar.watch_ids["delete"].pop(uid, 0)
+        if the_type != "all":
+            return True
 
+        glovar.watch_ids["ban"].pop(uid, 0)
+        glovar.watch_ids["delete"].pop(uid, 0)
         save("watch_ids")
 
         return True
