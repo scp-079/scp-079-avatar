@@ -135,6 +135,7 @@ def reset_data(client: Client) -> bool:
     # Reset user data every month
     glovar.locks["white"].acquire()
     glovar.locks["message"].acquire()
+
     try:
         glovar.bad_ids["users"] = set()
         save("bad_ids")

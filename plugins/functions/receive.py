@@ -376,6 +376,7 @@ def receive_remove_except(client: Client, data: dict) -> bool:
 def receive_remove_score(data: int) -> bool:
     # Receive remove user's score
     glovar.locks["message"].acquire()
+
     try:
         # Basic data
         uid = data
@@ -478,6 +479,7 @@ def receive_status_ask(client: Client, data: dict) -> bool:
     # Receive status request
     glovar.locks["white"].acquire()
     glovar.locks["message"].acquire()
+
     try:
         # Basic data
         aid = data["admin_id"]
