@@ -482,7 +482,7 @@ def receive_status_ask(client: Client, data: dict) -> bool:
         aid = data["admin_id"]
         mid = data["message_id"]
 
-        watching_users_count = len(glovar.user_ids)
+        watching_users_count = len([uid for uid in glovar.user_ids if glovar.user_ids[uid].get("message", {})])
         waiting_users_count = len(glovar.white_wait_ids)
         white_users_count = len(glovar.white_ids)
 
