@@ -27,7 +27,7 @@ from pyrogram.api.types import InputPeerUser, InputPeerChannel, UserFull
 from pyrogram.errors import ChatAdminRequired, ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait
 from pyrogram.errors import PeerIdInvalid, UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
-from .etc import t2t, wait_flood
+from .etc import wait_flood
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ def get_chat_member(client: Client, cid: int, uid: int) -> Union[bool, ChatMembe
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
-            except (PeerIdInvalid, UserNotParticipant):
+            except (ChannelInvalid, ChannelPrivate, PeerIdInvalid, UserNotParticipant):
                 result = False
     except Exception as e:
         logger.warning(f"Get chat member {uid} in {cid} error: {e}", exc_info=True)

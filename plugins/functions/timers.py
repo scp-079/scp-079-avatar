@@ -23,7 +23,7 @@ from time import sleep
 
 from PIL import Image
 from pyrogram import Client
-from pyrogram.errors import FloodWait
+from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 
 from .. import glovar
 from .channel import send_help, share_data, share_regex_count, share_user_avatar
@@ -357,6 +357,8 @@ def white_check(client: Client) -> bool:
                 except FloodWait as e:
                     flood_wait = True
                     wait_flood(e)
+                except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
+                    leave_group(client, gid)
                 except Exception as e:
                     logger.warning(f"Get members in {gid} error: {e}", exc_info=True)
 
