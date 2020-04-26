@@ -80,6 +80,7 @@ lang: str = ""
 normalize: Union[bool, str] = ""
 
 # [limit]
+limit_length: int = 0
 limit_message: int = 0
 
 # [mode]
@@ -139,6 +140,7 @@ try:
     normalize = eval(normalize)
 
     # [limit]
+    limit_length = int(config["limit"].get("limit_length", str(limit_length)))
     limit_message = int(config["limit"].get("limit_message", str(limit_message)))
 
     # [mode]
@@ -196,6 +198,10 @@ if (False
         # [language]
         or lang in {"", "[DATA EXPUNGED]"}
         or normalize not in {False, True}
+
+        # [limit]
+        or limit_length == 0
+        or limit_message == 0
 
         # [mode]
         or aio not in {False, True}

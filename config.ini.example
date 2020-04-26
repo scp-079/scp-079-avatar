@@ -51,6 +51,7 @@ lang = cmn-Hans
 normalize = True
 
 [limit]
+limit_length = [DATA EXPUNGED]
 limit_message = [DATA EXPUNGED]
 
 [mode]

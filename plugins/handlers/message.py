@@ -25,7 +25,7 @@ from typing import List
 
 from .. import glovar
 from ..functions.channel import share_user_avatar
-from ..functions.etc import get_full_name, get_hour, get_now, t2t, thread
+from ..functions.etc import get_full_name, get_hour, get_now, get_text, t2t, thread
 from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import authorized_group, class_d, class_e, declared_message, from_user, hide_channel
 from ..functions.filters import is_bio_text, is_class_d_user, is_declared_message, is_nm_text
@@ -71,6 +71,18 @@ def check(_: Client, message: Message) -> bool:
 
         # Check watch status
         if is_watch_user(message.from_user, "ban", now) or is_watch_user(message.from_user, "delete", now):
+            return True
+
+        # Check message text
+        message_text = get_text(message).strip()
+
+        if not message_text:
+            return True
+
+        if any(t in glovar.emoji_set for t in message_text):
+            return True
+
+        if len(message_text) < glovar.limit_length:
             return True
 
         # Init user id
