@@ -17,41 +17,40 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from functools import wraps
 
-from pyrogram import Client
+from pyrogram.errors import FloodWait
 
-from .. import glovar
-from .decorators import threaded
-from .file import save
-from .telegram import leave_chat
+from .etc import thread, wait_flood
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
-@threaded
-def leave_group(client: Client, gid: int) -> bool:
-    # Leave a group, clear it's data
-    result = False
+def retry(func):
+    # FloodWait retry
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = None
+        while True:
+            try:
+                result = func(*args, **kwargs)
+            except FloodWait as e:
+                wait_flood(e)
+            except Exception as e:
+                logger.warning(f"Retry error: {e}", exc_info=True)
+                break
+            else:
+                break
+        return result
+    return wrapper
 
-    try:
-        glovar.left_group_ids.add(gid)
-        save("left_group_ids")
-        leave_chat(client, gid, True)
 
-        glovar.admin_ids.pop(gid, set())
-        save("admin_ids")
-
-        glovar.deleted_ids.pop(gid, set())
-        save("deleted_ids")
-
-        glovar.trust_ids.pop(gid, set())
-        save("trust_ids")
-
-        glovar.declared_message_ids.pop(gid, set())
-
-        result = True
-    except Exception as e:
-        logger.warning(f"Leave group error: {e}", exc_info=True)
-
-    return result
+def threaded(daemon: bool = True):
+    # Run with thread
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return thread(func, args, kwargs, daemon)
+        return wrapper
+    return decorator

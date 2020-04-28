@@ -34,8 +34,10 @@ def get_user(client: Client, uid: Union[int, str]) -> Optional[User]:
     try:
         result = get_users(client, [uid])
 
-        if result:
-            result = result[0]
+        if not result:
+            return None
+
+        result = result[0]
     except Exception as e:
         logger.warning(f"Get user error: {e}", exc_info=True)
 

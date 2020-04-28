@@ -38,28 +38,36 @@ logger = logging.getLogger(__name__)
 
 def code(text: Any) -> str:
     # Get a code text
-    try:
-        text = str(text).strip()
+    result = ""
 
-        if text:
-            return f"<code>{escape(text)}</code>"
+    try:
+        result = str(text).strip()
+
+        if not result:
+            return ""
+
+        result = f"<code>{escape(result)}</code>"
     except Exception as e:
         logger.warning(f"Code error: {e}", exc_info=True)
 
-    return ""
+    return result
 
 
 def code_block(text: Any) -> str:
     # Get a code block text
-    try:
-        text = str(text).rstrip()
+    result = ""
 
-        if text:
-            return f"<pre>{escape(text)}</pre>"
+    try:
+        result = str(text).rstrip()
+
+        if not result:
+            return ""
+
+        result = f"<pre>{escape(result)}</pre>"
     except Exception as e:
         logger.warning(f"Code block error: {e}", exc_info=True)
 
-    return ""
+    return result
 
 
 def crypt_str(operation: str, text: str, key: bytes) -> str:
@@ -84,16 +92,16 @@ def crypt_str(operation: str, text: str, key: bytes) -> str:
 
 def delay(secs: int, target: Callable, args: list) -> bool:
     # Call a function with delay
+    result = False
+
     try:
         t = Timer(secs, target, args)
         t.daemon = True
-        t.start()
-
-        return True
+        result = t.start() or True
     except Exception as e:
         logger.warning(f"Delay error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def general_link(text: Union[int, str], link: str) -> str:
@@ -104,8 +112,10 @@ def general_link(text: Union[int, str], link: str) -> str:
         text = str(text).strip()
         link = link.strip()
 
-        if text and link:
-            result = f'<a href="{link}">{escape(text)}</a>'
+        if not (text and link):
+            return ""
+
+        result = f'<a href="{link}">{escape(text)}</a>'
     except Exception as e:
         logger.warning(f"General link error: {e}", exc_info=True)
 
@@ -114,23 +124,23 @@ def general_link(text: Union[int, str], link: str) -> str:
 
 def get_full_name(user: User, normal: bool = False, printable: bool = False) -> str:
     # Get user's full name
-    text = ""
+    result = ""
 
     try:
         if not user or user.is_deleted:
             return ""
 
-        text = user.first_name
+        result = user.first_name
 
         if user.last_name:
-            text += f" {user.last_name}"
+            result += f" {user.last_name}"
 
-        if text and normal:
-            text = t2t(text, normal, printable)
+        if result and normal:
+            result = t2t(result, normal, printable)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
 
-    return text
+    return result
 
 
 def get_hour() -> int:
@@ -171,23 +181,25 @@ def get_now() -> int:
 
 def get_text(message: Message, normal: bool = False, printable: bool = False) -> str:
     # Get message's text
-    text = ""
+    result = ""
 
     try:
         if not message:
             return ""
 
-        the_text = message.text or message.caption
+        message_text = message.text or message.caption
 
-        if the_text:
-            text += the_text
+        if message_text:
+            result += message_text
 
-        if text:
-            text = t2t(text, normal, printable)
+        if not result:
+            return ""
+
+        result = t2t(result, normal, printable)
     except Exception as e:
         logger.warning(f"Get text error: {e}", exc_info=True)
 
-    return text
+    return result
 
 
 def lang(text: str) -> str:
@@ -228,50 +240,52 @@ def random_str(i: int) -> str:
 
 def t2t(text: str, normal: bool, printable: bool) -> str:
     # Convert the string, text to text
+    result = text
+
     try:
-        if not text:
+        if not result:
             return ""
 
         if glovar.normalize and normal:
             for special in ["spc", "spe"]:
-                text = "".join(eval(f"glovar.{special}_dict").get(t, t) for t in text)
+                result = "".join(eval(f"glovar.{special}_dict").get(t, t) for t in result)
 
-            text = normalize("NFKC", text)
+            result = normalize("NFKC", result)
 
         if glovar.normalize and normal and "Hans" in glovar.lang:
-            text = convert(text, config="t2s.json")
+            result = convert(result, config="t2s.json")
         elif glovar.normalize and normal and "Hant" in glovar.lang:
-            text = convert(text, config="s2t.json")
+            result = convert(result, config="s2t.json")
 
         if printable:
-            text = "".join(t for t in text if t.isprintable() or t in {"\n", "\r", "\t"})
+            result = "".join(t for t in result if t.isprintable() or t in {"\n", "\r", "\t"})
     except Exception as e:
         logger.warning(f"T2T error: {e}", exc_info=True)
 
-    return text
+    return result
 
 
-def thread(target: Callable, args: tuple, daemon: bool = True) -> bool:
+def thread(target: Callable, args: tuple, kwargs: dict = None, daemon: bool = True) -> bool:
     # Call a function using thread
-    try:
-        t = Thread(target=target, args=args)
-        t.daemon = daemon
-        t.start()
+    result = False
 
-        return True
+    try:
+        t = Thread(target=target, args=args, kwargs=kwargs, daemon=daemon)
+        t.daemon = daemon
+        result = t.start() or True
     except Exception as e:
         logger.warning(f"Thread error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def wait_flood(e: FloodWait) -> bool:
     # Wait flood secs
-    try:
-        sleep(e.x + uniform(0.5, 1.0))
+    result = False
 
-        return True
+    try:
+        result = sleep(e.x + uniform(0.5, 1.0)) or True
     except Exception as e:
         logger.warning(f"Wait flood error: {e}", exc_info=True)
 
-    return False
+    return result

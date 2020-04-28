@@ -23,6 +23,7 @@ This bot is used to get newly joined member's profile photo.
 - plugins
     - functions
         - `channel.py` : Functions about channel
+        - `decorators.py` : Some decorators
         - `etc.py` : Miscellaneous
         - `file.py` : Save files
         - `filters.py` : Some filters

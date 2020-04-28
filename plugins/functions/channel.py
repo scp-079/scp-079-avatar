@@ -24,7 +24,8 @@ from PIL.Image import Image
 from pyrogram import Client
 
 from .. import glovar
-from .etc import code_block, thread
+from .decorators import threaded
+from .etc import code_block
 from .file import crypt_file, data_to_file, delete_file, get_new_path
 from .telegram import send_document, send_message
 
@@ -35,7 +36,7 @@ logger = logging.getLogger(__name__)
 def format_data(sender: str, receivers: List[str], action: str, action_type: str,
                 data: Union[bool, dict, int, str] = None) -> str:
     # Get exchange string
-    text = ""
+    result = ""
 
     try:
         data = {
@@ -45,18 +46,21 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
             "type": action_type,
             "data": data
         }
-        text = code_block(dumps(data, indent=4))
+        result = code_block(dumps(data, indent=4))
     except Exception as e:
         logger.warning(f"Format data error: {e}", exc_info=True)
 
-    return text
+    return result
 
 
+@threaded()
 def send_help(client: Client, cid: int, text: str) -> bool:
     # Request HIDE to help to send a text in a chat
+    result = False
+
     try:
         file = data_to_file(text)
-        share_data(
+        result = share_data(
             client=client,
             receivers=["HIDE"],
             action="help",
@@ -67,44 +71,21 @@ def send_help(client: Client, cid: int, text: str) -> bool:
     except Exception as e:
         logger.warning(f"Send help error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
+@threaded()
 def share_data(client: Client, receivers: List[str], action: str, action_type: str,
                data: Union[bool, dict, int, str] = None, file: str = None, encrypt: bool = True) -> bool:
     # Use this function to share data in the channel
-    try:
-        thread(
-            target=share_data_thread,
-            args=(client, receivers, action, action_type, data, file, encrypt)
-        )
+    result = False
 
-        return True
-    except Exception as e:
-        logger.warning(f"Share data error: {e}", exc_info=True)
-
-    return False
-
-
-def share_data_failed() -> bool:
-    # Sharing data failed, use the exchange channel instead
-    try:
-        return True
-    except Exception as e:
-        logger.warning(f"Share data failed error: {e}", exc_info=True)
-
-    return False
-
-
-def share_data_thread(client: Client, receivers: List[str], action: str, action_type: str,
-                      data: Union[bool, dict, int, str] = None, file: str = None, encrypt: bool = True) -> bool:
-    # Share data thread
     try:
         if glovar.sender in receivers:
             receivers.remove(glovar.sender)
 
         if not receivers:
-            return True
+            return False
 
         channel_id = glovar.hide_channel_id
 
@@ -145,26 +126,40 @@ def share_data_thread(client: Client, receivers: List[str], action: str, action_
 
         # Delete the tmp file
         for f in {file, file_path}:
-            f.startswith("tmp/") and thread(delete_file, (f,))
+            f.startswith("tmp/") and delete_file(f)
 
-        return True
+        result = bool(result)
     except Exception as e:
-        logger.warning(f"Share data thread error: {e}", exc_info=True)
+        logger.warning(f"Share data error: {e}", exc_info=True)
 
-    return False
+    return result
+
+
+def share_data_failed() -> bool:
+    # Sharing data failed, use the exchange channel instead
+    result = False
+
+    try:
+        result = True
+    except Exception as e:
+        logger.warning(f"Share data failed error: {e}", exc_info=True)
+
+    return result
 
 
 def share_regex_count(client: Client, word_type: str) -> bool:
     # Use this function to share regex count to REGEX
+    result = False
+
     try:
         if not glovar.regex.get(word_type):
-            return True
+            return False
 
         if not eval(f"glovar.{word_type}_words"):
-            return True
+            return False
 
         file = data_to_file(eval(f"glovar.{word_type}_words"))
-        share_data(
+        result = share_data(
             client=client,
             receivers=["REGEX"],
             action="regex",
@@ -172,19 +167,19 @@ def share_regex_count(client: Client, word_type: str) -> bool:
             data=f"{word_type}_words",
             file=file
         )
-
-        return True
     except Exception as e:
         logger.warning(f"Share regex update error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def share_user_avatar(client: Client, gid: int, uid: int, mid: int, image: Image) -> bool:
     # Share user's avatar to NOSPAM
+    result = False
+
     try:
         file = data_to_file(image)
-        share_data(
+        result = share_data(
             client=client,
             receivers=["NOSPAM"],
             action="update",
@@ -196,7 +191,7 @@ def share_user_avatar(client: Client, gid: int, uid: int, mid: int, image: Image
             },
             file=file
         )
-
-        return True
     except Exception as e:
         logger.warning(f"Share user avatar error: {e}", exc_info=True)
+
+    return result

@@ -22,12 +22,13 @@ from copy import deepcopy
 from string import ascii_lowercase
 from typing import Match, Optional, Union
 
-from pyrogram import CallbackQuery, Filters, Message, User
+from pyrogram import CallbackQuery, Client, Filters, Message, User
 
 from .. import glovar
-from .etc import get_now, get_text
+from .etc import get_full_name, get_now, get_text, t2t
 from .file import save
 from .ids import init_group_id
+from .telegram import get_user_full
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -35,6 +36,8 @@ logger = logging.getLogger(__name__)
 
 def is_authorized_group(_, update: Union[CallbackQuery, Message]) -> bool:
     # Check if the message is send from the authorized group
+    result = False
+
     try:
         if isinstance(update, CallbackQuery):
             message = update.message
@@ -51,11 +54,13 @@ def is_authorized_group(_, update: Union[CallbackQuery, Message]) -> bool:
     except Exception as e:
         logger.warning(f"Is authorized group error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_class_c(_, message: Message) -> bool:
     # Check if the message is sent from Class C personnel
+    result = False
+
     try:
         if not message.from_user:
             return False
@@ -70,11 +75,13 @@ def is_class_c(_, message: Message) -> bool:
     except Exception as e:
         logger.warning(f"Is class c error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_class_d(_, message: Message) -> bool:
     # Check if the message is Class D object
+    result = False
+
     try:
         if message.from_user:
             if is_class_d_user(message.from_user):
@@ -86,58 +93,69 @@ def is_class_d(_, message: Message) -> bool:
             if fid in glovar.bad_ids["users"]:
                 return True
 
-        if message.forward_from_chat:
-            cid = message.forward_from_chat.id
+        if not message.forward_from_chat:
+            return False
 
-            if cid in glovar.bad_ids["channels"]:
-                return True
+        cid = message.forward_from_chat.id
+
+        if cid in glovar.bad_ids["channels"]:
+            return True
     except Exception as e:
         logger.warning(f"Is class d error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
-def is_class_e(_, message: Message, test: bool = False) -> bool:
-    # Check if the message is Class E object
+def is_class_e(_, message: Message) -> bool:
+    # Check if the message is Class E personnel
+    result = False
+
     try:
-        if message.from_user and not test:
-            if is_class_e_user(message.from_user):
-                return True
+        if not message.from_user:
+            return False
+
+        if is_class_e_user(message.from_user):
+            return True
     except Exception as e:
         logger.warning(f"Is class e error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_declared_message(_, message: Message) -> bool:
     # Check if the message is declared by other bots
+    result = False
+
     try:
         if not message.chat:
             return False
 
         gid = message.chat.id
         mid = message.message_id
-
-        return is_declared_message_id(gid, mid)
+        result = is_declared_message_id(gid, mid)
     except Exception as e:
         logger.warning(f"Is declared message error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_from_user(_, message: Message) -> bool:
     # Check if the message is sent from a user
+    result = False
+
     try:
         if message.from_user and message.from_user.id != 777000:
             return True
     except Exception as e:
         logger.warning(f"Is from user error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_hide_channel(_, message: Message) -> bool:
     # Check if the message is sent from the hide channel
+    result = False
+
     try:
         if not message.chat:
             return False
@@ -149,11 +167,13 @@ def is_hide_channel(_, message: Message) -> bool:
     except Exception as e:
         logger.warning(f"Is hide channel error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_white_user(_, personnel: Union[int, Message, User]) -> bool:
     # Check if the user is in the white list
+    result = False
+
     try:
         if isinstance(personnel, int):
             uid = personnel
@@ -174,7 +194,7 @@ def is_white_user(_, personnel: Union[int, Message, User]) -> bool:
     except Exception as e:
         logger.warning(f"Is white user error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 authorized_group = Filters.create(
@@ -218,23 +238,67 @@ white_user = Filters.create(
 )
 
 
+def detect_nospam(client: Client, gid: int, user: User) -> bool:
+    # NOSPAM detection:
+    result = False
+
+    try:
+        # Basic data
+        uid = user.id
+
+        # Check if NOSPAM exist
+        if glovar.nospam_id not in glovar.admin_ids[gid]:
+            return False
+
+        # Check name
+        name = get_full_name(user, True, True)
+
+        if name and is_nm_text(name):
+            return True
+
+        # Check bio
+        user = get_user_full(client, uid)
+
+        if not user or not user.about:
+            bio = ""
+        else:
+            bio = t2t(user.about, True, True)
+
+        if bio and is_bio_text(bio):
+            return True
+    except Exception as e:
+        logger.warning(f"Detect nospam error: {e}", exc_info=True)
+
+    return result
+
+
 def is_ad_text(text: str, ocr: bool, matched: str = "") -> str:
     # Check if the text is ad text
+    result = ""
+
     try:
         if not text:
             return ""
 
         for c in ascii_lowercase:
-            if c != matched and is_regex_text(f"ad{c}", text, ocr):
-                return c
+            if c == matched:
+                continue
+
+            if not is_regex_text(f"ad{c}", text, ocr):
+                continue
+
+            result = c
+            break
     except Exception as e:
         logger.warning(f"Is ad text error: {e}", exc_info=True)
 
-    return ""
+    return result
 
 
 def is_ban_text(text: str, ocr: bool, message: Message = None) -> bool:
     # Check if the text is ban text
+    result = False
+
     try:
         if is_regex_text("ban", text, ocr):
             return True
@@ -263,17 +327,21 @@ def is_ban_text(text: str, ocr: bool, message: Message = None) -> bool:
             return True
 
         # ad_ + ad_
-        if ad:
-            ad = is_ad_text(text, ocr, ad)
-            return bool(ad)
+        if not ad:
+            return False
+
+        ad = is_ad_text(text, ocr, ad)
+        result = bool(ad)
     except Exception as e:
         logger.warning(f"Is ban text error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_bio_text(text: str) -> bool:
     # Check if the text is bio text
+    result = False
+
     try:
         if (is_regex_text("bio", text)
                 or is_ban_text(text, False)):
@@ -281,11 +349,13 @@ def is_bio_text(text: str) -> bool:
     except Exception as e:
         logger.warning(f"Is bio text error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_class_d_user(user: Union[int, User]) -> bool:
     # Check if the user is a Class D personnel
+    result = False
+
     try:
         if isinstance(user, int):
             uid = user
@@ -297,11 +367,13 @@ def is_class_d_user(user: Union[int, User]) -> bool:
     except Exception as e:
         logger.warning(f"Is class d user error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_class_e_user(user: Union[int, User]) -> bool:
     # Check if the user is a Class E personnel
+    result = False
+
     try:
         if isinstance(user, int):
             uid = user
@@ -312,18 +384,17 @@ def is_class_e_user(user: Union[int, User]) -> bool:
             return True
 
         group_list = list(glovar.trust_ids)
-
-        for gid in group_list:
-            if uid in glovar.trust_ids.get(gid, set()):
-                return True
+        result = any(uid in glovar.trust_ids.get(gid, set()) for gid in group_list)
     except Exception as e:
         logger.warning(f"Is class e user error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_con_text(text: str, ocr: bool) -> bool:
     # Check if the text is con text
+    result = False
+
     try:
         if (is_regex_text("con", text, ocr)
                 or is_regex_text("iml", text, ocr)
@@ -332,22 +403,25 @@ def is_con_text(text: str, ocr: bool) -> bool:
     except Exception as e:
         logger.warning(f"Is con text error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_declared_message_id(gid: int, mid: int) -> bool:
     # Check if the message's ID is declared by other bots
+    result = False
+
     try:
-        if mid in glovar.declared_message_ids.get(gid, set()):
-            return True
+        result = mid in glovar.declared_message_ids.get(gid, set())
     except Exception as e:
         logger.warning(f"Is declared message id error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_emoji(the_type: str, text: str, message: Message = None) -> bool:
     # Check the emoji type
+    result = False
+
     try:
         if message:
             text = get_text(message)
@@ -386,11 +460,13 @@ def is_emoji(the_type: str, text: str, message: Message = None) -> bool:
     except Exception as e:
         logger.warning(f"Is emoji error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_high_score_user(user: Union[int, User], high: bool = True) -> float:
     # Check if the message is sent by a high score user
+    result = 0.0
+
     try:
         if is_class_e_user(user):
             return 0.0
@@ -415,11 +491,13 @@ def is_high_score_user(user: Union[int, User], high: bool = True) -> float:
     except Exception as e:
         logger.warning(f"Is high score user error: {e}", exc_info=True)
 
-    return 0.0
+    return result
 
 
 def is_nm_text(text: str) -> bool:
     # Check if the text is nm text
+    result = False
+
     try:
         if (is_regex_text("nm", text)
                 or is_regex_text("bio", text)
@@ -428,7 +506,7 @@ def is_nm_text(text: str) -> bool:
     except Exception as e:
         logger.warning(f"Is nm text error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_regex_text(word_type: str, text: str, ocr: bool = False, again: bool = False) -> Optional[Match]:
@@ -476,6 +554,8 @@ def is_regex_text(word_type: str, text: str, ocr: bool = False, again: bool = Fa
 
 def is_watch_user(user: Union[int, User], the_type: str, now: int = 0) -> bool:
     # Check if the message is sent by a watch user
+    result = False
+
     try:
         if is_class_e_user(user):
             return False
@@ -487,10 +567,8 @@ def is_watch_user(user: Union[int, User], the_type: str, now: int = 0) -> bool:
 
         now = now or get_now()
         until = glovar.watch_ids[the_type].get(uid, 0)
-
-        if now < until:
-            return True
+        result = now < until
     except Exception as e:
         logger.warning(f"Is watch user error: {e}", exc_info=True)
 
-    return False
+    return result

@@ -27,7 +27,8 @@ from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInv
 
 from .. import glovar
 from .channel import send_help, share_data, share_regex_count, share_user_avatar
-from .etc import code, delay, general_link, get_now, lang, thread, wait_flood
+from .decorators import retry, threaded
+from .etc import code, delay, general_link, get_now, lang
 from .file import data_to_file, delete_file, get_downloaded_path, save
 from .filters import is_class_d_user, is_high_score_user, is_watch_user
 from .group import leave_group
@@ -38,8 +39,11 @@ from .telegram import get_admins, get_chat_member, get_members, update_online_st
 logger = logging.getLogger(__name__)
 
 
+@threaded()
 def backup_files(client: Client) -> bool:
     # Backup data files to BACKUP
+    result = False
+
     try:
         for file in glovar.file_list:
             # Check
@@ -57,28 +61,31 @@ def backup_files(client: Client) -> bool:
             )
             sleep(5)
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Backup error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def interval_hour_01(client: Client) -> bool:
     # Execute every hour
+    result = False
+
     try:
         # Update online status
         delay(randint(0, 600), update_online_status, [client])
-
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Interval hour 01 error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def interval_min_15(client: Client) -> bool:
     # Execute every 15 minutes
+    result = False
+
     try:
         # Basic data
         now = get_now()
@@ -122,17 +129,19 @@ def interval_min_15(client: Client) -> bool:
             gid = sorted(g_list, key=lambda g: user_ids[uid]["join"][g], reverse=True)[0]
             image = Image.open(image_path)
             share_user_avatar(client, gid, uid, 0, image)
-            thread(delete_file, (image_path,))
+            delete_file(image_path)
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Interval min 15 error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def reset_data(client: Client) -> bool:
     # Reset user data every month
+    result = False
+
     glovar.locks["white"].acquire()
     glovar.locks["message"].acquire()
 
@@ -161,20 +170,22 @@ def reset_data(client: Client) -> bool:
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('reset'))}\n")
-        thread(send_help, (client, glovar.debug_channel_id, text))
+        send_help(client, glovar.debug_channel_id, text)
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Reset data error: {e}", exc_info=True)
     finally:
         glovar.locks["message"].release()
         glovar.locks["white"].release()
 
-    return False
+    return result
 
 
 def send_count(client: Client) -> bool:
     # Send regex count to REGEX
+    result = False
+
     glovar.locks["regex"].acquire()
 
     try:
@@ -187,17 +198,19 @@ def send_count(client: Client) -> bool:
 
             save(f"{word_type}_words")
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Send count error: {e}", exc_info=True)
     finally:
         glovar.locks["regex"].release()
 
-    return False
+    return result
 
 
 def update_admins(client: Client) -> bool:
     # Update admin list every day
+    result = False
+
     glovar.locks["admin"].acquire()
 
     try:
@@ -229,19 +242,21 @@ def update_admins(client: Client) -> bool:
                                          or admin.user.id in glovar.bot_ids)}
             save("trust_ids")
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Update admin error: {e}", exc_info=True)
     finally:
         glovar.locks["admin"].release()
 
-    return False
+    return result
 
 
 def update_status(client: Client, the_type: str) -> bool:
     # Update running status to BACKUP
+    result = False
+
     try:
-        share_data(
+        result = share_data(
             client=client,
             receivers=["BACKUP"],
             action="backup",
@@ -251,16 +266,16 @@ def update_status(client: Client, the_type: str) -> bool:
                 "backup": glovar.backup
             }
         )
-
-        return True
     except Exception as e:
         logger.warning(f"Update status error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def white_check(client: Client) -> bool:
     # White list check
+    result = False
+
     glovar.locks["white"].acquire()
 
     try:
@@ -310,63 +325,71 @@ def white_check(client: Client) -> bool:
             user_ids = deepcopy(glovar.user_ids)
 
         for gid in list(glovar.admin_ids):
-            flood_wait = True
-            while flood_wait:
-                flood_wait = False
-                try:
-                    members = get_members(client, gid, "all")
-
-                    if not members:
-                        continue
-
-                    valid_members = filter(lambda m: m and m.user and user_ids.get(m.user.id, {}), members)
-
-                    for member in valid_members:
-                        if member.status != "member":
-                            continue
-
-                        uid = member.user.id
-                        joined = member.joined_date
-
-                        if now - joined < glovar.time_old:
-                            continue
-
-                        if is_class_d_user(uid):
-                            continue
-
-                        if is_high_score_user(uid, False) > 1.2:
-                            continue
-
-                        if is_watch_user(uid, "delete", now) or is_watch_user(uid, "ban", now):
-                            continue
-
-                        if uid in glovar.white_kicked_ids:
-                            continue
-
-                        if glovar.white_wait_ids.get(uid, set()):
-                            continue
-
-                        if not any(len(messages) > glovar.limit_message
-                                   for messages in [{mid for mid in user_ids[uid]["message"][group_id]
-                                                     if mid not in glovar.deleted_ids[group_id]}
-                                                    for group_id in list(user_ids[uid]["message"])]):
-                            continue
-
-                        glovar.user_ids[uid]["message"] = {}
-                        glovar.white_wait_ids[uid] = set(user_ids[uid]["message"])
-                except FloodWait as e:
-                    flood_wait = True
-                    wait_flood(e)
-                except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
-                    leave_group(client, gid)
-                except Exception as e:
-                    logger.warning(f"Get members in {gid} error: {e}", exc_info=True)
+            white_wait(client, gid, user_ids, now)
 
         save("user_ids")
         save("white_wait_ids")
+
+        result = True
     except Exception as e:
         logger.warning(f"White check error: {e}", exc_info=True)
     finally:
         glovar.locks["white"].release()
 
-    return False
+    return result
+
+
+@retry
+def white_wait(client: Client, gid: int, user_ids: dict, now: int) -> bool:
+    # Get white wait ids
+    result = False
+
+    try:
+        members = get_members(client, gid, "all")
+
+        if not members:
+            return False
+
+        valid_members = filter(lambda m: m and m.user and user_ids.get(m.user.id, {}), members)
+
+        for member in valid_members:
+            if member.status != "member":
+                continue
+
+            uid = member.user.id
+            joined = member.joined_date
+
+            if now - joined < glovar.time_old:
+                continue
+
+            if is_class_d_user(uid):
+                continue
+
+            if is_high_score_user(uid, False) > 1.2:
+                continue
+
+            if is_watch_user(uid, "delete", now) or is_watch_user(uid, "ban", now):
+                continue
+
+            if uid in glovar.white_kicked_ids:
+                continue
+
+            if glovar.white_wait_ids.get(uid, set()):
+                continue
+
+            if not any(len(messages) > glovar.limit_message
+                       for messages in [{mid for mid in user_ids[uid]["message"][group_id]
+                                         if mid not in glovar.deleted_ids[group_id]}
+                                        for group_id in list(user_ids[uid]["message"])]):
+                continue
+
+            glovar.user_ids[uid]["message"] = {}
+            glovar.white_wait_ids[uid] = set(user_ids[uid]["message"])
+    except FloodWait as e:
+        raise e
+    except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
+        leave_group(client, gid)
+    except Exception as e:
+        logger.warning(f"White wait error: {e}", exc_info=True)
+
+    return result

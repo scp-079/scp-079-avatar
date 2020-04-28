@@ -25,11 +25,11 @@ from typing import List
 
 from .. import glovar
 from ..functions.channel import share_user_avatar
-from ..functions.etc import get_full_name, get_hour, get_now, get_text, t2t, thread
+from ..functions.decorators import threaded
+from ..functions.etc import get_hour, get_now, get_text
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import authorized_group, class_d, declared_message, from_user, hide_channel
-from ..functions.filters import is_bio_text, is_class_d_user, is_declared_message, is_nm_text
-from ..functions.filters import is_watch_user, white_user
+from ..functions.filters import authorized_group, class_d, declared_message, detect_nospam, from_user, hide_channel
+from ..functions.filters import is_class_d_user, is_declared_message, is_watch_user, white_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_kicked_user, receive_refresh, receive_regex, receive_remove_bad
@@ -37,7 +37,7 @@ from ..functions.receive import receive_remove_except, receive_remove_score, rec
 from ..functions.receive import receive_status_ask, receive_user_score, receive_version_ask, receive_watch_user
 from ..functions.receive import receive_text_data
 from ..functions.timers import backup_files, send_count
-from ..functions.telegram import get_user_full, read_history, read_mention
+from ..functions.telegram import read_history, read_mention
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -49,6 +49,8 @@ logger = logging.getLogger(__name__)
                    & ~declared_message)
 def check(_: Client, message: Message) -> bool:
     # Check message sent from users
+    result = False
+
     glovar.locks["message"].acquire()
 
     try:
@@ -63,31 +65,28 @@ def check(_: Client, message: Message) -> bool:
         if (hour < glovar.time_begin < glovar.time_end
                 or glovar.time_begin < glovar.time_end < hour
                 or glovar.time_end < hour < glovar.time_begin):
-            return True
+            return False
 
         # Check white wait status
         if glovar.white_wait_ids.get(uid, set()):
-            return True
+            return False
 
         # Check watch status
         if is_watch_user(message.from_user, "ban", now) or is_watch_user(message.from_user, "delete", now):
-            return True
+            return False
 
         # Check message text
-        message_text = get_text(message).strip()
+        message_text = "".join(t for t in get_text(message) if t not in glovar.emoji_set and t.isprintable()).strip()
 
         if not message_text:
-            return True
-
-        if any(t in glovar.emoji_set for t in message_text):
-            return True
+            return False
 
         if len(message_text) < glovar.limit_length:
-            return True
+            return False
 
         # Init user id
         if not init_user_id(uid):
-            return True
+            return False
 
         # Record message id
         if not glovar.user_ids[uid]["message"].get(gid, set()):
@@ -96,13 +95,13 @@ def check(_: Client, message: Message) -> bool:
         glovar.user_ids[uid]["message"][gid].add(mid)
         save("user_ids")
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
     finally:
         glovar.locks["message"].release()
 
-    return False
+    return result
 
 
 @Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members
@@ -111,6 +110,8 @@ def check(_: Client, message: Message) -> bool:
                    & ~declared_message)
 def check_join(client: Client, message: Message) -> bool:
     # Check new joined user
+    result = False
+
     glovar.locks["message"].acquire()
 
     try:
@@ -132,23 +133,8 @@ def check_join(client: Client, message: Message) -> bool:
                 continue
 
             # Work with NOSPAM
-            if glovar.nospam_id in glovar.admin_ids[gid]:
-                # Check name
-                name = get_full_name(new, True, True)
-
-                if name and is_nm_text(name):
-                    continue
-
-                # Check bio
-                user = get_user_full(client, uid)
-
-                if not user or not user.about:
-                    bio = ""
-                else:
-                    bio = t2t(user.about, True, True)
-
-                if bio and is_bio_text(bio):
-                    continue
+            if detect_nospam(client, gid, new):
+                continue
 
             # Check declare status
             if is_declared_message(None, message):
@@ -182,62 +168,76 @@ def check_join(client: Client, message: Message) -> bool:
 
             image = Image.open(image_path)
             share_user_avatar(client, gid, uid, mid, image)
-            thread(delete_file, (image_path,))
+            delete_file(image_path)
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Check join error: {e}", exc_info=True)
     finally:
         glovar.locks["message"].release()
 
-    return False
+    return result
 
 
 @Client.on_message(Filters.incoming & Filters.channel & Filters.mentioned, group=1)
+@threaded()
 def mark_mention(client: Client, message: Message) -> bool:
     # Mark mention as read
+    result = False
+
     try:
         if not message.chat:
-            return True
+            return False
 
         cid = message.chat.id
-        thread(read_mention, (client, cid))
 
-        return True
+        if cid != glovar.hide_channel_id:
+            return False
+
+        read_mention(client, cid)
+        result = True
     except Exception as e:
         logger.warning(f"Mark mention error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 @Client.on_message(Filters.incoming & Filters.channel, group=2)
+@threaded()
 def mark_message(client: Client, message: Message) -> bool:
     # Mark messages as read
+    result = False
+
     try:
         if not message.chat:
-            return True
+            return False
 
         cid = message.chat.id
-        thread(read_history, (client, cid))
 
-        return True
+        if cid != glovar.hide_channel_id:
+            return False
+
+        read_history(client, cid)
+        result = True
     except Exception as e:
         logger.warning(f"Mark message error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 @Client.on_message((Filters.incoming or glovar.aio) & Filters.channel
                    & hide_channel)
 def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel
+    result = False
+
     glovar.locks["receive"].acquire()
 
     try:
         data = receive_text_data(message)
 
         if not data:
-            return True
+            return False
 
         sender = data["from"]
         receivers = data["to"]
@@ -318,7 +318,7 @@ def process_data(client: Client, message: Message) -> bool:
                 elif action == "backup":
 
                     if action_type == "now":
-                        thread(backup_files, (client,))
+                        backup_files(client)
                     elif action_type == "rollback":
                         receive_rollback(client, message, data)
 
@@ -407,18 +407,20 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "delete":
                         receive_kicked_user(client, data)
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Process data error: {e}", exc_info=True)
     finally:
         glovar.locks["receive"].release()
 
-    return False
+    return result
 
 
 @Client.on_deleted_messages()
 def deleted(_: Client, messages: List[Message]) -> bool:
     # Deleted messages
+    result = False
+
     glovar.locks["message"].acquire()
 
     try:
@@ -444,10 +446,10 @@ def deleted(_: Client, messages: List[Message]) -> bool:
 
         save("deleted_ids")
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Deleted error: {e}", exc_info=True)
     finally:
         glovar.locks["message"].release()
 
-    return False
+    return result
