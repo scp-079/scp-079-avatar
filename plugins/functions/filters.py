@@ -19,10 +19,11 @@
 import logging
 import re
 from copy import deepcopy
-from string import ascii_lowercase
+from string import ascii_lowercase, punctuation
 from typing import Match, Optional, Union
 
 from pyrogram import CallbackQuery, Client, Filters, Message, User
+from zhon.hanzi import punctuation as punctuation_zh
 
 from .. import glovar
 from .etc import get_full_name, get_now, get_text, t2t
@@ -570,5 +571,29 @@ def is_watch_user(user: Union[int, User], the_type: str, now: int = 0) -> bool:
         result = now < until
     except Exception as e:
         logger.warning(f"Is watch user error: {e}", exc_info=True)
+
+    return result
+
+
+def is_valid_character(c: str) -> bool:
+    # Check if the character is valid
+    result = False
+
+    try:
+        if not c.isprintable():
+            return False
+
+        if c in punctuation:
+            return False
+
+        if c in punctuation_zh:
+            return False
+
+        if c in glovar.emoji_set:
+            return False
+
+        result = True
+    except Exception as e:
+        logger.warning(f"Is valid character error: {e}", exc_info=True)
 
     return result

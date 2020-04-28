@@ -3,7 +3,7 @@ cffi==1.14.0
 cryptography==2.9
 emoji==0.5.4
 OpenCC==0.2
-Pillow==7.1.1
+Pillow==7.1.2
 pyaes==1.6.1
 pyAesCrypt==0.4.3
 pycparser==2.20
@@ -14,3 +14,4 @@ PyYAML==5.3.1
 six==1.14.0
 TgCrypto==1.2.0
 tzlocal==2.0.0
+zhon==1.1.5

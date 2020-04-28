@@ -13,7 +13,7 @@ This bot is used to get newly joined member's profile photo.
 - Python 3.6 or higher
 - Debian 10: `sudo apt update && sudo apt install opencc -y`
 - pip: `pip install -r requirements.txt` 
-- or pip: `pip install -U APScheduler emoji OpenCC Pillow pyAesCrypt pyrogram[fast] pyyaml`
+- or pip: `pip install -U APScheduler emoji OpenCC Pillow pyAesCrypt pyrogram[fast] pyyaml zhon`
 
 ## Files
 

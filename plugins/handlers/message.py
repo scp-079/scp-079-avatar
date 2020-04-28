@@ -29,7 +29,7 @@ from ..functions.decorators import threaded
 from ..functions.etc import get_hour, get_now, get_text
 from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import authorized_group, class_d, declared_message, detect_nospam, from_user, hide_channel
-from ..functions.filters import is_class_d_user, is_declared_message, is_watch_user, white_user
+from ..functions.filters import is_class_d_user, is_declared_message, is_watch_user, is_valid_character, white_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_kicked_user, receive_refresh, receive_regex, receive_remove_bad
@@ -76,7 +76,7 @@ def check(_: Client, message: Message) -> bool:
             return False
 
         # Check message text
-        message_text = "".join(t for t in get_text(message) if t not in glovar.emoji_set and t.isprintable()).strip()
+        message_text = "".join(t for t in get_text(message) if is_valid_character(t)).strip()
 
         if not message_text:
             return False
