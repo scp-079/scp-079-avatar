@@ -385,6 +385,8 @@ def white_wait(client: Client, gid: int, user_ids: dict, now: int) -> bool:
 
             glovar.user_ids[uid]["message"] = {}
             glovar.white_wait_ids[uid] = set(user_ids[uid]["message"])
+
+        result = True
     except FloodWait as e:
         raise e
     except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):

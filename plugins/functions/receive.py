@@ -26,7 +26,7 @@ from pyrogram import Client, Message
 
 from .. import glovar
 from .channel import send_help, share_data
-from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention_id, thread
+from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention_id
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .ids import init_group_id, init_user_id
 from .timers import update_admins
