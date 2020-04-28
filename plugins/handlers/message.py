@@ -120,6 +120,10 @@ def check_join(client: Client, message: Message) -> bool:
         mid = message.message_id
         now = message.date or get_now()
 
+        # Check NOSPAM
+        if glovar.nospam_id not in glovar.admin_ids.get(gid, set()):
+            return False
+
         for new in message.new_chat_members:
             # Basic data
             uid = new.id
