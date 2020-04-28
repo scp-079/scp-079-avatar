@@ -306,6 +306,7 @@ def white_check(client: Client) -> bool:
             glovar.white_ids.add(uid)
 
         save("user_ids")
+        glovar.white_ids = glovar.white_ids | {uid for gid in list(glovar.trust_ids) for uid in glovar.trust_ids[gid]}
         save("white_ids")
         glovar.white_wait_ids = {}
         save("white_wait_ids")
