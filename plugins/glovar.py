@@ -261,8 +261,8 @@ locks: Dict[str, Lock] = {
 }
 
 receivers: Dict[str, List[str]] = {
-    "white": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
-              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "USER", "WATCH"]
+    "white": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "INDEX", "LANG",
+              "LONG", "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "USER", "WATCH"]
 }
 
 regex: Dict[str, bool] = {
