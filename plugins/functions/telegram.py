@@ -19,7 +19,7 @@
 import logging
 from typing import Generator, Iterable, List, Optional, Union
 
-from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, User
+from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, ReplyKeyboardMarkup, User
 from pyrogram.api.functions.account import UpdateStatus
 from pyrogram.api.functions.messages import ReadMentions
 from pyrogram.api.functions.users import GetFullUser
@@ -205,7 +205,7 @@ def resolve_peer(client: Client, pid: Union[int, str]) -> Union[bool, InputPeerC
 
 @retry
 def send_document(client: Client, cid: int, document: str, file_ref: str = None, caption: str = "", mid: int = None,
-                  markup: InlineKeyboardMarkup = None) -> Union[bool, Message, None]:
+                  markup: Union[InlineKeyboardMarkup, ReplyKeyboardMarkup] = None) -> Union[bool, Message, None]:
     # Send a document to a chat
     result = None
 
@@ -233,7 +233,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
 
 @retry
 def send_message(client: Client, cid: int, text: str, mid: int = None,
-                 markup: InlineKeyboardMarkup = None) -> Union[bool, Message, None]:
+                 markup: Union[InlineKeyboardMarkup, ReplyKeyboardMarkup] = None) -> Union[bool, Message, None]:
     # Send a message to a chat
     result = None
 
