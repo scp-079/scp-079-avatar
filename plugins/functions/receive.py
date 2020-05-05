@@ -91,6 +91,59 @@ def receive_add_except(client: Client, data: dict) -> bool:
     return result
 
 
+def receive_flood_users(client: Client, message: Message) -> bool:
+    # Receive flood users' status
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        users = receive_file_data(client, message)
+
+        if users is None:
+            return False
+
+        for uid in list(users):
+            if not init_user_id(uid):
+                continue
+
+            glovar.user_ids[uid]["join"] -= users[uid]["groups"]
+            glovar.user_ids[uid]["score"]["captcha"] = users[uid]["score"]
+
+        save("user_ids")
+    except Exception as e:
+        logger.warning(f"Receive flood users error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return result
+
+
+def receive_captcha_kicked_user(data: dict) -> bool:
+    # Receive CAPTCHA kicked user
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        # Basic data
+        gid = data["group_id"]
+        uid = data["user_id"]
+
+        # Check user status
+        if not glovar.user_ids.get(uid, {}):
+            return True
+
+        glovar.user_ids[uid]["join"].pop(gid, 0)
+        save("user_ids")
+    except Exception as e:
+        logger.warning(f"Receive captcha kicked user error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return result
+
+
 def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
     # Receive clear data command
     result = False
@@ -210,64 +263,6 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = True) ->
             delete_file(f)
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
-
-    return result
-
-
-def receive_captcha_kicked_user(data: dict) -> bool:
-    # Receive CAPTCHA kicked user
-    result = False
-
-    glovar.locks["message"].acquire()
-
-    try:
-        # Basic data
-        gid = data["group_id"]
-        uid = data["user_id"]
-
-        # Check user status
-        if not glovar.user_ids.get(uid, {}):
-            return True
-
-        glovar.user_ids[uid]["join"].pop(gid, 0)
-        save("user_ids")
-    except Exception as e:
-        logger.warning(f"Receive captcha kicked user error: {e}", exc_info=True)
-    finally:
-        glovar.locks["message"].release()
-
-    return result
-
-
-def receive_warn_kicked_user(client: Client, data: dict) -> bool:
-    # Receive WARN banned user
-    result = False
-
-    try:
-        # Basic data
-        uid = data["user_id"]
-
-        # Check kicked list
-        if uid in glovar.white_kicked_ids:
-            return False
-
-        # Add to kicked list
-        glovar.white_kicked_ids.add(uid)
-        save("white_kicked_ids")
-
-        # Remove white user
-        receive_remove_white(uid)
-
-        # Share the info
-        share_data(
-            client=client,
-            receivers=glovar.receivers["white"],
-            action="remove",
-            action_type="white",
-            data=uid
-        )
-    except Exception as e:
-        logger.warning(f"Receive warn banned user error: {e}", exc_info=True)
 
     return result
 
@@ -635,6 +630,39 @@ def receive_version_ask(client: Client, data: dict) -> bool:
         )
     except Exception as e:
         logger.warning(f"Receive version ask error: {e}", exc_info=True)
+
+    return result
+
+
+def receive_warn_kicked_user(client: Client, data: dict) -> bool:
+    # Receive WARN banned user
+    result = False
+
+    try:
+        # Basic data
+        uid = data["user_id"]
+
+        # Check kicked list
+        if uid in glovar.white_kicked_ids:
+            return False
+
+        # Add to kicked list
+        glovar.white_kicked_ids.add(uid)
+        save("white_kicked_ids")
+
+        # Remove white user
+        receive_remove_white(uid)
+
+        # Share the info
+        share_data(
+            client=client,
+            receivers=glovar.receivers["white"],
+            action="remove",
+            action_type="white",
+            data=uid
+        )
+    except Exception as e:
+        logger.warning(f"Receive warn banned user error: {e}", exc_info=True)
 
     return result
 
