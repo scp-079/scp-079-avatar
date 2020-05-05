@@ -214,7 +214,32 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = True) ->
     return result
 
 
-def receive_kicked_user(client: Client, data: dict) -> bool:
+def receive_captcha_kicked_user(data: dict) -> bool:
+    # Receive CAPTCHA kicked user
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        # Basic data
+        gid = data["group_id"]
+        uid = data["user_id"]
+
+        # Check user status
+        if not glovar.user_ids.get(uid, {}):
+            return True
+
+        glovar.user_ids[uid]["join"].pop(gid, 0)
+        save("user_ids")
+    except Exception as e:
+        logger.warning(f"Receive captcha kicked user error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return result
+
+
+def receive_warn_kicked_user(client: Client, data: dict) -> bool:
     # Receive WARN banned user
     result = False
 

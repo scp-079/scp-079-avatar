@@ -31,11 +31,11 @@ from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import authorized_group, class_d, declared_message, detect_nospam, from_user, hide_channel
 from ..functions.filters import is_class_d_user, is_declared_message, is_watch_user, is_valid_character, white_user
 from ..functions.ids import init_group_id, init_user_id
-from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_declared_message
-from ..functions.receive import receive_kicked_user, receive_refresh, receive_regex, receive_remove_bad
+from ..functions.receive import receive_add_bad, receive_add_except, receive_captcha_kicked_user, receive_clear_data
+from ..functions.receive import receive_declared_message, receive_refresh, receive_regex, receive_remove_bad
 from ..functions.receive import receive_remove_except, receive_remove_score, receive_remove_white, receive_rollback
-from ..functions.receive import receive_status_ask, receive_user_score, receive_version_ask, receive_watch_user
-from ..functions.receive import receive_text_data
+from ..functions.receive import receive_status_ask, receive_text_data, receive_user_score, receive_version_ask
+from ..functions.receive import receive_warn_kicked_user, receive_watch_user
 from ..functions.timers import backup_files, send_count
 from ..functions.telegram import read_history, read_mention
 
@@ -405,11 +405,17 @@ def process_data(client: Client, message: Message) -> bool:
 
         elif "USER" in receivers:
 
-            if sender == "WARN":
+            if sender == "CAPTCHA":
 
                 if action == "help":
                     if action_type == "delete":
-                        receive_kicked_user(client, data)
+                        receive_captcha_kicked_user(data)
+
+            elif sender == "WARN":
+
+                if action == "help":
+                    if action_type == "delete":
+                        receive_warn_kicked_user(client, data)
 
         result = True
     except Exception as e:
