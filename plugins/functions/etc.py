@@ -254,8 +254,6 @@ def t2t(text: str, normal: bool, printable: bool) -> str:
 
         if glovar.normalize and normal and "Hans" in glovar.lang:
             result = convert(result, config="t2s.json")
-        elif glovar.normalize and normal and "Hant" in glovar.lang:
-            result = convert(result, config="s2t.json")
 
         if printable:
             result = "".join(t for t in result if t.isprintable() or t in {"\n", "\r", "\t"})
