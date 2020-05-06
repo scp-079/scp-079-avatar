@@ -200,7 +200,7 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
                 f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('clear'))}\n"
                 f"{lang('more')}{lang('colon')}{code(f'{data_type} {the_type}')}\n")
-        send_help(client, glovar.debug_channel_id, text)
+        result = send_help(client, glovar.debug_channel_id, text)
     except Exception as e:
         logger.warning(f"Receive clear data: {e}", exc_info=True)
     finally:
