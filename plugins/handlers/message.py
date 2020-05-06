@@ -26,10 +26,11 @@ from typing import List
 from .. import glovar
 from ..functions.channel import share_user_avatar
 from ..functions.decorators import threaded
-from ..functions.etc import get_hour, get_now, get_text
+from ..functions.etc import get_hour, get_full_name, get_now, get_text
 from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import authorized_group, class_d, declared_message, detect_nospam, from_user, hide_channel
-from ..functions.filters import is_class_d_user, is_declared_message, is_watch_user, is_valid_character, white_user
+from ..functions.filters import is_ban_text, is_class_d_user, is_declared_message, is_high_score_user, is_nm_text
+from ..functions.filters import is_watch_user, is_valid_character, white_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_captcha_kicked_user, receive_clear_data
 from ..functions.receive import receive_declared_message, receive_flood_users, receive_refresh, receive_regex
@@ -75,10 +76,21 @@ def check(_: Client, message: Message) -> bool:
         if is_watch_user(message.from_user, "ban", now) or is_watch_user(message.from_user, "delete", now):
             return False
 
+        # Check score
+        if is_high_score_user(message.from_user, False) > 1.2:
+            return False
+
+        # Check name
+        if is_nm_text(get_full_name(message.from_user)):
+            return False
+
         # Check message text
         message_text = "".join(t for t in get_text(message) if is_valid_character(t)).strip()
 
         if not message_text:
+            return False
+
+        if is_ban_text(message_text, False):
             return False
 
         if len(message_text) < glovar.limit_length:
