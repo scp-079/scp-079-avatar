@@ -661,7 +661,7 @@ def receive_warn_kicked_user(client: Client, data: dict) -> bool:
             data=uid
         )
     except Exception as e:
-        logger.warning(f"Receive warn banned user error: {e}", exc_info=True)
+        logger.warning(f"Receive warn kicked user error: {e}", exc_info=True)
 
     return result
 
