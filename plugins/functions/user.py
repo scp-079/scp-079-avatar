@@ -21,6 +21,7 @@ from typing import Optional, Union
 
 from pyrogram import Client, User
 
+from .. import glovar
 from .telegram import get_users
 
 # Enable logging
@@ -40,5 +41,20 @@ def get_user(client: Client, uid: Union[int, str]) -> Optional[User]:
         result = result[0]
     except Exception as e:
         logger.warning(f"Get user error: {e}", exc_info=True)
+
+    return result
+
+
+def remove_new_users() -> bool:
+    # Remove new users
+    result = False
+
+    try:
+        for uid in list(glovar.user_ids):
+            glovar.user_ids[uid]["join"] = {}
+
+        result = True
+    except Exception as e:
+        logger.warning(f"Remove new users error: {e}", exc_info=True)
 
     return result

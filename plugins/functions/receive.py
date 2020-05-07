@@ -30,7 +30,7 @@ from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .ids import init_group_id, init_user_id
 from .timers import update_admins
-from .user import get_user
+from .user import get_user, remove_new_users
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -176,8 +176,7 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
             if the_type == "all":
                 glovar.user_ids = {}
             elif the_type == "new":
-                for uid in list(glovar.user_ids):
-                    glovar.user_ids[uid]["join"] = {}
+                remove_new_users()
 
             save("user_ids")
 
