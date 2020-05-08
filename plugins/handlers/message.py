@@ -81,7 +81,7 @@ def check(_: Client, message: Message) -> bool:
             return False
 
         # Check name
-        if is_nm_text(get_full_name(message.from_user)):
+        if is_nm_text(get_full_name(message.from_user, True, True, True)):
             return False
 
         # Check message text

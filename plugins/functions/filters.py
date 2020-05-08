@@ -252,7 +252,7 @@ def detect_nospam(client: Client, gid: int, user: User) -> bool:
             return False
 
         # Check name
-        name = get_full_name(user, True, True)
+        name = get_full_name(user, True, True, True)
 
         if name and is_nm_text(name):
             return True
@@ -263,7 +263,7 @@ def detect_nospam(client: Client, gid: int, user: User) -> bool:
         if not user or not user.about:
             bio = ""
         else:
-            bio = t2t(user.about, True, True)
+            bio = t2t(user.about, True, True, True)
 
         if bio and is_bio_text(bio):
             return True

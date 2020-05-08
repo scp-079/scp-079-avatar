@@ -19,6 +19,7 @@
 import logging
 from html import escape
 from random import choice, uniform
+from re import sub
 from string import ascii_letters, digits
 from threading import Thread, Timer
 from time import localtime, sleep, time
@@ -122,7 +123,7 @@ def general_link(text: Union[int, str], link: str) -> str:
     return result
 
 
-def get_full_name(user: User, normal: bool = False, printable: bool = False) -> str:
+def get_full_name(user: User, normal: bool = False, printable: bool = False, pure: bool = False) -> str:
     # Get user's full name
     result = ""
 
@@ -136,7 +137,7 @@ def get_full_name(user: User, normal: bool = False, printable: bool = False) -> 
             result += f" {user.last_name}"
 
         if result and normal:
-            result = t2t(result, normal, printable)
+            result = t2t(result, normal, printable, pure)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
 
@@ -179,7 +180,7 @@ def get_now() -> int:
     return result
 
 
-def get_text(message: Message, normal: bool = False, printable: bool = False) -> str:
+def get_text(message: Message, normal: bool = False, printable: bool = False, pure: bool = False) -> str:
     # Get message's text
     result = ""
 
@@ -195,7 +196,7 @@ def get_text(message: Message, normal: bool = False, printable: bool = False) ->
         if not result:
             return ""
 
-        result = t2t(result, normal, printable)
+        result = t2t(result, normal, printable, pure)
     except Exception as e:
         logger.warning(f"Get text error: {e}", exc_info=True)
 
@@ -238,7 +239,7 @@ def random_str(i: int) -> str:
     return text
 
 
-def t2t(text: str, normal: bool, printable: bool) -> str:
+def t2t(text: str, normal: bool, printable: bool, pure: bool = False) -> str:
     # Convert the string, text to text
     result = text
 
@@ -257,6 +258,9 @@ def t2t(text: str, normal: bool, printable: bool) -> str:
 
         if printable:
             result = "".join(t for t in result if t.isprintable() or t in {"\n", "\r", "\t"})
+
+        if pure:
+            result = sub(r"""[^\da-zA-Z一-龥.,:'"?!~;()。，？！～@“”]""", "", result)
     except Exception as e:
         logger.warning(f"T2T error: {e}", exc_info=True)
 
