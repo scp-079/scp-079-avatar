@@ -127,8 +127,10 @@ def interval_min_15(client: Client) -> bool:
 
             g_list = list(user_ids[uid]["join"])
             gid = sorted(g_list, key=lambda g: user_ids[uid]["join"][g], reverse=True)[0]
-            image = Image.open(image_path)
-            share_user_avatar(client, gid, uid, 0, image)
+
+            with Image.open(image_path) as image:
+                share_user_avatar(client, gid, uid, 0, image)
+
             delete_file(image_path)
 
         result = True

@@ -182,8 +182,9 @@ def check_join(client: Client, message: Message) -> bool:
             if not image_path:
                 continue
 
-            image = Image.open(image_path)
-            share_user_avatar(client, gid, uid, mid, image)
+            with Image.open(image_path) as image:
+                share_user_avatar(client, gid, uid, mid, image)
+
             delete_file(image_path)
 
         result = True
