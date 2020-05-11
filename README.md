@@ -19,6 +19,7 @@ This bot is used to get newly joined member's profile photo.
 
 - languages
    - `cmn-Hans.yml` : Mandarin Chinese (Simplified)
+   - `cmn-Hant-TW.yml` : Mandarin Chinese in Taiwan (Traditional)
    - `en.yml` : English
 - plugins
     - functions
