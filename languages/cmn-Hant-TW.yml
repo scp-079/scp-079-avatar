@@ -1,0 +1,28 @@
+# Mandarin Chinese in Taiwan (Traditional)
+
+# Admin
+admin_project: 項目管理者
+
+# Basic
+action: 執行操作
+clear: 清除數據
+more: 額外訊息
+reset: 復原數據
+rollback: 數據回滚
+
+# Group
+refresh: 刷新管理目錄
+
+# Record
+project: 項目編號
+
+# Status
+waiting_users: 隊列中的用戶
+watching_users: 觀察中的用戶
+white_users: 白名單用戶
+
+# Symbol
+colon: "："
+
+# Unit
+members: 名

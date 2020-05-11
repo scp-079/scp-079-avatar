@@ -17,7 +17,7 @@ refresh: Refresh Admin Lists
 project: Project
 
 # Status
-waiting_users: White List Waiting
+waiting_users: White List Pending
 watching_users: White List Watching
 white_users: White List
 
