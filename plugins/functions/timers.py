@@ -31,7 +31,7 @@ from .decorators import retry, threaded
 from .etc import code, delay, general_link, get_now, lang
 from .file import data_to_file, delete_file, get_downloaded_path, save
 from .filters import is_class_d_user, is_high_score_user, is_watch_user
-from .group import leave_group
+from .group import leave_group, save_admins
 from .user import get_user
 from .telegram import get_admins, get_chat_member, get_members, update_online_status
 
@@ -229,20 +229,8 @@ def update_admins(client: Client) -> bool:
             if not admin_members:
                 continue
 
-            # Admin list
-            glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
-                                     if (((not admin.user.is_bot and not admin.user.is_deleted)
-                                          and admin.can_delete_messages
-                                          and admin.can_restrict_members)
-                                         or admin.status == "creator"
-                                         or admin.user.id in glovar.bot_ids)}
-            save("admin_ids")
-
-            # Trust list
-            glovar.trust_ids[gid] = {admin.user.id for admin in admin_members
-                                     if ((not admin.user.is_bot and not admin.user.is_deleted)
-                                         or admin.user.id in glovar.bot_ids)}
-            save("trust_ids")
+            # Save the admin list
+            save_admins(gid, admin_members)
 
         result = True
     except Exception as e:

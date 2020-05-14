@@ -17,8 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import List
 
-from pyrogram import Client
+from pyrogram import ChatMember, Client
 
 from .. import glovar
 from .decorators import threaded
@@ -53,5 +54,32 @@ def leave_group(client: Client, gid: int) -> bool:
         result = True
     except Exception as e:
         logger.warning(f"Leave group error: {e}", exc_info=True)
+
+    return result
+
+
+def save_admins(gid: int, admin_members: List[ChatMember]) -> bool:
+    # Save the group's admin list
+    result = False
+
+    try:
+        # Admin list
+        glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
+                                 if (((not admin.user.is_bot and not admin.user.is_deleted)
+                                      and admin.can_delete_messages
+                                      and admin.can_restrict_members)
+                                     or admin.status == "creator"
+                                     or admin.user.id in glovar.bot_ids)}
+        save("admin_ids")
+
+        # Trust list
+        glovar.trust_ids[gid] = {admin.user.id for admin in admin_members
+                                 if ((not admin.user.is_bot and not admin.user.is_deleted)
+                                     or admin.user.id in glovar.bot_ids)}
+        save("trust_ids")
+
+        result = True
+    except Exception as e:
+        logger.warning(f"Save admins error: {e}", exc_info=True)
 
     return result
