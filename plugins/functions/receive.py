@@ -91,8 +91,8 @@ def receive_add_except(client: Client, data: dict) -> bool:
     return result
 
 
-def receive_flood_users(client: Client, message: Message) -> bool:
-    # Receive flood users' status
+def receive_flood_score(client: Client, message: Message) -> bool:
+    # Receive flood users' score
     result = False
 
     glovar.locks["message"].acquire()
@@ -103,16 +103,14 @@ def receive_flood_users(client: Client, message: Message) -> bool:
         if users is None:
             return False
 
-        for uid in list(users):
-            if not init_user_id(uid):
-                continue
+        user_list = [uid for uid in list(users) if init_user_id(uid)]
 
-            glovar.user_ids[uid]["join"] -= users[uid]["groups"]
-            glovar.user_ids[uid]["score"]["captcha"] = users[uid]["score"]
+        for uid in user_list:
+            glovar.user_ids[uid]["score"]["captcha"] = users[uid]
 
         save("user_ids")
     except Exception as e:
-        logger.warning(f"Receive flood users error: {e}", exc_info=True)
+        logger.warning(f"Receive flood score error: {e}", exc_info=True)
     finally:
         glovar.locks["message"].release()
 
