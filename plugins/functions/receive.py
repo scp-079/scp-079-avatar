@@ -230,6 +230,18 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
 
             save("watch_ids")
 
+        # Clear white data
+        elif data_type == "white":
+            if the_type == "all":
+                glovar.white_ids = set()
+                save("white_ids")
+            elif the_type == "kicked":
+                glovar.white_kicked_ids = set()
+                save("white_kicked_ids")
+            elif the_type == "wait":
+                glovar.white_wait_ids = {}
+                save("white_wait_ids")
+
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
                 f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
