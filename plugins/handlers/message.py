@@ -25,7 +25,6 @@ from typing import List
 
 from .. import glovar
 from ..functions.channel import share_user_avatar
-from ..functions.decorators import threaded
 from ..functions.etc import get_hour, get_full_name, get_now, get_text
 from ..functions.file import delete_file, get_downloaded_path, save
 from ..functions.filters import authorized_group, class_d, declared_message, detect_nospam, from_user, hide_channel
@@ -198,7 +197,6 @@ def check_join(client: Client, message: Message) -> bool:
 
 
 @Client.on_message(Filters.incoming & Filters.channel & Filters.mentioned, group=1)
-@threaded()
 def mark_mention(client: Client, message: Message) -> bool:
     # Mark mention as read
     result = False
@@ -212,8 +210,7 @@ def mark_mention(client: Client, message: Message) -> bool:
         if cid != glovar.hide_channel_id:
             return False
 
-        read_mention(client, cid)
-        result = True
+        result = read_mention(client, cid)
     except Exception as e:
         logger.warning(f"Mark mention error: {e}", exc_info=True)
 
@@ -221,7 +218,6 @@ def mark_mention(client: Client, message: Message) -> bool:
 
 
 @Client.on_message(Filters.incoming & Filters.channel, group=2)
-@threaded()
 def mark_message(client: Client, message: Message) -> bool:
     # Mark messages as read
     result = False
@@ -235,8 +231,7 @@ def mark_message(client: Client, message: Message) -> bool:
         if cid != glovar.hide_channel_id:
             return False
 
-        read_history(client, cid)
-        result = True
+        result = read_history(client, cid)
     except Exception as e:
         logger.warning(f"Mark message error: {e}", exc_info=True)
 
