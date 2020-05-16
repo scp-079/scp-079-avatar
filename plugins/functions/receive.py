@@ -235,6 +235,10 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
             if the_type == "all":
                 glovar.white_ids = set()
                 save("white_ids")
+                glovar.white_kicked_ids = set()
+                save("white_kicked_ids")
+                glovar.white_wait_ids = {}
+                save("white_wait_ids")
             elif the_type == "kicked":
                 glovar.white_kicked_ids = set()
                 save("white_kicked_ids")
