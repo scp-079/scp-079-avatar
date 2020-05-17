@@ -30,7 +30,7 @@ from .telegram import leave_chat
 logger = logging.getLogger(__name__)
 
 
-@threaded
+@threaded()
 def leave_group(client: Client, gid: int) -> bool:
     # Leave a group, clear it's data
     result = False
