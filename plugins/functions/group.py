@@ -22,7 +22,7 @@ from typing import List
 from pyrogram import ChatMember, Client
 
 from .. import glovar
-from .decorators import threaded
+from .etc import thread
 from .file import save
 from .telegram import leave_chat
 
@@ -30,7 +30,6 @@ from .telegram import leave_chat
 logger = logging.getLogger(__name__)
 
 
-@threaded()
 def leave_group(client: Client, gid: int) -> bool:
     # Leave a group, clear it's data
     result = False
@@ -38,7 +37,7 @@ def leave_group(client: Client, gid: int) -> bool:
     try:
         glovar.left_group_ids.add(gid)
         save("left_group_ids")
-        leave_chat(client, gid, True)
+        thread(leave_chat, (client, gid, True))
 
         glovar.admin_ids.pop(gid, set())
         save("admin_ids")
