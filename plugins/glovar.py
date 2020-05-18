@@ -282,7 +282,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.2.3"
+version: str = "0.2.4"
 
 # Load data from pickle
 
@@ -323,6 +323,9 @@ except_ids: Dict[str, Set[str]] = {
 # except_ids = {
 #     "long": {"content"}
 # }
+
+flooded_ids: Set[int] = set()
+# flooded_ids = {-10012345678}
 
 left_group_ids: Set[int] = set()
 # left_group_ids = {-10012345678}
@@ -389,8 +392,8 @@ for word_type in regex:
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "deleted_ids", "except_ids", "left_group_ids", "trust_ids",
-                        "user_ids", "watch_ids", "white_ids", "white_kicked_ids", "white_wait_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "deleted_ids", "except_ids", "flooded_ids", "left_group_ids",
+                        "trust_ids", "user_ids", "watch_ids", "white_ids", "white_kicked_ids", "white_wait_ids"]
 file_list += [f"{f}_words" for f in regex]
 
 for file in file_list:

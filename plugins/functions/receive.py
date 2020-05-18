@@ -91,28 +91,26 @@ def receive_add_except(client: Client, data: dict) -> bool:
     return result
 
 
-def receive_flood_score(client: Client, message: Message) -> bool:
-    # Receive flood users' score
+def receive_captcha_flood(data: dict) -> bool:
+    # Receive captcha flood status
     result = False
 
-    glovar.locks["message"].acquire()
-
     try:
-        users = receive_file_data(client, message)
+        # Basic data
+        gid = data["group_id"]
+        status = data["status"]
 
-        if users is None:
-            return False
+        # Check the status
+        if status == "begin":
+            glovar.flooded_ids.add(gid)
+        elif status == "end":
+            glovar.flooded_ids.discard(gid)
 
-        user_list = [uid for uid in list(users) if init_user_id(uid)]
+        save("flooded_ids")
 
-        for uid in user_list:
-            glovar.user_ids[uid]["score"]["captcha"] = users[uid]
-
-        save("user_ids")
+        result = True
     except Exception as e:
-        logger.warning(f"Receive flood score error: {e}", exc_info=True)
-    finally:
-        glovar.locks["message"].release()
+        logger.warning(f"Receive captcha flood error: {e}", exc_info=True)
 
     return result
 
@@ -318,6 +316,32 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = True) ->
             delete_file(f)
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
+
+    return result
+
+
+def receive_flood_score(client: Client, message: Message) -> bool:
+    # Receive flood users' score
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        users = receive_file_data(client, message)
+
+        if users is None:
+            return False
+
+        user_list = [uid for uid in list(users) if init_user_id(uid)]
+
+        for uid in user_list:
+            glovar.user_ids[uid]["score"]["captcha"] = users[uid]
+
+        save("user_ids")
+    except Exception as e:
+        logger.warning(f"Receive flood score error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
 
     return result
 

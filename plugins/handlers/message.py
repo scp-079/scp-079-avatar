@@ -62,6 +62,10 @@ def check(_: Client, message: Message) -> bool:
         hour = get_hour()
         now = message.date or get_now()
 
+        # Check group status
+        if gid in glovar.flooded_ids:
+            return False
+
         # Check hour
         if (hour < glovar.time_begin < glovar.time_end
                 or glovar.time_begin < glovar.time_end < hour
@@ -131,6 +135,10 @@ def check_join(client: Client, message: Message) -> bool:
         gid = message.chat.id
         mid = message.message_id
         now = message.date or get_now()
+
+        # Check group status
+        if gid in glovar.flooded_ids:
+            return False
 
         # Check NOSPAM
         if glovar.nospam_id not in glovar.admin_ids.get(gid, set()):
