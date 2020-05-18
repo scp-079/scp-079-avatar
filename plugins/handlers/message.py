@@ -31,7 +31,7 @@ from ..functions.filters import authorized_group, class_d, declared_message, det
 from ..functions.filters import is_ban_text, is_class_d_user, is_declared_message, is_high_score_user, is_nm_text
 from ..functions.filters import is_watch_user, is_valid_character, white_user
 from ..functions.ids import init_group_id, init_user_id
-from ..functions.receive import receive_add_bad, receive_add_except, receive_captcha_kicked_user
+from ..functions.receive import receive_add_bad, receive_add_except, receive_captcha_flood, receive_captcha_kicked_user
 from ..functions.receive import receive_captcha_kicked_users, receive_clear_data, receive_declared_message
 from ..functions.receive import receive_flood_score, receive_refresh, receive_regex, receive_remove_bad
 from ..functions.receive import receive_remove_except, receive_remove_score, receive_remove_white, receive_rollback
@@ -277,6 +277,8 @@ def process_data(client: Client, message: Message) -> bool:
                 if action == "flood":
                     if action_type == "score":
                         receive_flood_score(client, message)
+                    elif action_type == "status":
+                        receive_captcha_flood(data)
 
                 if action == "update":
                     if action_type == "declare":
