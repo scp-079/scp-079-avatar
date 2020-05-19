@@ -27,7 +27,7 @@ from pyrogram.api.types import InputPeerUser, InputPeerChannel, UserFull
 from pyrogram.errors import ChatAdminRequired, ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait
 from pyrogram.errors import PeerIdInvalid, UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
-from .decorators import retry, threaded
+from .decorators import retry
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -151,7 +151,6 @@ def leave_chat(client: Client, cid: int, delete: bool = False) -> bool:
     return result
 
 
-@threaded()
 @retry
 def read_history(client: Client, cid: int) -> bool:
     # Mark messages in a chat as read
@@ -167,7 +166,6 @@ def read_history(client: Client, cid: int) -> bool:
     return result
 
 
-@threaded()
 @retry
 def read_mention(client: Client, cid: int) -> bool:
     # Mark a mention as read
