@@ -91,7 +91,7 @@ def crypt_str(operation: str, text: str, key: bytes) -> str:
     return result
 
 
-def delay(secs: int, target: Callable, args: list) -> bool:
+def delay(secs: int, target: Callable, args: list = None) -> bool:
     # Call a function with delay
     result = False
 
