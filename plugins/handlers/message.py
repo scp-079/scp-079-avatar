@@ -246,7 +246,7 @@ def mark_message(client: Client, message: Message) -> bool:
     return result
 
 
-@Client.on_message((Filters.incoming or aio) & Filters.channel
+@Client.on_message((Filters.incoming | aio) & Filters.channel
                    & hide_channel)
 def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel
