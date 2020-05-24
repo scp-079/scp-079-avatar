@@ -27,9 +27,9 @@ from .. import glovar
 from ..functions.channel import share_user_avatar
 from ..functions.etc import get_hour, get_full_name, get_now, get_text, thread
 from ..functions.file import delete_file, get_downloaded_path, save
-from ..functions.filters import authorized_group, class_d, declared_message, detect_nospam, from_user, hide_channel
-from ..functions.filters import is_ban_text, is_class_d_user, is_declared_message, is_high_score_user, is_nm_text
-from ..functions.filters import is_watch_user, is_valid_character, white_user
+from ..functions.filters import aio, authorized_group, class_d, declared_message, detect_nospam, from_user
+from ..functions.filters import hide_channel, is_ban_text, is_class_d_user, is_declared_message, is_high_score_user
+from ..functions.filters import is_nm_text, is_watch_user, is_valid_character, white_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_captcha_flood, receive_captcha_kicked_user
 from ..functions.receive import receive_captcha_kicked_users, receive_clear_data, receive_declared_message
@@ -246,7 +246,7 @@ def mark_message(client: Client, message: Message) -> bool:
     return result
 
 
-@Client.on_message((Filters.incoming or glovar.aio) & Filters.channel
+@Client.on_message((Filters.incoming or aio) & Filters.channel
                    & hide_channel)
 def process_data(client: Client, message: Message) -> bool:
     # Process the data in exchange channel
