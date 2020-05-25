@@ -293,8 +293,7 @@ except Exception as e:
     logger.info(f"Remove tmp error: {e}")
 
 for path in ["data", "tmp"]:
-    if not exists(path):
-        mkdir(path)
+    not exists(path) and mkdir(path)
 
 # Init ids variables
 
