@@ -19,7 +19,7 @@
 import logging
 from typing import Generator, Iterable, List, Optional, Union
 
-from pyrogram import ChatMember, Client, InlineKeyboardMarkup, Message, ReplyKeyboardMarkup, User
+from pyrogram import Chat, ChatMember, ChatPreview, Client, InlineKeyboardMarkup, Message, ReplyKeyboardMarkup, User
 from pyrogram.api.functions.account import UpdateStatus
 from pyrogram.api.functions.messages import ReadMentions
 from pyrogram.api.functions.users import GetFullUser
@@ -54,6 +54,11 @@ def get_admins(client: Client, cid: int) -> Union[bool, List[ChatMember], None]:
     result = None
 
     try:
+        chat = get_chat(client, cid)
+
+        if not chat or not chat.members_count:
+            return False
+
         result = client.get_chat_members(chat_id=cid, filter="administrators")
     except FloodWait as e:
         raise e
@@ -61,6 +66,23 @@ def get_admins(client: Client, cid: int) -> Union[bool, List[ChatMember], None]:
         return False
     except Exception as e:
         logger.warning(f"Get admins in {cid} error: {e}", exc_info=True)
+
+    return result
+
+
+@retry
+def get_chat(client: Client, cid: Union[int, str]) -> Union[Chat, ChatPreview, None]:
+    # Get a chat
+    result = None
+
+    try:
+        result = client.get_chat(chat_id=cid)
+    except FloodWait as e:
+        raise e
+    except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
+        return None
+    except Exception as e:
+        logger.warning(f"Get chat {cid} error: {e}", exc_info=True)
 
     return result
 
