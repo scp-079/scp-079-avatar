@@ -169,6 +169,7 @@ def check_join(client: Client, message: Message) -> bool:
                 continue
 
             # Update user's join status
+            joined = glovar.user_ids[uid]["join"].get(gid)
             glovar.user_ids[uid]["join"][gid] = now
             save("user_ids")
 
@@ -180,7 +181,7 @@ def check_join(client: Client, message: Message) -> bool:
             file_ref = ""
             old_id = glovar.user_ids[uid]["avatar"]
 
-            if file_id == old_id:
+            if file_id == old_id and joined:
                 continue
 
             glovar.user_ids[uid]["avatar"] = file_id
