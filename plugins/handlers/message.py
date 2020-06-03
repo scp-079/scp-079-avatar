@@ -443,6 +443,7 @@ def process_data(client: Client, message: Message) -> bool:
 
                 if action == "help":
                     if action_type == "delete":
+                        logger.warning("!")
                         receive_warn_kicked_user(client, data)
 
         result = True
