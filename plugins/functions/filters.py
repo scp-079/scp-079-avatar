@@ -156,10 +156,13 @@ def is_declared_message(_, message: Message) -> bool:
 
 
 def is_from_user(_, update: Union[CallbackQuery, Message]) -> bool:
-    # Check if the message is sent from a user
+    # Check if the message is sent from a user, or the callback is sent from a private chat
     result = False
 
     try:
+        if isinstance(update, CallbackQuery) and update.message.chat.id < 0:
+            return False
+
         if update.from_user and update.from_user.id != 777000:
             return True
     except Exception as e:
