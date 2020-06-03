@@ -62,6 +62,9 @@ def is_authorized_group(_, update: Union[CallbackQuery, Message]) -> bool:
 
         cid = message.chat.id
 
+        if cid > 0:
+            return False
+
         if init_group_id(cid):
             return True
     except Exception as e:
