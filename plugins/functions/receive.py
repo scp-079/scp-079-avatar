@@ -128,7 +128,7 @@ def receive_captcha_kicked_user(data: dict) -> bool:
         uid = data["user_id"]
 
         # Check the group
-        if not glovar.admin_ids.get(gid) is None:
+        if glovar.admin_ids.get(gid) is None:
             return False
 
         # Check user status
@@ -158,7 +158,7 @@ def receive_captcha_kicked_users(client: Client, message: Message, data: int) ->
         gid = data
 
         # Check the group
-        if not glovar.admin_ids.get(gid) is None:
+        if glovar.admin_ids.get(gid) is None:
             return False
 
         # Get user list
@@ -269,7 +269,7 @@ def receive_declared_message(data: dict) -> bool:
         mid = data["message_id"]
 
         # Check the group
-        if not glovar.admin_ids.get(gid) is None:
+        if glovar.admin_ids.get(gid) is None:
             return False
 
         # Init data
@@ -737,7 +737,7 @@ def receive_warn_kicked_user(client: Client, data: dict) -> bool:
         uid = data["user_id"]
 
         # Check the group
-        if not glovar.admin_ids.get(gid) is None:
+        if glovar.admin_ids.get(gid) is None:
             return False
 
         # Check kicked list
