@@ -28,6 +28,7 @@ from .. import glovar
 from .channel import send_help, share_data
 from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention_id
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
+from .filters import is_high_score_user
 from .ids import init_group_id, init_user_id
 from .timers import update_admins
 from .user import get_user, remove_new_users
@@ -660,7 +661,7 @@ def receive_text_data(message: Message) -> dict:
     return result
 
 
-def receive_user_score(project: str, data: dict) -> bool:
+def receive_user_score(client: Client, project: str, data: dict) -> bool:
     # Receive and update user's score
     result = False
 
@@ -678,7 +679,20 @@ def receive_user_score(project: str, data: dict) -> bool:
         glovar.user_ids[uid]["score"][project] = score
         save("user_ids")
 
-        result = True
+        if is_high_score_user(uid, False) < 1.8:
+            return True
+
+        # Remove white user
+        receive_remove_white(uid)
+
+        # Share the info
+        result = share_data(
+            client=client,
+            receivers=glovar.receivers["white"],
+            action="remove",
+            action_type="white",
+            data=uid
+        )
     except Exception as e:
         logger.warning(f"Receive user score error: {e}", exc_info=True)
     finally:

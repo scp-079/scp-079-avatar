@@ -285,7 +285,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "CLEAN":
 
@@ -299,7 +299,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "HIDE":
 
@@ -319,7 +319,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "LONG":
 
@@ -333,7 +333,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "MANAGE":
 
@@ -383,7 +383,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "NOPORN":
 
@@ -397,7 +397,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "NOSPAM":
 
@@ -411,7 +411,7 @@ def process_data(client: Client, message: Message) -> bool:
                     if action_type == "declare":
                         receive_declared_message(data)
                     elif action_type == "score":
-                        receive_user_score(sender, data)
+                        receive_user_score(client, sender, data)
 
             elif sender == "REGEX":
 

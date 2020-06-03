@@ -283,6 +283,9 @@ def white_check(client: Client) -> bool:
             if is_high_score_user(uid, False) > 1.2:
                 continue
 
+            if any(glovar.user_ids[uid]["score"][project] for project in ["noflood", "warn"]):
+                continue
+
             if is_watch_user(uid, "delete", now) or is_watch_user(uid, "ban", now):
                 continue
 
@@ -357,6 +360,9 @@ def white_wait(client: Client, gid: int, user_ids: dict, now: int) -> bool:
                 continue
 
             if is_high_score_user(uid, False) > 1.2:
+                continue
+
+            if any(glovar.user_ids[uid]["score"][project] for project in ["noflood", "warn"]):
                 continue
 
             if is_watch_user(uid, "delete", now) or is_watch_user(uid, "ban", now):
