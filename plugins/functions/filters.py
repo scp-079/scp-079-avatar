@@ -155,12 +155,12 @@ def is_declared_message(_, message: Message) -> bool:
     return result
 
 
-def is_from_user(_, message: Message) -> bool:
+def is_from_user(_, update: Union[CallbackQuery, Message]) -> bool:
     # Check if the message is sent from a user
     result = False
 
     try:
-        if message.from_user and message.from_user.id != 777000:
+        if update.from_user and update.from_user.id != 777000:
             return True
     except Exception as e:
         logger.warning(f"Is from user error: {e}", exc_info=True)
