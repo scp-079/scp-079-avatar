@@ -679,7 +679,7 @@ def receive_user_score(client: Client, project: str, data: dict) -> bool:
         glovar.user_ids[uid]["score"][project] = score
         save("user_ids")
 
-        if is_high_score_user(uid, False) < 1.8:
+        if is_high_score_user(uid, False) <= 1.8:
             return True
 
         # Remove white user
