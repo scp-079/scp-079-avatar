@@ -27,7 +27,7 @@ from typing import Any, Callable, Optional, Union
 from unicodedata import normalize
 
 from cryptography.fernet import Fernet
-from opencc import convert
+from opencc import OpenCC
 from pyrogram import Message, User
 from pyrogram.errors import FloodWait
 
@@ -35,6 +35,9 @@ from .. import glovar
 
 # Enable logging
 logger = logging.getLogger(__name__)
+
+# Init Opencc
+converter = OpenCC(config="t2s.json")
 
 
 def code(text: Any) -> str:
@@ -254,7 +257,7 @@ def t2t(text: str, normal: bool, printable: bool, pure: bool = False) -> str:
             result = normalize("NFKC", result)
 
         if glovar.normalize and normal and "Hans" in glovar.lang:
-            result = convert(result, config="t2s.json")
+            result = converter.convert(result)
 
         if printable:
             result = "".join(t for t in result if t.isprintable() or t in {"\n", "\r", "\t"})
