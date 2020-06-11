@@ -173,6 +173,10 @@ def check_join(client: Client, message: Message) -> bool:
             glovar.user_ids[uid]["join"][gid] = now
             save("user_ids")
 
+            # Check group status
+            if glovar.nospam_id not in glovar.admin_ids[gid]:
+                continue
+
             # Check avatar
             if not new.photo:
                 continue
