@@ -11,7 +11,7 @@ reset: 重置数据
 rollback: 数据回滚
 
 # Group
-refresh: 刷新群组管管理员列表
+refresh: 刷新群组管理员列表
 
 # Record
 project: 项目编号
