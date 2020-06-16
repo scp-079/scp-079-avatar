@@ -30,6 +30,8 @@ from typing import Dict, List, Set, Union
 from emoji import UNICODE_EMOJI
 from yaml import safe_load
 
+from .checker import check_all
+
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -157,62 +159,67 @@ try:
     time_new = int(config["time"].get("time_new", str(time_new)))
     time_old = int(config["time"].get("time_old", str(time_old)))
 except Exception as e:
-    logger.warning(f"Read data from config.ini error: {e}", exc_info=True)
+    logger.critical(f"[ERROR] Read data from config.ini error: {e}", exc_info=True)
+    raise SystemExit(f"[ERROR] Bad config.ini - please check the log file for more details")
 
 # Check
-if (False
-        # [bots]
-        or avatar_id == 0
-        or captcha_id == 0
-        or clean_id == 0
-        or index_id == 0
-        or lang_id == 0
-        or long_id == 0
-        or noflood_id == 0
-        or noporn_id == 0
-        or nospam_id == 0
-        or tip_id == 0
-        or user_id == 0
-        or warn_id == 0
-
-        # [channels]
-        or debug_channel_id == 0
-        or hide_channel_id == 0
-
-        # [custom]
-        or project_link in {"", "[DATA EXPUNGED]"}
-        or project_name in {"", "[DATA EXPUNGED]"}
-
-        # [emoji]
-        or emoji_ad_single == 0
-        or emoji_ad_total == 0
-        or emoji_many == 0
-        or emoji_protect in {"", "[DATA EXPUNGED]"}
-        or emoji_wb_single == 0
-        or emoji_wb_total == 0
-
-        # [encrypt]
-        or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
-        or password in {"", "[DATA EXPUNGED]"}
-
-        # [language]
-        or lang in {"", "[DATA EXPUNGED]"}
-        or normalize not in {False, True}
-
-        # [limit]
-        or limit_length == 0
-        or limit_message == 0
-
-        # [mode]
-        or aio not in {False, True}
-        or backup not in {False, True}
-
-        # [time]
-        or date_reset in {"", "[DATA EXPUNGED]"}
-        or time_new == 0
-        or time_old == 0):
-    logger.critical("No proper settings")
-    raise SystemExit("No proper settings")
+check_all(
+    {
+        "bots": {
+            "avatar_id": avatar_id,
+            "captcha_id": captcha_id,
+            "clean_id": clean_id,
+            "index_id": index_id,
+            "lang_id": lang_id,
+            "long_id": long_id,
+            "noflood_id": noflood_id,
+            "noporn_id": noporn_id,
+            "nospam_id": nospam_id,
+            "tip_id": tip_id,
+            "user_id": user_id,
+            "warn_id": warn_id
+        },
+        "channels": {
+            "debug_channel_id": debug_channel_id,
+            "hide_channel_id": hide_channel_id
+        },
+        "custom": {
+            "project_link": project_link,
+            "project_name": project_name
+        },
+        "emoji": {
+            "emoji_ad_single": emoji_ad_single,
+            "emoji_ad_total": emoji_ad_total,
+            "emoji_many": emoji_many,
+            "emoji_protect": emoji_protect,
+            "emoji_wb_single": emoji_wb_single,
+            "emoji_wb_total": emoji_wb_total
+        },
+        "encrypt": {
+            "key": key,
+            "password": password
+        },
+        "language": {
+            "lang": lang,
+            "normalize": normalize
+        },
+        "limit": {
+            "limit_length": limit_length,
+            "limit_message": limit_message
+        },
+        "mode": {
+            "aio": aio,
+            "backup": backup
+        },
+        "time": {
+            "date_reset": date_reset,
+            "time_begin": time_begin,
+            "time_check": time_check,
+            "time_new": time_new,
+            "time_old": time_old
+        }
+    }
+)
 
 # Language Dictionary
 lang_dict: dict = {}
