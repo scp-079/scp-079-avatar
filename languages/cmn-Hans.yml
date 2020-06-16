@@ -1,7 +1,7 @@
 # Mandarin Chinese (Simplified)
 
 # Admin
-admin_project: 项目管理员
+admin_project: 工作组成员
 
 # Basic
 action: 执行操作
@@ -11,15 +11,15 @@ reset: 重置数据
 rollback: 数据回滚
 
 # Group
-refresh: 刷新群管列表
+refresh: 刷新群组管理员列表
 
 # Record
 project: 项目编号
 
 # Status
-waiting_users: 待加白的用户
+waiting_users: 待加入白名单的用户
 watching_users: 观察中的用户
-white_users: 白名单用户
+white_users: 自动白名单用户
 
 # Symbol
 colon: "："
