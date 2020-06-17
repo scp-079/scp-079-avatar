@@ -43,6 +43,9 @@ logger = logging.getLogger(__name__)
 
 # Read data from config.ini
 
+# [flag]
+broken: bool = True
+
 # [bots]
 avatar_id: int = 0
 captcha_id: int = 0
@@ -158,9 +161,11 @@ try:
     time_end = int(config["time"].get("time_end", str(time_end)))
     time_new = int(config["time"].get("time_new", str(time_new)))
     time_old = int(config["time"].get("time_old", str(time_old)))
+
+    # [flag]
+    broken = False
 except Exception as e:
-    logger.critical(f"[ERROR] Read data from config.ini error: {e}", exc_info=True)
-    raise SystemExit(f"[ERROR] Bad config.ini - please check the log file for more details")
+    logger.error(f"[ERROR] Read data from config.ini error: {e}", exc_info=True)
 
 # Check
 check_all(
@@ -218,7 +223,8 @@ check_all(
             "time_new": time_new,
             "time_old": time_old
         }
-    }
+    },
+    broken
 )
 
 # Language Dictionary
@@ -289,7 +295,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.2.5"
+version: str = "0.2.6"
 
 # Load data from pickle
 

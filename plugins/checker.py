@@ -23,29 +23,24 @@ from typing import Dict, Union
 logger = logging.getLogger(__name__)
 
 
-def check_all(values: dict) -> bool:
+def check_all(values: Dict[str, Dict[str, Union[bool, bytes, int, str]]], broken: bool) -> bool:
     # Check all values in config.ini
     error = ""
 
-    error += check_bots(values["bots"])
-    error += check_channels(values["channels"])
-    error += check_custom(values["custom"])
-    error += check_emoji(values["emoji"])
-    error += check_encrypt(values["encrypt"])
-    error += check_language(values["language"])
-    error += check_limit(values["limit"])
-    error += check_mode(values["mode"])
-    error += check_time(values["time"])
+    sections = list(values)
+    sections.sort()
+
+    for section in sections:
+        data = values[section]
+        error += eval(f"check_{section}")(data, broken)
 
     if not error:
         return True
 
-    error = "-" * 24 + f"\nBot refused to start because:\n" + "-" * 24 + f"\n{error}" + "-" * 24
-    logger.critical(error)
-    raise SystemExit(error)
+    raise_error(error)
 
 
-def check_bots(values: dict) -> str:
+def check_bots(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in bots section
     result = ""
 
@@ -53,10 +48,15 @@ def check_bots(values: dict) -> str:
         if values[key] <= 0:
             result += f"[ERROR] [bots] {key} - should be a positive integer\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_channels(values: Dict[str, Union[bytes, int, str]]) -> str:
+def check_channels(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in channels section
     result = ""
 
@@ -68,10 +68,15 @@ def check_channels(values: Dict[str, Union[bytes, int, str]]) -> str:
         elif not str(values[key]).startswith("-100"):
             result += f"[ERROR] [channels] {key} - please use a supergroup instead\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_custom(values: dict) -> str:
+def check_custom(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in custom section
     result = ""
 
@@ -79,10 +84,15 @@ def check_custom(values: dict) -> str:
         if values[key] in {"", "[DATA EXPUNGED]"}:
             result += f"[ERROR] [custom] {key} - please fill something except [DATA EXPUNGED]\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_emoji(values: dict) -> str:
+def check_emoji(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in emoji section
     result = ""
 
@@ -92,10 +102,15 @@ def check_emoji(values: dict) -> str:
         elif key == "emoji_protect" and values[key] in {"", "[DATA EXPUNGED]"}:
             result += f"[ERROR] [emoji] {key} - please fill something except [DATA EXPUNGED]\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_encrypt(values: dict) -> str:
+def check_encrypt(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in encrypt section
     result = ""
 
@@ -105,10 +120,15 @@ def check_encrypt(values: dict) -> str:
         elif key == "password" and key in {"", "[DATA EXPUNGED]"}:
             result += f"[ERROR] [encrypt] {key} - please fill a valid password\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_language(values: dict) -> str:
+def check_language(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in language section
     result = ""
 
@@ -118,10 +138,15 @@ def check_language(values: dict) -> str:
         elif key == "normalize" and values[key] not in {False, True}:
             result += f"[ERROR] [language] {key} - please fill a valid boolean value\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_limit(values: dict) -> str:
+def check_limit(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in limit section
     result = ""
 
@@ -129,10 +154,15 @@ def check_limit(values: dict) -> str:
         if values[key] <= 0:
             result += f"[ERROR] [limit] {key} - should be a positive integer\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_mode(values: dict) -> str:
+def check_mode(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in mode section
     result = ""
 
@@ -140,10 +170,15 @@ def check_mode(values: dict) -> str:
         if values[key] not in {False, True}:
             result += f"[ERROR] [mode] {key} - please fill a valid boolean value\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
 
 
-def check_time(values: dict) -> str:
+def check_time(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
     # Check all values in time section
     result = ""
 
@@ -153,4 +188,15 @@ def check_time(values: dict) -> str:
         elif key in {"time_new", "time_old"} and values[key] <= 0:
             result += f"[ERROR] [time] {key} - should be a positive integer\n"
 
+        if not broken or not result:
+            continue
+
+        raise_error(result)
+
     return result
+
+
+def raise_error(error: str):
+    error = "-" * 24 + f"\nBot refused to start because:\n" + "-" * 24 + f"\n{error}" + "-" * 24
+    logger.critical(error)
+    raise SystemExit(error)
