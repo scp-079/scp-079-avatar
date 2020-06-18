@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from os.path import exists
 from typing import Dict, Union
 
 # Enable logging
@@ -135,6 +136,8 @@ def check_language(values: Dict[str, Union[bool, bytes, int, str]], broken: bool
     for key in values:
         if key == "lang" and values[key] in {"", "[DATA EXPUNGED]"}:
             result += f"[ERROR] [language] {key} - please fill something except [DATA EXPUNGED]\n"
+        elif key == "lang" and not exists(f"languages/{values[key]}.yml"):
+            result += f"[ERROR] [language] {key} - language {values[key]} does not exist\n"
         elif key == "normalize" and values[key] not in {False, True}:
             result += f"[ERROR] [language] {key} - please fill a valid boolean value\n"
 

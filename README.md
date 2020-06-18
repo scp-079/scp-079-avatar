@@ -36,6 +36,7 @@ This bot is used to get newly joined member's profile photo.
         - `user.py` : Functions about user and channel object
     - handlers
         - `message.py`: Handle messages
+    - `checker.py` : Check the format of config.ini
     - `glovar.py` : Global variables
 - `.gitignore` : Ignore
 - `config.ini.example` -> `config.ini` : Configuration
@@ -44,11 +45,11 @@ This bot is used to get newly joined member's profile photo.
 - `README.md` : This file
 - `requirements.txt` : Managed by pip
 
-## Contribute
+## Contribution
 
-Welcome to make this project even better.
+Contributions are always welcome, whether it's modifying source code to add new features or bug fixes, documenting new file formats or simply editing some grammar.
 
-If you are willing to contribute, please [apply](https://t.me/SCP_079_TICKET_BOT) to join our private group on GitLab.
+You can also join the [discuss group](https://t.me/SCP_079_CHAT) if you are unsure of anything.
 
 ## Translation
 
