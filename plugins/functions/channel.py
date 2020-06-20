@@ -54,7 +54,7 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
 
 
 @threaded()
-def send_help(client: Client, cid: int, text: str) -> bool:
+def send_help(client: Client, cid: int, text: str, mid: int = None) -> bool:
     # Request HIDE to help to send a text in a chat
     result = False
 
@@ -65,7 +65,10 @@ def send_help(client: Client, cid: int, text: str) -> bool:
             receivers=["HIDE"],
             action="help",
             action_type="send",
-            data=cid,
+            data={
+                "chat_id": cid,
+                "message_id": mid
+            },
             file=file
         )
     except Exception as e:

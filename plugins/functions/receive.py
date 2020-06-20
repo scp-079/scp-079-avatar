@@ -20,13 +20,14 @@ import logging
 import pickle
 from copy import deepcopy
 from json import loads
+from subprocess import run, PIPE
 from typing import Any
 
 from pyrogram import Client, Message
 
 from .. import glovar
 from .channel import send_help, share_data
-from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention_id, thread
+from .etc import code, crypt_str, general_link, get_int, get_readable_time, get_text, lang, mention_id, thread
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_high_score_user
 from .ids import init_group_id, init_user_id
@@ -56,7 +57,7 @@ def receive_add_bad(sender: str, data: dict) -> bool:
 
         save("bad_ids")
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Receive add bad error: {e}", exc_info=True)
 
@@ -339,6 +340,8 @@ def receive_flood_score(client: Client, message: Message) -> bool:
             glovar.user_ids[uid]["score"]["captcha"] = users[uid]
 
         save("user_ids")
+
+        result = True
     except Exception as e:
         logger.warning(f"Receive flood score error: {e}", exc_info=True)
     finally:
@@ -701,26 +704,35 @@ def receive_user_score(client: Client, project: str, data: dict) -> bool:
     return result
 
 
-def receive_version_ask(client: Client, data: dict) -> bool:
+def receive_version_ask(client: Client, message: Message, data: dict) -> bool:
     # Receive version info request
     result = False
 
     try:
         # Basic data
         aid = data["admin_id"]
+        gid = data["group_id"]
         mid = data["message_id"]
 
-        result = share_data(
-            client=client,
-            receivers=["HIDE"],
-            action="version",
-            action_type="reply",
-            data={
-                "admin_id": aid,
-                "message_id": mid,
-                "version": glovar.version
-            }
-        )
+        # Version info
+        git_change = bool(run("git diff-index HEAD --", stdout=PIPE, shell=True).stdout.decode().strip())
+        git_date = run("git log -1 --format='%at'", stdout=PIPE, shell=True).stdout.decode()
+        git_date = get_readable_time(get_int(git_date), "%Y/%m/%d %H:%M:%S")
+        git_hash = run("git rev-parse --short HEAD", stdout=PIPE, shell=True).stdout.decode()
+        get_hash_link = f"https://github.com/scp-079/scp-079-{glovar.sender.lower()}/commit/{git_hash}"
+        command_date = get_readable_time(message.date, "%Y/%m/%d %H:%M:%S")
+
+        # Generate the text
+        text = (f"{lang('admin')}{lang('colon')}{mention_id(aid)}\n\n"
+                f"{lang('project')}{lang('colon')}{code(glovar.sender)}\n"
+                f"{lang('version')}{lang('colon')}{code(glovar.version)}\n"
+                f"{lang('git_change')}{lang('colon')}{code(git_change)}\n"
+                f"{lang('git_hash')}{lang('colon')}{general_link(git_hash, get_hash_link)}\n"
+                f"{lang('git_date')}{lang('colon')}{code(git_date)}\n"
+                f"{lang('command_date')}{lang('colon')}{code(command_date)}\n")
+
+        # Send the report message
+        result = send_help(client, gid, text, mid)
     except Exception as e:
         logger.warning(f"Receive version ask error: {e}", exc_info=True)
 

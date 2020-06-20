@@ -295,7 +295,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.2.6"
+version: str = "0.2.7"
 
 # Load data from pickle
 
