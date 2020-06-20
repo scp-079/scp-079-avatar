@@ -25,7 +25,7 @@ from pyrogram import Client
 
 from .. import glovar
 from .decorators import threaded
-from .etc import code_block
+from .etc import code_block, thread
 from .file import crypt_file, data_to_file, delete_file, get_new_path
 from .telegram import send_document, send_message
 
@@ -126,7 +126,7 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
 
         # Delete the tmp file
         for f in {file, file_path}:
-            f.startswith("tmp/") and delete_file(f)
+            f.startswith("tmp/") and thread(delete_file, (f,))
 
         result = bool(result)
     except Exception as e:

@@ -198,7 +198,7 @@ def check_join(client: Client, message: Message) -> bool:
             with Image.open(image_path) as image:
                 share_user_avatar(client, gid, uid, mid, image)
 
-            delete_file(image_path)
+            thread(delete_file, (image_path,))
 
         result = True
     except Exception as e:

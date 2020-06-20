@@ -26,7 +26,7 @@ from pyrogram import Client, Message
 
 from .. import glovar
 from .channel import send_help, share_data
-from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention_id
+from .etc import code, crypt_str, general_link, get_int, get_text, lang, mention_id, thread
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_high_score_user
 from .ids import init_group_id, init_user_id
@@ -314,7 +314,7 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = True) ->
             result = pickle.load(f)
 
         for f in {path, path_decrypted}:
-            delete_file(f)
+            thread(delete_file, (f,))
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
 

@@ -28,7 +28,7 @@ from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInv
 from .. import glovar
 from .channel import send_help, share_data, share_regex_count, share_user_avatar
 from .decorators import retry, threaded
-from .etc import code, delay, general_link, get_now, lang
+from .etc import code, delay, general_link, get_now, lang, thread
 from .file import data_to_file, delete_file, get_downloaded_path, save
 from .filters import is_class_d_user, is_high_score_user, is_watch_user
 from .group import leave_group, save_admins
@@ -131,7 +131,7 @@ def interval_min_15(client: Client) -> bool:
             with Image.open(image_path) as image:
                 share_user_avatar(client, gid, uid, 0, image)
 
-            delete_file(image_path)
+            thread(delete_file, (image_path,))
 
         result = True
     except Exception as e:
