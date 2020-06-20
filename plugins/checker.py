@@ -18,13 +18,12 @@
 
 import logging
 from os.path import exists
-from typing import Dict, Union
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
-def check_all(values: Dict[str, Dict[str, Union[bool, bytes, int, str]]], broken: bool) -> bool:
+def check_all(values: dict, broken: bool) -> bool:
     # Check all values in config.ini
     error = ""
 
@@ -41,7 +40,7 @@ def check_all(values: Dict[str, Dict[str, Union[bool, bytes, int, str]]], broken
     raise_error(error)
 
 
-def check_bots(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_bots(values: dict, broken: bool) -> str:
     # Check all values in bots section
     result = ""
 
@@ -57,7 +56,7 @@ def check_bots(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) ->
     return result
 
 
-def check_channels(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_channels(values: dict, broken: bool) -> str:
     # Check all values in channels section
     result = ""
 
@@ -77,7 +76,7 @@ def check_channels(values: Dict[str, Union[bool, bytes, int, str]], broken: bool
     return result
 
 
-def check_custom(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_custom(values: dict, broken: bool) -> str:
     # Check all values in custom section
     result = ""
 
@@ -93,7 +92,7 @@ def check_custom(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) 
     return result
 
 
-def check_emoji(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_emoji(values: dict, broken: bool) -> str:
     # Check all values in emoji section
     result = ""
 
@@ -111,7 +110,7 @@ def check_emoji(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -
     return result
 
 
-def check_encrypt(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_encrypt(values: dict, broken: bool) -> str:
     # Check all values in encrypt section
     result = ""
 
@@ -129,7 +128,7 @@ def check_encrypt(values: Dict[str, Union[bool, bytes, int, str]], broken: bool)
     return result
 
 
-def check_language(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_language(values: dict, broken: bool) -> str:
     # Check all values in language section
     result = ""
 
@@ -149,7 +148,7 @@ def check_language(values: Dict[str, Union[bool, bytes, int, str]], broken: bool
     return result
 
 
-def check_limit(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_limit(values: dict, broken: bool) -> str:
     # Check all values in limit section
     result = ""
 
@@ -165,7 +164,7 @@ def check_limit(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -
     return result
 
 
-def check_mode(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_mode(values: dict, broken: bool) -> str:
     # Check all values in mode section
     result = ""
 
@@ -181,7 +180,7 @@ def check_mode(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) ->
     return result
 
 
-def check_time(values: Dict[str, Union[bool, bytes, int, str]], broken: bool) -> str:
+def check_time(values: dict, broken: bool) -> str:
     # Check all values in time section
     result = ""
 
