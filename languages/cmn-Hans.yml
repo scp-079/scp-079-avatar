@@ -10,11 +10,11 @@ more: 附加信息
 reset: 重置数据
 rollback: 数据回滚
 
+# Command
+command_date: 命令发送时间
+
 # Group
 refresh: 刷新群组管理员列表
-
-# Record
-project: 项目编号
 
 # Status
 waiting_users: 待加入白名单的用户
@@ -26,3 +26,10 @@ colon: "："
 
 # Unit
 members: 名
+
+# Version
+git_change: 本地修改
+git_date: 提交时间
+git_hash: 哈希值
+project: 项目编号
+version: 版本

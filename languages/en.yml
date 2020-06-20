@@ -10,11 +10,11 @@ more: Extra Info
 reset: Reset Data
 rollback: Rollback
 
+# Command
+command_date: 命令发送时间
+
 # Group
 refresh: Refresh Admin Lists
-
-# Record
-project: Project
 
 # Status
 waiting_users: White List Pending
@@ -26,3 +26,10 @@ colon: ": "
 
 # Unit
 members: member(s)
+
+# Version
+git_change: 本地修改
+git_date: 提交时间
+git_hash: 哈希值
+project: 项目编号
+version: 版本

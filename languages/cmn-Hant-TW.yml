@@ -10,11 +10,11 @@ more: 額外訊息
 reset: 復原數據
 rollback: 數據回滚
 
+# Command
+command_date: 命令发送时间
+
 # Group
 refresh: 刷新管理目錄
-
-# Record
-project: 項目編號
 
 # Status
 waiting_users: 隊列中的用戶
@@ -26,3 +26,10 @@ colon: "："
 
 # Unit
 members: 名
+
+# Version
+git_change: 本地修改
+git_date: 提交时间
+git_hash: 哈希值
+project: 项目编号
+version: 版本
