@@ -24,8 +24,8 @@ from pyrogram.api.functions.account import UpdateStatus
 from pyrogram.api.functions.messages import ReadMentions
 from pyrogram.api.functions.users import GetFullUser
 from pyrogram.api.types import InputPeerUser, InputPeerChannel, UserFull
-from pyrogram.errors import ChatAdminRequired, ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait
-from pyrogram.errors import PeerIdInvalid, UsernameInvalid, UsernameNotOccupied, UserNotParticipant
+from pyrogram.errors import ChatAdminRequired, ButtonDataInvalid, ButtonUrlInvalid, ChannelInvalid, ChannelPrivate
+from pyrogram.errors import FloodWait, PeerIdInvalid, UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
 from .decorators import retry
 
@@ -243,7 +243,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
         )
     except FloodWait as e:
         raise e
-    except ButtonDataInvalid:
+    except (ButtonDataInvalid, ButtonUrlInvalid):
         logger.warning(f"Send document {document} to {cid} - invalid markup: {markup}")
     except (ChannelInvalid, ChannelPrivate, ChatAdminRequired, PeerIdInvalid):
         return False
@@ -273,7 +273,7 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
         )
     except FloodWait as e:
         raise e
-    except ButtonDataInvalid:
+    except (ButtonDataInvalid, ButtonUrlInvalid):
         logger.warning(f"Send message to {cid} - invalid markup: {markup}")
     except (ChannelInvalid, ChannelPrivate, ChatAdminRequired, PeerIdInvalid):
         return False
