@@ -166,6 +166,7 @@ try:
     # [flag]
     broken = False
 except Exception as e:
+    print("[ERROR] Read data from config.ini error, please check the log file")
     logger.error(f"[ERROR] Read data from config.ini error: {e}", exc_info=True)
 
 # Check
