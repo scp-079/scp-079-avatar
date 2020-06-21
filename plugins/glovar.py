@@ -157,11 +157,11 @@ try:
 
     # [time]
     date_reset = config.get("time", "date_reset", fallback=date_reset)
-    time_begin = config.get("time", "time_begin", fallback=time_begin)
-    time_check = config.get("time", "time_check", fallback=time_check)
-    time_end = config.get("time", "time_end", fallback=time_end)
-    time_new = config.get("time", "time_new", fallback=time_new)
-    time_old = config.get("time", "time_old", fallback=time_old)
+    time_begin = int(config.get("time", "time_begin", fallback=time_begin))
+    time_check = int(config.get("time", "time_check", fallback=time_check))
+    time_end = int(config.get("time", "time_end", fallback=time_end))
+    time_new = int(config.get("time", "time_new", fallback=time_new))
+    time_old = int(config.get("time", "time_old", fallback=time_old))
 
     # [flag]
     broken = False
