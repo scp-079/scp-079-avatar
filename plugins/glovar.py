@@ -65,102 +65,103 @@ debug_channel_id: int = 0
 hide_channel_id: int = 0
 
 # [custom]
-project_link: str = ""
-project_name: str = ""
+project_link: str = "https://scp-079.org/avatar/"
+project_name: str = "SCP-079-AVATAR"
 
 # [emoji]
-emoji_ad_single: int = 0
-emoji_ad_total: int = 0
-emoji_many: int = 0
-emoji_protect: str = ""
-emoji_wb_single: int = 0
-emoji_wb_total: int = 0
+emoji_ad_single: int = 15
+emoji_ad_total: int = 30
+emoji_many: int = 15
+emoji_protect: str = "\\U0001F642"
+emoji_wb_single: int = 10
+emoji_wb_total: int = 15
 
 # [encrypt]
 key: Union[bytes, str] = ""
 password: str = ""
 
 # [language]
-lang: str = ""
-normalize: Union[bool, str] = ""
+lang: str = "cmn-Hans"
+normalize: Union[bool, str] = "True"
 
 # [limit]
-limit_length: int = 0
-limit_message: int = 0
+limit_length: int = 30
+limit_message: int = 50
 
 # [mode]
-aio: Union[bool, str] = ""
-backup: Union[bool, str] = ""
+aio: Union[bool, str] = "False"
+backup: Union[bool, str] = "False"
 
 # [time]
-date_reset: str = ""
+date_reset: str = "1st mon"
 time_begin: int = 0
-time_check: int = 0
-time_end: int = 0
-time_new: int = 0
-time_old: int = 0
+time_check: int = 5
+time_end: int = 12
+time_new: int = 1800
+time_old: int = 7776000
 
 try:
     config = RawConfigParser()
     config.read("config.ini")
 
     # [bots]
-    avatar_id = int(config["bots"].get("avatar_id", str(avatar_id)))
-    captcha_id = int(config["bots"].get("captcha_id", str(captcha_id)))
-    clean_id = int(config["bots"].get("clean_id", str(clean_id)))
-    index_id = int(config["bots"].get("index_id", str(index_id)))
-    lang_id = int(config["bots"].get("lang_id", str(lang_id)))
-    long_id = int(config["bots"].get("long_id", str(long_id)))
-    noflood_id = int(config["bots"].get("noflood_id", str(noflood_id)))
-    noporn_id = int(config["bots"].get("noporn_id", str(noporn_id)))
-    nospam_id = int(config["bots"].get("nospam_id", str(nospam_id)))
-    tip_id = int(config["bots"].get("tip_id", str(tip_id)))
-    user_id = int(config["bots"].get("user_id", str(user_id)))
-    warn_id = int(config["bots"].get("warn_id", str(warn_id)))
+    avatar_id = int(config.get("bots", "avatar_id", fallback=avatar_id))
+    captcha_id = int(config.get("bots", "captcha_id", fallback=captcha_id))
+    clean_id = int(config.get("bots", "clean_id", fallback=clean_id))
+    index_id = int(config.get("bots", "index_id", fallback=index_id))
+    lang_id = int(config.get("bots", "lang_id", fallback=lang_id))
+    long_id = int(config.get("bots", "long_id", fallback=long_id))
+    noflood_id = int(config.get("bots", "noflood_id", fallback=noflood_id))
+    noporn_id = int(config.get("bots", "noporn_id", fallback=noporn_id))
+    nospam_id = int(config.get("bots", "nospam_id", fallback=nospam_id))
+    tip_id = int(config.get("bots", "tip_id", fallback=tip_id))
+    user_id = int(config.get("bots", "user_id", fallback=user_id))
+    warn_id = int(config.get("bots", "warn_id", fallback=warn_id))
 
     # [channels]
-    debug_channel_id = int(config["channels"].get("debug_channel_id", str(debug_channel_id)))
-    hide_channel_id = int(config["channels"].get("hide_channel_id", str(hide_channel_id)))
+    debug_channel_id = int(config.get("channels", "debug_channel_id", fallback=debug_channel_id))
+    hide_channel_id = int(config.get("channels", "hide_channel_id", fallback=hide_channel_id))
 
     # [custom]
-    project_link = config["custom"].get("project_link", project_link)
-    project_name = config["custom"].get("project_name", project_name)
+    project_link = config.get("custom", "project_link", fallback=project_link)
+    project_name = config.get("custom", "project_name", fallback=project_name)
 
     # [emoji]
-    emoji_ad_single = int(config["emoji"].get("emoji_ad_single", str(emoji_ad_single)))
-    emoji_ad_total = int(config["emoji"].get("emoji_ad_total", str(emoji_ad_total)))
-    emoji_many = int(config["emoji"].get("emoji_many", str(emoji_many)))
-    emoji_protect = getdecoder("unicode_escape")(config["emoji"].get("emoji_protect", emoji_protect))[0]
-    emoji_wb_single = int(config["emoji"].get("emoji_wb_single", str(emoji_wb_single)))
-    emoji_wb_total = int(config["emoji"].get("emoji_wb_total", str(emoji_wb_total)))
+    emoji_ad_single = int(config.get("emoji", "emoji_ad_single", fallback=emoji_ad_single))
+    emoji_ad_total = int(config.get("emoji", "emoji_ad_total", fallback=emoji_ad_total))
+    emoji_many = int(config.get("emoji", "emoji_many", fallback=emoji_many))
+    emoji_protect = config.get("emoji", "emoji_protect", fallback=emoji_protect)
+    emoji_protect = getdecoder("unicode_escape")(emoji_protect)[0]
+    emoji_wb_single = int(config.get("emoji", "emoji_wb_single", fallback=emoji_wb_single))
+    emoji_wb_total = int(config.get("emoji", "emoji_wb_total", fallback=emoji_wb_total))
 
     # [encrypt]
-    key = config["encrypt"].get("key", key)
+    key = config.get("encrypt", "key", fallback=key)
     key = key.encode("utf-8")
-    password = config["encrypt"].get("password", password)
+    password = config.get("encrypt", "password", fallback=password)
 
     # [language]
-    lang = config["language"].get("lang", lang)
-    normalize = config["language"].get("normalize", normalize)
+    lang = config.get("language", "lang", fallback=lang)
+    normalize = config.get("language", "normalize", fallback=normalize)
     normalize = eval(normalize)
 
     # [limit]
-    limit_length = int(config["limit"].get("limit_length", str(limit_length)))
-    limit_message = int(config["limit"].get("limit_message", str(limit_message)))
+    limit_length = int(config.get("limit", "limit_length", fallback=limit_length))
+    limit_message = int(config.get("limit", "limit_message", fallback=limit_message))
 
     # [mode]
-    aio = config["mode"].get("aio", aio)
+    aio = config.get("mode", "aio", fallback=aio)
     aio = eval(aio)
-    backup = config["mode"].get("backup", backup)
+    backup = config.get("mode", "backup", fallback=backup)
     backup = eval(backup)
 
     # [time]
-    date_reset = config["time"].get("date_reset", date_reset)
-    time_begin = int(config["time"].get("time_begin", str(time_begin)))
-    time_check = int(config["time"].get("time_check", str(time_check)))
-    time_end = int(config["time"].get("time_end", str(time_end)))
-    time_new = int(config["time"].get("time_new", str(time_new)))
-    time_old = int(config["time"].get("time_old", str(time_old)))
+    date_reset = config.get("time", "date_reset", fallback=date_reset)
+    time_begin = config.get("time", "time_begin", fallback=time_begin)
+    time_check = config.get("time", "time_check", fallback=time_check)
+    time_end = config.get("time", "time_end", fallback=time_end)
+    time_new = config.get("time", "time_new", fallback=time_new)
+    time_old = config.get("time", "time_old", fallback=time_old)
 
     # [flag]
     broken = False
@@ -295,7 +296,7 @@ for c in ascii_lowercase:
 
 sender: str = "AVATAR"
 
-version: str = "0.2.7"
+version: str = "0.2.8"
 
 # Load data from pickle
 

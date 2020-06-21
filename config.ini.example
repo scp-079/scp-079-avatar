@@ -60,8 +60,8 @@ backup = False
 
 [time]
 date_reset = 1st mon
-time_begin = [DATA EXPUNGED]
-time_check = [DATA EXPUNGED]
-time_end = [DATA EXPUNGED]
+time_begin = 0
+time_check = 5
+time_end = 12
 time_new = 1800
 time_old = 7776000
